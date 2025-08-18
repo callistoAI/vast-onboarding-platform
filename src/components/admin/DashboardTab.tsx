@@ -544,16 +544,11 @@ export function OnboardingLinksTab() {
         <div className="space-y-4">
           {/* Table Header */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="grid grid-cols-12 gap-6 px-6 py-4 text-sm font-medium text-gray-500 border-b border-gray-100">
-              <div className="col-span-1">
-                <input type="checkbox" className="rounded border-gray-300" />
-              </div>
-              <div className="col-span-2">Link ID</div>
+            <div className="grid grid-cols-12 gap-6 px-6 py-4 text-sm font-semibold text-gray-700 bg-gray-100 border-b border-gray-300 uppercase tracking-wide rounded-t-lg">
+              <div className="col-span-3">Name</div>
               <div className="col-span-2">Created</div>
-              <div className="col-span-2">Name</div>
-              <div className="col-span-2">Platforms</div>
-              <div className="col-span-1">Status</div>
-              <div className="col-span-1">Used</div>
+              <div className="col-span-4">URL</div>
+              <div className="col-span-2">Status</div>
               <div className="col-span-1">Actions</div>
             </div>
           </div>
@@ -569,16 +564,7 @@ export function OnboardingLinksTab() {
               filteredLinks().map((link) => (
                 <div key={link.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
                   <div className="grid grid-cols-12 gap-6 items-center px-6 py-4">
-                    <div className="col-span-1">
-                      <input type="checkbox" className="rounded border-gray-300" />
-                    </div>
-                    <div className="col-span-2">
-                      <span className="text-cyan-600 font-medium">{link.link_token.substring(0, 8)}</span>
-                    </div>
-                    <div className="col-span-2">
-                      <span className="text-gray-900">{new Date(link.created_at).toLocaleDateString()}</span>
-                    </div>
-                    <div className="col-span-2">
+                    <div className="col-span-3">
                       {editingLinkId === link.id ? (
                         <input
                           type="text"
@@ -605,6 +591,14 @@ export function OnboardingLinksTab() {
                       )}
                     </div>
                     <div className="col-span-2">
+                      <span className="text-gray-900">{new Date(link.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <div className="col-span-4">
+                      <div className="flex items-center space-x-2">
+                        <code className="text-sm font-mono text-gray-600 truncate max-w-xs">/onboard/{link.link_token}</code>
+                      </div>
+                    </div>
+                    <div className="col-span-2">
                       <div className="flex space-x-1">
                         {link.platforms.slice(0, 3).map((platform) => {
                           const config = platformOptions.find(p => p.id === platform);
@@ -627,20 +621,15 @@ export function OnboardingLinksTab() {
                         )}
                       </div>
                     </div>
-                    <div className="col-span-1">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    <div className="col-span-2">
+                      <span className={`px-3 py-1 rounded-lg text-xs font-medium ${
                         link.status === 'active' 
-                          ? 'bg-teal-100 text-teal-700 border border-teal-200'
+                          ? 'bg-green-100 text-green-700 border border-green-200'
                           : link.status === 'used'
                           ? 'bg-blue-100 text-blue-700 border border-blue-200'
                           : 'bg-gray-100 text-gray-700 border border-gray-200'
                       }`}>
                         {link.status === 'active' ? 'Active' : link.status === 'used' ? 'Used' : 'Inactive'}
-                      </span>
-                    </div>
-                    <div className="col-span-1">
-                      <span className="text-gray-500 text-sm">
-                        {link.used_at ? new Date(link.used_at).toLocaleDateString() : '-'}
                       </span>
                     </div>
                     <div className="col-span-1">
