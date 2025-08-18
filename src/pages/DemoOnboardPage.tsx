@@ -6,29 +6,29 @@ import { useAuth } from '../hooks/useAuth';
 const platformConfigs = {
   meta: {
     name: 'Meta Business',
-    color: 'purple',
+    color: '#6200EE',
     description: 'Connect your Facebook and Instagram business accounts',
     permissions: [
       'Read and manage Facebook Pages',
       'Access Instagram Business accounts',
       'Create and manage Facebook Ads',
       'View Facebook Insights and Analytics'
-    ]
+    ],
   },
   google: {
     name: 'Google Ads',
-    color: 'indigo',
+    color: '#3700B3',
     description: 'Access Google Ads campaigns and analytics',
     permissions: [
       'View and manage Google Ads campaigns',
       'Access Google Analytics data',
       'Manage Google My Business listings',
       'View YouTube channel analytics'
-    ]
+    ],
   },
   tiktok: {
     name: 'TikTok Ads',
-    color: 'teal',
+    color: '#03DAC6',
     description: 'Manage TikTok advertising campaigns',
     permissions: [
       'Create and manage TikTok ad campaigns',
@@ -39,14 +39,14 @@ const platformConfigs = {
   },
   shopify: {
     name: 'Shopify',
-    color: 'cyan',
+    color: '#018786',
     description: 'Connect your Shopify store data',
     permissions: [
       'Access Shopify store data',
       'View product and inventory information',
       'Access order and customer data',
       'Manage Shopify app integrations'
-    ]
+    ],
   }
 };
 
@@ -236,7 +236,10 @@ export function DemoOnboardPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                   {Object.entries(platformConfigs).map(([platform, config]) => (
                     <div key={platform} className="text-center group">
-                      <div className={`w-16 h-16 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-105 transition-transform duration-200`}>
+                      <div 
+                        className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-105 transition-transform duration-200"
+                        style={{ background: `linear-gradient(135deg, ${config.color}, ${config.color}dd)` }}
+                      >
                         <span className="text-white font-bold text-xl">{config.name.charAt(0)}</span>
                       </div>
                       <p className="text-lg font-semibold text-gray-900 mb-2">{config.name}</p>
@@ -265,7 +268,10 @@ export function DemoOnboardPage() {
                 // Connection Phase
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-10">
                   <div className="text-center mb-10">
-                    <div className={`w-24 h-24 bg-gradient-to-br from-${currentConfig.color}-400 to-${currentConfig.color}-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg`}>
+                    <div 
+                      className="w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg"
+                      style={{ background: `linear-gradient(135deg, ${currentConfig.color}, ${currentConfig.color}dd)` }}
+                    >
                       <span className="text-white font-bold text-3xl">{currentConfig.name.charAt(0)}</span>
                     </div>
                     <h3 className="text-3xl font-bold text-gray-900 mb-4">{currentConfig.name}</h3>
@@ -325,7 +331,10 @@ export function DemoOnboardPage() {
                 // Permissions Phase
                 <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-10">
                   <div className="text-center mb-10">
-                    <div className={`w-20 h-20 bg-gradient-to-br from-${currentConfig.color}-400 to-${currentConfig.color}-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg`}>
+                    <div 
+                      className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg"
+                      style={{ background: `linear-gradient(135deg, ${currentConfig.color}, ${currentConfig.color}dd)` }}
+                    >
                       <span className="text-white font-bold text-2xl">{currentConfig.name.charAt(0)}</span>
                     </div>
                     <h3 className="text-3xl font-bold text-gray-900 mb-4">Review Access Permissions</h3>
@@ -343,10 +352,14 @@ export function DemoOnboardPage() {
                             className="sr-only"
                           />
                           <div className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${
-                            platformPermissions[currentPlatform]?.[permission]
-                              ? `bg-gradient-to-r from-${currentConfig.color}-500 to-${currentConfig.color}-600 border-${currentConfig.color}-500 shadow-sm`
+                            (platformPermissions[currentPlatform]?.[permission] || false)
+                              ? 'border-transparent shadow-sm'
                               : 'border-gray-300 bg-white hover:border-gray-400 group-hover:border-gray-500'
-                          }`}>
+                          }`}
+                          style={(platformPermissions[currentPlatform]?.[permission] || false) ? {
+                            background: `linear-gradient(135deg, ${currentConfig.color}, ${currentConfig.color}dd)`,
+                            borderColor: currentConfig.color
+                          } : {}}>
                             {platformPermissions[currentPlatform]?.[permission] && (
                               <CheckCircle className="w-5 h-5 text-white" />
                             )}
@@ -404,7 +417,10 @@ export function DemoOnboardPage() {
                     const status = platformStatuses[platform];
                     return (
                       <div key={platform} className="text-center group">
-                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 relative shadow-lg group-hover:scale-105 transition-transform duration-200`} style={{ background: `linear-gradient(135deg, ${config.color}, ${config.color}dd)` }}>
+                        <div 
+                          className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 relative shadow-lg group-hover:scale-105 transition-transform duration-200"
+                          style={{ background: `linear-gradient(135deg, ${config.color}, ${config.color}dd)` }}
+                        >
                           <span className="text-white font-bold text-xl">{config.name.charAt(0)}</span>
                           {status === 'connected' && (
                             <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
