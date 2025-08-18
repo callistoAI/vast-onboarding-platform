@@ -522,20 +522,6 @@ export function OnboardingLinksTab() {
           <div className="col-span-4">URL</div>
           <div className="col-span-2">Status</div>
           <div className="col-span-1">Actions</div>
-                  onChange={(e) => setSelectedFilter(e.target.value as 'all' | 'active' | 'used' | 'inactive')}
-                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
-                >
-                  <option value="all">All Links</option>
-                  <option value="active">Active</option>
-                  <option value="used">Used</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Links Table */}
@@ -607,34 +593,48 @@ export function OnboardingLinksTab() {
                               title={config?.name}
                             >
                               <span className="text-white font-bold text-xs">
-                  <div className="col-span-1">
-                    <div className="flex items-center space-x-1">
-                      <button
-                        onClick={() => handleTestLink(link.link_token)}
-                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        title="Test link"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Copy link"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                      <button
-                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                        title="More options"
-                      >
-                        <Settings className="w-4 h-4" />
-                      </button>
-                        onKeyPress={(e) => {
+                                {config?.name.charAt(0)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                        {link.platforms.length > 3 && (
+                          <div className="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center shadow-sm">
+                            <span className="text-white font-bold text-xs">+{link.platforms.length - 3}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="col-span-1">
+                      <div className="flex items-center space-x-1">
+                        <button
+                          onClick={() => handleTestLink(link.link_token)}
+                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="Test link"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
+                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Copy link"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                        <button
+                          className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                          title="More options"
+                        >
+                          <Settings className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))
             )}
           </div>
+        </div>
 
         {/* Empty State */}
         {filteredLinks().length === 0 && (
