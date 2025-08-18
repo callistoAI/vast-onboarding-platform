@@ -551,10 +551,7 @@ export function SettingsTab() {
         <div className="space-y-4">
           {/* Table Header */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="grid grid-cols-12 gap-6 px-6 py-4 text-sm font-medium text-gray-500 border-b border-gray-100">
-              <div className="col-span-1">
-                <input type="checkbox" className="rounded border-gray-300" />
-              </div>
+            <div className="grid grid-cols-11 gap-6 px-6 py-4 text-sm font-medium text-gray-500 bg-white border-b border-gray-100">
               <div className="col-span-4">Member</div>
               <div className="col-span-2">Role</div>
               <div className="col-span-2">Status</div>
@@ -573,10 +570,7 @@ export function SettingsTab() {
             ) : (
               filteredInvites().map((invite) => (
                 <div key={invite.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
-                  <div className="grid grid-cols-12 gap-6 items-center px-6 py-4">
-                    <div className="col-span-1">
-                      <input type="checkbox" className="rounded border-gray-300" />
-                    </div>
+                  <div className="grid grid-cols-11 gap-6 items-center px-6 py-4">
                     <div className="col-span-4">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 rounded-xl flex items-center justify-center shadow-sm">
@@ -655,116 +649,7 @@ export function SettingsTab() {
             )}
           </div>
         </div>
-
       </div>
-        {/* Team Members List */}
-        <div className="space-y-4">
-          {/* Table Header */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="grid grid-cols-12 gap-6 px-6 py-4 text-sm font-medium text-gray-500 border-b border-gray-100">
-              <div className="col-span-1">
-                <input type="checkbox" className="rounded border-gray-300" />
-              </div>
-              <div className="col-span-4">Member</div>
-              <div className="col-span-2">Role</div>
-              <div className="col-span-2">Status</div>
-              <div className="col-span-2">Joined</div>
-              <div className="col-span-1">Actions</div>
-            </div>
-          </div>
-
-          {/* Table Body - Separated Rows */}
-          <div className="space-y-3">
-            {filteredInvites().length === 0 ? (
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center">
-                <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">No team members match the current filter</p>
-              </div>
-            ) : (
-              filteredInvites().map((invite) => (
-                <div key={invite.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
-                  <div className="grid grid-cols-12 gap-6 items-center px-6 py-4">
-                    <div className="col-span-1">
-                      <input type="checkbox" className="rounded border-gray-300" />
-                    </div>
-                    <div className="col-span-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 rounded-xl flex items-center justify-center shadow-sm">
-                          <span className="text-sm font-semibold text-white">
-                            {invite.email ? invite.email.charAt(0).toUpperCase() : '?'}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-900">{invite.email || 'Loading...'}</p>
-                          <p className="text-sm text-gray-500">ID: {invite.id.substring(0, 8)}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-span-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getRoleColor(invite.role)}`}>
-                        {invite.role.charAt(0).toUpperCase() + invite.role.slice(1)}
-                      </span>
-                    </div>
-                    <div className="col-span-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(invite.status)}`}>
-                        {getStatusIcon(invite.status)}
-                        <span className="ml-1 capitalize">{invite.status}</span>
-                      </span>
-                    </div>
-                    <div className="col-span-2">
-                      <span className="text-gray-900">
-                        {invite.created_at ? new Date(invite.created_at).toLocaleDateString() : '-'}
-                      </span>
-                    </div>
-                    <div className="col-span-1">
-                      <div className="flex items-center space-x-1">
-                        {invite.status === 'invited' && invite.email && (
-                          <>
-                            <button
-                              onClick={() => copyToClipboard(`${window.location.origin}/invite/${invite.invite_token}`)}
-                              className="p-2 text-gray-400 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-colors"
-                              title="Copy invite link"
-                            >
-                              <Copy className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => resendInvite()}
-                              className="p-2 text-gray-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
-                              title="Resend invite"
-                            >
-                              <Mail className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
-                        <div className="relative group">
-                          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                            <MoreVertical className="w-4 h-4" />
-                          </button>
-                          {invite.email && (
-                            <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 min-w-36">
-                              <button
-                                onClick={() => changeRole(invite.id, invite.role === 'admin' ? 'editor' : 'admin')}
-                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium"
-                              >
-                                Change Role
-                              </button>
-                              <button
-                                onClick={() => removeInvite(invite.id)}
-                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
 
       {/* Account Information */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
