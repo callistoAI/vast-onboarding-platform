@@ -7,10 +7,10 @@ import { useAuth } from '../../hooks/useAuth';
 type OnboardingLink = Database['public']['Tables']['onboarding_links']['Row'];
 
 const platformOptions = [
-  { id: 'meta', name: 'Meta Business', color: 'blue' },
-  { id: 'google', name: 'Google Ads', color: 'red' },
-  { id: 'tiktok', name: 'TikTok Ads', color: 'purple' },
-  { id: 'shopify', name: 'Shopify', color: 'green' }
+  { id: 'meta', name: 'Meta Business', color: 'purple' },
+  { id: 'google', name: 'Google Ads', color: 'indigo' },
+  { id: 'tiktok', name: 'TikTok Ads', color: 'teal' },
+  { id: 'shopify', name: 'Shopify', color: 'cyan' }
 ];
 
 const platformApiOptions = {

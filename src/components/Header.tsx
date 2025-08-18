@@ -25,22 +25,20 @@ export function Header() {
           <div className="flex items-center ml-8 flex-shrink-0">
             <button
               onClick={handleHome}
-              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity group"
               title="Home"
             >
               <img 
                 src="/vast-logo.png" 
                 alt="Vast Logo" 
-                className="w-8 h-8 rounded-lg object-cover shadow-sm"
+                className="w-8 h-8 object-cover"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-lg flex items-center justify-center shadow-sm hidden">
-              </div>
-              <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-lg flex items-center justify-center shadow-sm hidden">
+              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-lime-500 flex items-center justify-center hidden">
                 <span className="text-white font-bold text-sm">V</span>
               </div>
             </button>
@@ -57,9 +55,6 @@ export function Header() {
           <div className="flex items-center space-x-4 mr-8 flex-shrink-0">
             {profile && (
               <>
-                <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100">
-                  <Bell className="w-5 h-5" />
-                </button>
                 <div className="relative group">
                   <button className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 transition-colors">
                     <div className="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full flex items-center justify-center">

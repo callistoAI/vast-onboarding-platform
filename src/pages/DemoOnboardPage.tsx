@@ -6,7 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 const platformConfigs = {
   meta: {
     name: 'Meta Business',
-    color: 'blue',
+    color: 'purple',
     description: 'Connect your Facebook and Instagram business accounts',
     permissions: [
       'Read and manage Facebook Pages',
@@ -17,7 +17,7 @@ const platformConfigs = {
   },
   google: {
     name: 'Google Ads',
-    color: 'red',
+    color: 'indigo',
     description: 'Access Google Ads campaigns and analytics',
     permissions: [
       'View and manage Google Ads campaigns',
@@ -28,7 +28,7 @@ const platformConfigs = {
   },
   tiktok: {
     name: 'TikTok Ads',
-    color: 'purple',
+    color: 'teal',
     description: 'Manage TikTok advertising campaigns',
     permissions: [
       'Create and manage TikTok ad campaigns',
@@ -39,7 +39,7 @@ const platformConfigs = {
   },
   shopify: {
     name: 'Shopify',
-    color: 'green',
+    color: 'cyan',
     description: 'Connect your Shopify store data',
     permissions: [
       'Access Shopify store data',

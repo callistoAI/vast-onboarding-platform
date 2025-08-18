@@ -11,25 +11,25 @@ const platformConfigs = {
   meta: {
     name: 'Meta Business',
     description: 'Connect to Facebook and Instagram Business accounts',
-    color: 'blue',
+    color: 'purple',
     authUrl: 'https://business.facebook.com/oauth', // Placeholder
   },
   google: {
     name: 'Google Ads',
     description: 'Access Google Ads campaigns and analytics',
-    color: 'red',
+    color: 'indigo',
     authUrl: 'https://accounts.google.com/oauth', // Placeholder
   },
   tiktok: {
     name: 'TikTok Ads',
     description: 'Manage TikTok advertising campaigns',
-    color: 'purple',
+    color: 'teal',
     authUrl: 'https://ads.tiktok.com/oauth', // Placeholder
   },
   shopify: {
     name: 'Shopify',
     description: 'Connect to Shopify store data',
-    color: 'green',
+    color: 'cyan',
     authUrl: 'https://shopify.com/oauth', // Placeholder
   }
 };
