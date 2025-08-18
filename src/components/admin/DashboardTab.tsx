@@ -403,12 +403,7 @@ export function OnboardingLinksTab() {
     
     // Apply status filter
     if (selectedFilter !== 'all') {
-      if (selectedFilter === 'inactive') {
-        // Show links that are neither active nor used (placeholder for inactive state)
-        filtered = filtered.filter(link => link.status !== 'active' && link.status !== 'used');
-      } else {
-        filtered = filtered.filter(link => link.status === selectedFilter);
-      }
+      filtered = filtered.filter(link => link.status === selectedFilter);
     }
     
     return filtered.filter(link => {
@@ -647,12 +642,12 @@ export function OnboardingLinksTab() {
                 </button>
                 <button
                   onClick={generateLink}
-            <div className="grid grid-cols-12 gap-4 px-8 py-5 text-sm font-medium text-gray-500 border-b border-gray-100">
-              <div className="col-span-4">Name</div>
-              <div className="col-span-4">URL</div>
-              <div className="col-span-2">Platforms</div>
-              <div className="col-span-1">Status</div>
-              <div className="col-span-1">Actions</div>
+                  disabled={generating || selectedPlatforms.length === 0 || Object.keys(platformApis).length === 0 || !linkName.trim()}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                >
+                  {generating ? 'Generating...' : 'Generate Link'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
