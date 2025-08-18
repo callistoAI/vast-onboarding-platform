@@ -37,7 +37,7 @@ export function HorizontalNav() {
         return (
           <div
             key={item.path}
-            className="relative group"
+            className="relative"
           >
             <button
               onClick={() => navigate(item.path)}
@@ -51,11 +51,7 @@ export function HorizontalNav() {
             </button>
             {/* Active indicator line */}
             {isActive && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-full animate-in slide-in-from-left-full duration-300"></div>
-            )}
-            {/* Hover indicator line */}
-            {!isActive && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-300 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-full"></div>
             )}
           </div>
         );

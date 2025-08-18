@@ -464,21 +464,21 @@ export function OnboardingLinksTab() {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex items-center justify-between mb-8 animate-in fade-in slide-in-from-top-4 duration-500">
+      <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Links</h1>
           <p className="text-gray-600 mt-1">Manage your onboarding links and client access</p>
         </div>
         <button 
           onClick={() => setShowLinkForm(!showLinkForm)}
-          className="bg-gradient-to-r from-indigo-500 to-pink-600 text-white px-6 py-2.5 rounded-lg hover:from-indigo-600 hover:to-pink-700 hover:scale-105 hover:shadow-lg transition-all duration-200 font-medium"
+          className="bg-gradient-to-r from-indigo-500 to-pink-600 text-white px-6 py-2.5 rounded-lg hover:from-indigo-600 hover:to-pink-700 transition-colors duration-200 font-medium"
         >
           Create link
         </button>
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -522,7 +522,7 @@ export function OnboardingLinksTab() {
 
       {/* Link Generation Form */}
       {showLinkForm && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
           <div className="px-6 py-4 border-b border-gray-100">
             <h3 className="text-xl font-semibold text-gray-900">Create new link</h3>
             <p className="text-gray-600 text-sm mt-1">Generate a new onboarding link for your clients</p>
@@ -670,14 +670,14 @@ export function OnboardingLinksTab() {
               <div className="flex space-x-4 pt-4 border-t border-gray-100">
                 <button
                   onClick={() => setShowLinkForm(false)}
-                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:scale-105 font-medium transition-all duration-300"
+                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors duration-200"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={generateLink}
                   disabled={generating || selectedPlatforms.length === 0 || Object.keys(platformApis).length === 0 || !linkName.trim()}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 hover:scale-105 hover:shadow-lg disabled:opacity-50 font-medium transition-all duration-200"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 disabled:opacity-50 font-medium transition-colors duration-200"
                 >
                   {generating ? 'Generating...' : 'Generate Link'}
                 </button>
@@ -766,7 +766,7 @@ export function OnboardingLinksTab() {
       )}
 
       {/* Links List */}
-      <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+      <div className="space-y-4">
         {/* Table Header */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="grid grid-cols-12 gap-6 px-8 py-5 text-sm font-medium text-gray-500 border-b border-gray-100">
@@ -793,7 +793,7 @@ export function OnboardingLinksTab() {
                   : link.isStandard && link.standardType === 'view'
                   ? 'bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 shadow-purple-100 hover:shadow-purple-200 ring-1 ring-purple-200/50'
                   : 'bg-white border-gray-200'
-              } hover:shadow-md hover:-translate-y-0.5 transition-all duration-200`}>
+              } hover:shadow-md transition-shadow duration-200`}>
                 <div className="grid grid-cols-12 gap-6 items-center px-8 py-6 group">
                   <div className="col-span-3">
                     {editingLinkId === link.id ? (
@@ -875,14 +875,14 @@ export function OnboardingLinksTab() {
                     <div className="flex items-center justify-center space-x-2">
                       <button
                         onClick={() => handleTestLink(link.link_token)}
-                        className="p-2.5 text-gray-400 hover:text-green-600 hover:bg-green-50 hover:scale-105 rounded-lg transition-all duration-200"
+                        className="p-2.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-200"
                         title="Test link"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
-                        className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 hover:scale-105 rounded-lg transition-all duration-200"
+                        className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
                         title="Copy link"
                       >
                         <Copy className="w-4 h-4" />
@@ -894,7 +894,7 @@ export function OnboardingLinksTab() {
                             // In a real app, this would delete from the database
                           }
                         }}
-                        className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 hover:scale-105 rounded-lg transition-all duration-200"
+                        className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
                         title="Delete link"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -910,8 +910,8 @@ export function OnboardingLinksTab() {
 
       {/* Generated Link Modal */}
       {generatedLink && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-green-600" />
@@ -938,7 +938,7 @@ export function OnboardingLinksTab() {
             </p>
             <button
               onClick={() => setGeneratedLink(null)}
-              className="w-full px-6 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 hover:scale-105 hover:shadow-lg font-medium transition-all duration-200"
+              className="w-full px-6 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 font-medium transition-colors duration-200"
             >
               Close
             </button>

@@ -25,20 +25,20 @@ export function Header() {
           <div className="flex items-center flex-shrink-0">
             <button
               onClick={handleHome}
-              className="flex items-center space-x-3 hover:opacity-80 hover:scale-105 transition-all duration-200 group p-1"
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity duration-200 group p-1"
               title="Home"
             >
               <img 
                 src="/vast-logo.png" 
                 alt="Vast Logo" 
-                className="w-10 h-10 object-contain transition-transform duration-200 group-hover:rotate-12"
+                className="w-10 h-10 object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-lime-500 rounded-lg flex items-center justify-center hidden transition-transform duration-200 group-hover:rotate-12">
+              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-lime-500 rounded-lg flex items-center justify-center hidden">
                 <span className="text-white font-bold text-sm">V</span>
               </div>
             </button>
@@ -56,7 +56,7 @@ export function Header() {
             {profile && (
               <>
                 <div className="relative group">
-                  <button className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all duration-200">
+                  <button className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 transition-colors duration-200">
                     <div className="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full flex items-center justify-center">
                       <span className="text-sm font-semibold text-white">
                         {profile.name?.charAt(0)?.toUpperCase()}
@@ -72,7 +72,7 @@ export function Header() {
                     </div>
                     <button
                       onClick={handleSignOut}
-                      className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                      className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Sign Out</span>
