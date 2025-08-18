@@ -65,6 +65,8 @@ export function OnboardingLinksTab() {
   const [showCopyNotification, setShowCopyNotification] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState<string | null>(null);
   const [editingLink, setEditingLink] = useState<OnboardingLink | null>(null);
+  const [showSettingsModal, setShowSettingsModal] = useState<string | null>(null);
+  const [editingLink, setEditingLink] = useState<OnboardingLink | null>(null);
   
   const fetchData = useCallback(async () => {
     try {
