@@ -514,16 +514,14 @@ export function OnboardingLinksTab() {
       )}
 
       {/* Links List */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-100">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Onboarding Links</h3>
-            <div className="flex items-center space-x-3">
-              {/* Filter Dropdown */}
-              <div className="relative">
-                <select
-                  value={selectedFilter}
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+        {/* Table Header */}
+        <div className="grid grid-cols-12 gap-6 px-6 py-4 text-sm font-semibold text-gray-700 bg-gray-100 border-b border-gray-300 uppercase tracking-wide rounded-t-lg">
+          <div className="col-span-3">Name</div>
+          <div className="col-span-2">Created</div>
+          <div className="col-span-4">URL</div>
+          <div className="col-span-2">Status</div>
+          <div className="col-span-1">Actions</div>
                   onChange={(e) => setSelectedFilter(e.target.value as 'all' | 'active' | 'used' | 'inactive')}
                   className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
                 >
@@ -609,62 +607,37 @@ export function OnboardingLinksTab() {
                               title={config?.name}
                             >
                               <span className="text-white font-bold text-xs">
-                                {config?.name.charAt(0)}
-                              </span>
-                            </div>
-                          );
-                        })}
-                        {link.platforms.length > 3 && (
-                          <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center shadow-sm">
-                            <span className="text-gray-600 font-bold text-xs">+{link.platforms.length - 3}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="col-span-2">
-                      <span className={`px-3 py-1 rounded-lg text-xs font-medium ${
-                        link.status === 'active' 
-                          ? 'bg-green-100 text-green-700 border border-green-200'
-                          : link.status === 'used'
-                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                          : 'bg-gray-100 text-gray-700 border border-gray-200'
-                      }`}>
-                        {link.status === 'active' ? 'Active' : link.status === 'used' ? 'Used' : 'Inactive'}
-                      </span>
-                    </div>
-                    <div className="col-span-1">
-                      <div className="flex items-center space-x-1">
-                        <button
-                          onClick={() => handleTestLink(link.link_token)}
-                          className="p-2 text-gray-400 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-colors"
-                          title="Test link"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
-                          className="p-2 text-gray-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
-                          title="Copy link"
-                        >
-                          <Copy className="w-4 h-4" />
-                        </button>
-                        <button
-                          className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                          title="More options"
-                        >
-                          <Settings className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
+                  <div className="col-span-1">
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={() => handleTestLink(link.link_token)}
+                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        title="Test link"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Copy link"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                      <button
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                        title="More options"
+                      >
+                        <Settings className="w-4 h-4" />
+                      </button>
+                        onKeyPress={(e) => {
                   </div>
                 </div>
               ))
             )}
           </div>
-        </div>
 
         {/* Empty State */}
-        {filteredLinks.length === 0 && (
+        {filteredLinks().length === 0 && (
           <div className="px-6 py-12 text-center">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Link className="w-8 h-8 text-gray-400" />
