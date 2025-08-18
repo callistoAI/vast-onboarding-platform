@@ -656,7 +656,7 @@ export function SettingsTab() {
           </div>
         </div>
 
-
+      </div>
         {/* Team Members List */}
         <div className="space-y-4">
           {/* Table Header */}
