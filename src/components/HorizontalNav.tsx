@@ -11,7 +11,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { icon: Link, label: 'Dashboard', path: '/dashboard' },
+  { icon: Link, label: 'Links', path: '/dashboard' },
   { icon: UserCheck, label: 'Clients', path: '/admin/clients', adminOnly: true },
   { icon: Palette, label: 'Customisation', path: '/admin/customisation', adminOnly: true },
   { icon: Settings, label: 'Settings', path: '/admin/settings', adminOnly: true },

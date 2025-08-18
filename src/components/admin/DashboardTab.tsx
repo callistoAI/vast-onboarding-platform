@@ -41,8 +41,12 @@ const platformApiOptions = {
 };
 
 export function OnboardingLinksTab() {
-  const [, setLinks] = useState<OnboardingLink[]>([]);
+  const [links, setLinks] = useState<OnboardingLink[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalLinks, setTotalLinks] = useState(0);
+  const [activeLinks, setActiveLinks] = useState(0);
+  const [usedLinks, setUsedLinks] = useState(0);
+  const [expiredLinks, setExpiredLinks] = useState(0);
   const [showLinkForm, setShowLinkForm] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [platformApis, setPlatformApis] = useState<Record<string, string[]>>({});
@@ -71,6 +75,17 @@ export function OnboardingLinksTab() {
       if (linksError) throw linksError;
       setLinks(linksData || []);
 
+      // Calculate counts
+      const total = linksData?.length || 0;
+      const active = linksData?.filter(link => link.status === 'active').length || 0;
+      const used = linksData?.filter(link => link.status === 'used').length || 0;
+      const expired = linksData?.filter(link => link.status === 'expired').length || 0;
+      
+      setTotalLinks(total);
+      setActiveLinks(active);
+      setUsedLinks(used);
+      setExpiredLinks(expired);
+
     } catch (error) {
       console.error('Error fetching data:', error);
       // Use mock data for testing
@@ -85,37 +100,134 @@ export function OnboardingLinksTab() {
   }, [fetchData]);
 
   const setMockData = () => {
-    // Enhanced mock links with more variety
+    // Enhanced mock links with more variety and different statuses
     const mockLinks = [
       {
         id: '1',
         created_by: 'admin1',
         platforms: ['meta', 'google', 'tiktok', 'shopify'],
         expires_at: null,
-        note: 'Standard onboarding link - All platforms',
+        note: 'Premium Client Package',
         status: 'active' as const,
-        link_token: 'standard-all-platforms',
+        link_token: 'premium-client-pkg-001',
         used_by: null,
         used_at: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       },
       {
         id: '2',
         created_by: 'admin1',
         platforms: ['meta', 'google'],
         expires_at: null,
-        note: 'Standard view-only link - Meta & Google',
+        note: 'Social Media Analytics',
+        status: 'used' as const,
+        link_token: 'social-analytics-002',
+        used_by: 'client1',
+        used_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '3',
+        created_by: 'admin1',
+        platforms: ['tiktok', 'shopify'],
+        expires_at: null,
+        note: 'E-commerce Setup',
         status: 'active' as const,
-        link_token: 'standard-view-only',
+        link_token: 'ecommerce-setup-003',
         used_by: null,
         used_at: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }
+        created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '4',
+        created_by: 'admin1',
+        platforms: ['google'],
+        expires_at: null,
+        note: 'Google Ads Only',
+        status: 'expired' as const,
+        link_token: 'google-ads-004',
+        used_by: null,
+        used_at: null,
+        created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '5',
+        created_by: 'admin1',
+        platforms: ['meta', 'tiktok'],
+        expires_at: null,
+        note: 'Social Commerce',
+        status: 'used' as const,
+        link_token: 'social-commerce-005',
+        used_by: 'client2',
+        used_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '6',
+        created_by: 'admin1',
+        platforms: ['shopify'],
+        expires_at: null,
+        note: 'Shopify Integration',
+        status: 'active' as const,
+        link_token: 'shopify-integration-006',
+        used_by: null,
+        used_at: null,
+        created_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '7',
+        created_by: 'admin1',
+        platforms: ['meta', 'google', 'tiktok'],
+        expires_at: null,
+        note: 'Full Marketing Suite',
+        status: 'active' as const,
+        link_token: 'full-marketing-007',
+        used_by: null,
+        used_at: null,
+        created_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '8',
+        created_by: 'admin1',
+        platforms: ['google', 'shopify'],
+        expires_at: null,
+        note: 'Analytics Dashboard',
+        status: 'expired' as const,
+        link_token: 'analytics-dashboard-008',
+        used_by: null,
+        used_at: null,
+        created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '9',
+        created_by: 'admin1',
+        platforms: ['meta'],
+        expires_at: null,
+        note: 'Meta Business Only',
+        status: 'used' as const,
+        link_token: 'meta-business-009',
+        used_by: 'client3',
+        used_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      },
     ] as OnboardingLink[];
 
     setLinks(mockLinks);
+    
+    // Calculate counts
+    setTotalLinks(mockLinks.length);
+    setActiveLinks(mockLinks.filter(link => link.status === 'active').length);
+    setUsedLinks(mockLinks.filter(link => link.status === 'used').length);
+    setExpiredLinks(mockLinks.filter(link => link.status === 'expired').length);
   };
 
   const generateLink = async () => {
@@ -196,45 +308,30 @@ export function OnboardingLinksTab() {
 
 
 
-  // Placeholder UI items for links
-  const getPlaceholderLinks = () => [
-    {
-      id: 'placeholder-1',
-      name: activeTab === 'manage' ? 'E-commerce Client Package' : activeTab === 'view' ? 'Analytics Dashboard Access' : 'Premium Client Setup',
-      platforms: activeTab === 'manage' ? ['meta', 'google'] : activeTab === 'view' ? ['google'] : ['meta', 'google', 'tiktok'],
-      status: 'active',
-      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      note: activeTab === 'manage' ? 'Full manage access for e-commerce clients' : activeTab === 'view' ? 'View-only analytics access' : 'Complete platform access',
-      link_token: activeTab === 'manage' ? 'ecom-client-pkg-001' : activeTab === 'view' ? 'analytics-view-001' : 'premium-setup-001'
-    },
-    {
-      id: 'placeholder-2', 
-      name: activeTab === 'manage' ? 'Social Commerce Setup' : activeTab === 'view' ? 'Social Media Insights' : 'Standard Client Package',
-      platforms: activeTab === 'manage' ? ['tiktok', 'shopify'] : activeTab === 'view' ? ['meta'] : ['meta', 'google'],
-      status: 'used',
-      created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      note: activeTab === 'manage' ? 'Admin access for social commerce' : activeTab === 'view' ? 'Read-only social media insights' : 'Standard client onboarding',
-      link_token: activeTab === 'manage' ? 'social-commerce-002' : activeTab === 'view' ? 'social-insights-002' : 'standard-pkg-002',
-      used_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      id: 'placeholder-3',
-      name: activeTab === 'manage' ? 'Premium Advertising Suite' : activeTab === 'view' ? 'E-commerce Reports' : 'Quick Setup Link',
-      platforms: activeTab === 'manage' ? ['meta', 'google', 'tiktok'] : activeTab === 'view' ? ['shopify'] : ['shopify'],
-      status: 'active',
-      created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      note: activeTab === 'manage' ? 'Full manage access for premium clients' : activeTab === 'view' ? 'View-only e-commerce reports' : 'Quick client setup',
-      link_token: activeTab === 'manage' ? 'premium-ads-003' : activeTab === 'view' ? 'ecommerce-reports-003' : 'quick-setup-003'
-    }
-  ];
-
   const filteredLinks = () => {
-    const links = getPlaceholderLinks();
-    if (selectedFilter === 'all') return links;
-    return links.filter(link => {
+    let filtered = [...links];
+    
+    // Apply tab filter
+    if (activeTab === 'manage') {
+      // Show first 3 links for manage tab
+      filtered = filtered.slice(0, 3);
+    } else if (activeTab === 'view') {
+      // Show links 3-5 for view tab
+      filtered = filtered.slice(3, 6);
+    } else {
+      // Show first 6 links for all tab
+      filtered = filtered.slice(0, 6);
+    }
+    
+    // Apply status filter
+    if (selectedFilter !== 'all') {
+      filtered = filtered.filter(link => link.status === selectedFilter);
+    }
+    
+    return filtered.filter(link => {
       if (selectedFilter === 'active') return link.status === 'active';
       if (selectedFilter === 'used') return link.status === 'used';
-      if (selectedFilter === 'inactive') return link.status === 'inactive';
+      if (selectedFilter === 'expired') return link.status === 'expired';
       return true;
     });
   };
@@ -257,7 +354,7 @@ export function OnboardingLinksTab() {
       {/* Header Section */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Links list</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Links</h1>
           <p className="text-gray-600 mt-1">Manage your onboarding links and client access</p>
         </div>
         <button 
@@ -266,6 +363,49 @@ export function OnboardingLinksTab() {
         >
           Create link
         </button>
+      </div>
+
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Links</p>
+              <p className="text-3xl font-bold text-gray-900 mt-1">{totalLinks}</p>
+            </div>
+            <div className="w-12 h-8 bg-gradient-to-r from-blue-100 to-blue-200 rounded opacity-60"></div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Active Links</p>
+              <p className="text-3xl font-bold text-gray-900 mt-1">{activeLinks}</p>
+            </div>
+            <div className="w-12 h-8 bg-gradient-to-r from-green-100 to-green-200 rounded opacity-60"></div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Used Links</p>
+              <p className="text-3xl font-bold text-gray-900 mt-1">{usedLinks}</p>
+            </div>
+            <div className="w-12 h-8 bg-gradient-to-r from-purple-100 to-purple-200 rounded opacity-60"></div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Expired Links</p>
+              <p className="text-3xl font-bold text-gray-900 mt-1">{expiredLinks}</p>
+            </div>
+            <div className="w-12 h-8 bg-gradient-to-r from-orange-100 to-orange-200 rounded opacity-60"></div>
+          </div>
+        </div>
       </div>
 
       {/* Link Generation Form */}
@@ -485,11 +625,11 @@ export function OnboardingLinksTab() {
             
             {showFilterDropdown && (
               <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-10 min-w-32">
-                {['all', 'active', 'used', 'inactive'].map((filter) => (
+                {['all', 'active', 'used', 'expired'].map((filter) => (
                   <button
                     key={filter}
                     onClick={() => {
-                      setSelectedFilter(filter as 'all' | 'active' | 'used' | 'inactive');
+                      setSelectedFilter(filter as 'all' | 'active' | 'used' | 'expired');
                       setShowFilterDropdown(false);
                     }}
                     className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
@@ -514,138 +654,127 @@ export function OnboardingLinksTab() {
       )}
 
       {/* Links List */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+      <div className="space-y-4">
         {/* Table Header */}
-        <div className="grid grid-cols-12 gap-6 px-6 py-4 text-sm font-semibold text-gray-700 bg-gray-100 border-b border-gray-300 uppercase tracking-wide rounded-t-lg">
-          <div className="col-span-3">Name</div>
-          <div className="col-span-2">Created</div>
-          <div className="col-span-4">URL</div>
-          <div className="col-span-2">Status</div>
-          <div className="col-span-1">Actions</div>
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="grid grid-cols-12 gap-6 px-6 py-4 text-sm font-medium text-gray-500 bg-white border-b border-gray-100">
+            <div className="col-span-3">Name</div>
+            <div className="col-span-2">Created</div>
+            <div className="col-span-3">URL</div>
+            <div className="col-span-2">Platforms</div>
+            <div className="col-span-1">Status</div>
+            <div className="col-span-1">Actions</div>
+          </div>
         </div>
 
-        {/* Links Table */}
-        <div className="space-y-4">
-          {/* Table Header */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-            <div className="grid grid-cols-12 gap-6 px-6 py-4 text-sm font-semibold text-gray-700 bg-gray-100 border-b border-gray-300 uppercase tracking-wide rounded-t-lg">
-              <div className="col-span-3">Name</div>
-              <div className="col-span-2">Created</div>
-              <div className="col-span-4">URL</div>
-              <div className="col-span-2">Status</div>
-              <div className="col-span-1">Actions</div>
+        {/* Table Body - Separated Rows */}
+        <div className="space-y-3">
+          {filteredLinks().length === 0 ? (
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center">
+              <ExternalLink className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">No links match the current filter</p>
             </div>
-          </div>
-
-          {/* Table Body - Separated Rows */}
-          <div className="space-y-3">
-            {filteredLinks().length === 0 ? (
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center">
-                <ExternalLink className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">No links match the current filter</p>
-              </div>
-            ) : (
-              filteredLinks().map((link) => (
-                <div key={link.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
-                  <div className="grid grid-cols-12 gap-6 items-center px-6 py-4">
-                    <div className="col-span-3">
-                      {editingLinkId === link.id ? (
-                        <input
-                          type="text"
-                          value={editingLinkName}
-                          onChange={(e) => setEditingLinkName(e.target.value)}
-                          className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') handleSaveLinkName(link.id);
-                            if (e.key === 'Escape') handleCancelEdit();
-                          }}
-                          autoFocus
-                        />
-                      ) : (
-                        <div className="flex items-center space-x-2">
-                          <span className="text-gray-900 font-medium">{link.name}</span>
-                          <button
-                            onClick={() => handleEditLinkName(link.id, link.name)}
-                            className="text-gray-400 hover:text-gray-600 transition-colors"
-                            title="Edit name"
+          ) : (
+            filteredLinks().map((link) => (
+              <div key={link.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+                <div className="grid grid-cols-12 gap-6 items-center px-6 py-4">
+                  <div className="col-span-3">
+                    {editingLinkId === link.id ? (
+                      <input
+                        type="text"
+                        value={editingLinkName}
+                        onChange={(e) => setEditingLinkName(e.target.value)}
+                        className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') handleSaveLinkName(link.id);
+                          if (e.key === 'Escape') handleCancelEdit();
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-900 font-medium">{link.note}</span>
+                        <button
+                          onClick={() => handleEditLinkName(link.id, link.note || '')}
+                          className="text-gray-400 hover:text-gray-600 transition-colors"
+                          title="Edit name"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-gray-900">{new Date(link.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <div className="col-span-3">
+                    <div className="flex items-center space-x-2">
+                      <code className="text-sm font-mono text-gray-600 truncate max-w-xs">/onboard/{link.link_token}</code>
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <div className="flex space-x-1">
+                      {link.platforms.slice(0, 3).map((platform) => {
+                        const config = platformOptions.find(p => p.id === platform);
+                        return (
+                          <div
+                            key={platform}
+                            className={`w-6 h-6 bg-gradient-to-br from-${config?.color}-400 to-${config?.color}-500 rounded-full flex items-center justify-center shadow-sm`}
+                            title={config?.name}
                           >
-                            <Edit3 className="w-4 h-4" />
-                          </button>
+                            <span className="text-white font-bold text-xs">
+                              {config?.name.charAt(0)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                      {link.platforms.length > 3 && (
+                        <div className="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center shadow-sm">
+                          <span className="text-white font-bold text-xs">+{link.platforms.length - 3}</span>
                         </div>
                       )}
                     </div>
-                    <div className="col-span-2">
-                      <span className="text-gray-900">{new Date(link.created_at).toLocaleDateString()}</span>
-                    </div>
-                    <div className="col-span-4">
-                      <div className="flex items-center space-x-2">
-                        <code className="text-sm font-mono text-gray-600 truncate max-w-xs">/onboard/{link.link_token}</code>
-                      </div>
-                    </div>
-                    <div className="col-span-2">
-                      <div className="flex space-x-1">
-                        {link.platforms.slice(0, 3).map((platform) => {
-                          const config = platformOptions.find(p => p.id === platform);
-                          return (
-                            <div
-                              key={platform}
-                              className={`w-6 h-6 bg-gradient-to-br from-${config?.color}-400 to-${config?.color}-500 rounded-full flex items-center justify-center shadow-sm`}
-                              title={config?.name}
-                            >
-                              <span className="text-white font-bold text-xs">
-                                {config?.name.charAt(0)}
-                              </span>
-                            </div>
-                          );
-                        })}
-                        {link.platforms.length > 3 && (
-                          <div className="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center shadow-sm">
-                            <span className="text-white font-bold text-xs">+{link.platforms.length - 3}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="col-span-1">
-                      <div className="flex items-center space-x-1">
-                        <button
-                          onClick={() => handleTestLink(link.link_token)}
-                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                          title="Test link"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Copy link"
-                        >
-                          <Copy className="w-4 h-4" />
-                        </button>
-                        <button
-                          className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                          title="More options"
-                        >
-                          <Settings className="w-4 h-4" />
-                        </button>
-                      </div>
+                  </div>
+                  <div className="col-span-1">
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      link.status === 'active' 
+                        ? 'bg-green-100 text-green-800' 
+                        : link.status === 'used'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {link.status.charAt(0).toUpperCase() + link.status.slice(1)}
+                    </span>
+                  </div>
+                  <div className="col-span-1">
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={() => handleTestLink(link.link_token)}
+                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        title="Test link"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Copy link"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                      <button
+                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                        title="More options"
+                      >
+                        <Settings className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              </div>
+            ))
+          )}
         </div>
-
-        {/* Empty State */}
-        {filteredLinks().length === 0 && (
-          <div className="px-6 py-12 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Link className="w-8 h-8 text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No links found</h3>
-            <p className="text-gray-500">Create your first onboarding link to get started.</p>
-          </div>
-        )}
       </div>
 
       {/* Generated Link Modal */}
