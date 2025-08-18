@@ -735,7 +735,7 @@ export function OnboardingLinksTab() {
       <div className="space-y-4">
         {/* Table Header */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div className="grid grid-cols-12 gap-4 px-6 py-4 text-sm font-medium text-gray-500 bg-white border-b border-gray-100">
+          <div className="grid grid-cols-12 gap-6 px-8 py-5 text-sm font-medium text-gray-500 border-b border-gray-100">
             <div className="col-span-3">Name</div>
             <div className="col-span-3">URL</div>
             <div className="col-span-3">Platforms</div>
@@ -745,7 +745,7 @@ export function OnboardingLinksTab() {
         </div>
 
         {/* Table Body - Separated Rows */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {filteredLinks().length === 0 ? (
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center">
               <ExternalLink className="w-12 h-12 text-gray-300 mx-auto mb-4" />
@@ -754,14 +754,14 @@ export function OnboardingLinksTab() {
           ) : (
             filteredLinks().map((link) => (
               <div key={link.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
-                <div className="grid grid-cols-12 gap-4 items-center px-6 py-4">
+                <div className="grid grid-cols-12 gap-6 items-center px-8 py-6">
                   <div className="col-span-3">
                     {editingLinkId === link.id ? (
                       <input
                         type="text"
                         value={editingLinkName}
                         onChange={(e) => setEditingLinkName(e.target.value)}
-                        className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
                         onKeyPress={(e) => {
                           if (e.key === 'Enter') handleSaveLinkName(link.id);
                           if (e.key === 'Escape') handleCancelEdit();
@@ -770,7 +770,7 @@ export function OnboardingLinksTab() {
                       />
                     ) : (
                       <div className="flex items-center space-x-2">
-                        <span className="text-gray-900 font-medium">{link.note}</span>
+                        <span className="text-gray-900 font-semibold text-base">{link.note}</span>
                         <button
                           onClick={() => handleEditLinkName(link.id, link.note || '')}
                           className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -782,18 +782,20 @@ export function OnboardingLinksTab() {
                     )}
                   </div>
                   <div className="col-span-3">
-                    <div className="flex items-center space-x-2">
-                      <code className="text-sm font-mono text-gray-600 truncate max-w-xs">/onboard/{link.link_token}</code>
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 font-mono text-sm text-gray-700 max-w-full">
+                      <div className="truncate">
+                        https://app.leadsie.com/onboard/{link.link_token}
+                      </div>
                     </div>
                   </div>
                   <div className="col-span-3">
-                    <div className="flex space-x-1">
+                    <div className="flex space-x-2">
                       {link.platforms.slice(0, 3).map((platform) => {
                         const config = platformOptions.find(p => p.id === platform);
                         return (
                           <div
                             key={platform}
-                            className={`w-6 h-6 bg-gradient-to-br from-${config?.color}-400 to-${config?.color}-500 rounded-full flex items-center justify-center shadow-sm`}
+                            className={`w-8 h-8 bg-gradient-to-br from-${config?.color}-400 to-${config?.color}-500 rounded-lg flex items-center justify-center shadow-sm`}
                             title={config?.name}
                           >
                             <span className="text-white font-bold text-xs">
@@ -803,14 +805,14 @@ export function OnboardingLinksTab() {
                         );
                       })}
                       {link.platforms.length > 3 && (
-                        <div className="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center shadow-sm">
+                        <div className="w-8 h-8 bg-gray-400 rounded-lg flex items-center justify-center shadow-sm">
                           <span className="text-white font-bold text-xs">+{link.platforms.length - 3}</span>
                         </div>
                       )}
                     </div>
                   </div>
                   <div className="col-span-2">
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${
                       link.status === 'active' 
                         ? 'bg-green-100 text-green-800' 
                         : link.status === 'used'
@@ -821,17 +823,17 @@ export function OnboardingLinksTab() {
                     </span>
                   </div>
                   <div className="col-span-1">
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center justify-center space-x-2">
                       <button
                         onClick={() => handleTestLink(link.link_token)}
-                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        className="p-2.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                         title="Test link"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         title="Copy link"
                       >
                         <Copy className="w-4 h-4" />
@@ -843,7 +845,7 @@ export function OnboardingLinksTab() {
                             // In a real app, this would delete from the database
                           }
                         }}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="Delete link"
                       >
                         <Trash2 className="w-4 h-4" />
