@@ -650,15 +650,10 @@ export function ClientsTab() {
             client_id: '15',
             platform: 'tiktok' as const,
             status: 'authorized' as const,
-          const clientStatus = ['1', '3', '5', '7', '9', '11', '13', '15'].includes(client.id) 
-            ? 'active' 
-            : ['2', '4', '6', '8'].includes(client.id) 
-            ? 'pending' 
-            : 'inactive';
             scopes: [],
-          if (selectedFilter === 'active') return clientStatus === 'active';
-          if (selectedFilter === 'pending') return clientStatus === 'pending';
-          if (selectedFilter === 'inactive') return clientStatus === 'inactive';
+            token_data: {},
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           },
         ],
       }
