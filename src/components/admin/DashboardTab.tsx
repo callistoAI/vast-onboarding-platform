@@ -851,8 +851,9 @@ export function OnboardingLinksTab() {
                         <Copy className="w-4 h-4" />
                       </button>
                       <button
+                        onClick={() => handleOpenSettings(link)}
                         className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                        title="More options"
+                        title="Settings"
                       >
                         <Settings className="w-4 h-4" />
                       </button>
