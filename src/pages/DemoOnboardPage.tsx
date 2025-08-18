@@ -161,8 +161,8 @@ export function DemoOnboardPage() {
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-sm hidden">
-                <span className="text-white font-bold">C</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-lime-600 rounded-xl flex items-center justify-center shadow-sm hidden">
+                <span className="text-white font-bold text-sm">V</span>
               </div>
               <h1 className="text-2xl font-bold text-gray-900">Vast Onboarding Demo</h1>
             </div>
@@ -222,8 +222,8 @@ export function DemoOnboardPage() {
                     target.nextElementSibling?.classList.remove('hidden');
                   }}
                 />
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg hidden">
-                  <span className="text-white font-bold text-3xl">C</span>
+                <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-lime-600 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg hidden">
+                  <span className="text-white font-bold text-2xl">V</span>
                 </div>
               </div>
               <h2 className="text-4xl font-bold text-gray-900 mb-6">Welcome to Vast Onboarding</h2>
@@ -274,9 +274,9 @@ export function DemoOnboardPage() {
 
                   {platformStatuses[currentPlatform] === 'pending' && !isConnecting && (
                     <div className="space-y-8">
-                      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                        <p className="text-center text-blue-800 text-lg font-medium">
-                          Would you like to connect your {currentConfig.name} account?
+                      <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                        <p className="text-center text-green-800 text-lg font-medium">
+                          Platform connection successful!
                         </p>
                       </div>
                       <div className="flex space-x-4">
@@ -299,9 +299,9 @@ export function DemoOnboardPage() {
 
                   {isConnecting && (
                     <div className="text-center py-16">
-                      <div className="w-20 h-20 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-8"></div>
-                      <p className="text-blue-700 font-bold text-2xl mb-3">Connecting to {currentConfig.name}...</p>
-                      <p className="text-blue-600 text-lg">Please wait while we establish a secure connection</p>
+                      <div className="w-20 h-20 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-8"></div>
+                      <p className="text-green-700 font-bold text-2xl mb-3">Connecting to {currentConfig.name}...</p>
+                      <p className="text-green-600 text-lg">Please wait while we establish a secure connection</p>
                     </div>
                   )}
 

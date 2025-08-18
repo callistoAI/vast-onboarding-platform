@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { CheckCircle, Clock, AlertCircle, ExternalLink, TrendingUp, Activity, Users, Shield, X, Send } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { CheckCircle, Clock, AlertCircle, ExternalLink, TrendingUp, Activity, Shield, X, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Database } from '../lib/database.types';
 import { useAuth } from '../hooks/useAuth';
@@ -64,16 +64,7 @@ export function ClientDashboard() {
   const [supportSubmitted, setSupportSubmitted] = useState(false);
   const { profile } = useAuth();
 
-  useEffect(() => {
-    if (profile?.role === 'client') {
-      fetchAuthorizations();
-    } else {
-      // For testing - use mock data for non-client users
-      setMockData();
-    }
-  }, []);
-
-  const fetchAuthorizations = async () => {
+  const fetchAuthorizations = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('authorizations')
@@ -93,7 +84,16 @@ export function ClientDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile?.id]);
+
+  useEffect(() => {
+    if (profile?.role === 'client') {
+      fetchAuthorizations();
+    } else {
+      // For testing - use mock data for non-client users
+      setMockData();
+    }
+  }, [profile?.role, fetchAuthorizations]);
 
   const setMockData = () => {
     // Mock data for testing
@@ -275,10 +275,10 @@ export function ClientDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Platforms</p>
-              <p className="text-3xl font-bold text-blue-600">{authorizations.length}</p>
+              <p className="text-3xl font-bold text-green-600">{authorizations.length}</p>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-              <Activity className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+              <Activity className="w-6 h-6 text-green-600" />
             </div>
           </div>
         </div>
@@ -304,7 +304,7 @@ export function ClientDashboard() {
         </div>
         <div className="bg-gray-200 rounded-full h-3 mb-4">
           <div 
-            className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-full h-3 transition-all duration-500"
+            className="bg-gradient-to-r from-green-500 to-lime-600 rounded-full h-3 transition-all duration-500"
             style={{ width: `${completionRate}%` }}
           ></div>
         </div>
@@ -344,7 +344,7 @@ export function ClientDashboard() {
               </div>
 
               {status === 'pending' ? (
-                <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl font-medium hover:bg-blue-700 transition-all duration-200 flex items-center justify-center space-x-2">
+                <button className="w-full bg-gradient-to-r from-green-500 to-lime-600 text-white py-3 px-4 rounded-xl font-medium hover:from-green-600 hover:to-lime-700 transition-all duration-200 flex items-center justify-center space-x-2">
                   <span>Authorize Access</span>
                   <ExternalLink className="w-4 h-4" />
                 </button>
@@ -372,11 +372,11 @@ export function ClientDashboard() {
       </div>
 
       {/* Help Section */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-6">
-        <div className="flex items-start space-x-4">
-          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-            <Shield className="w-6 h-6 text-blue-600" />
-          </div>
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-6">
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Shield className="w-6 h-6 text-green-600" />
+              </div>
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Need Help?</h3>
             <p className="text-gray-700 text-sm mb-4">
@@ -385,7 +385,7 @@ export function ClientDashboard() {
             <div className="flex space-x-3">
               <button 
                 onClick={() => setShowSupportForm(true)}
-                className="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-blue-700 transition-all duration-200"
+                className="bg-gradient-to-r from-green-500 to-lime-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:from-green-600 hover:to-lime-700 transition-all duration-200"
               >
                 Contact Support
               </button>
@@ -453,7 +453,7 @@ export function ClientDashboard() {
               </button>
               <button
                 onClick={handleSavePermissions}
-                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium transition-colors"
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-xl hover:from-green-600 hover:to-lime-700 font-medium transition-colors"
               >
                 Save Changes
               </button>
@@ -493,7 +493,7 @@ export function ClientDashboard() {
                   value={supportMessage}
                   onChange={(e) => setSupportMessage(e.target.value)}
                   placeholder="Describe your issue or question..."
-                  className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-colors"
+                  className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none transition-colors"
                 />
                 <div className="flex space-x-4 mt-6">
                   <button
@@ -505,7 +505,7 @@ export function ClientDashboard() {
                   <button
                     onClick={handleSubmitSupport}
                     disabled={submittingSupport || !supportMessage.trim()}
-                    className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors flex items-center justify-center space-x-2"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-xl hover:from-green-600 hover:to-lime-700 disabled:opacity-50 font-medium transition-colors flex items-center justify-center space-x-2"
                   >
                     {submittingSupport ? (
                       <>

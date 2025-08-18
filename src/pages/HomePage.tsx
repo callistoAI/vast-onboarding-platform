@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Users, Play, ArrowRight, MessageSquare, Send, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { supabase } from '../lib/supabase';
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -113,7 +112,7 @@ export function HomePage() {
 
           {/* Client Dashboard */}
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-500 rounded-2xl mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-400 to-lime-500 rounded-2xl mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
               <Users className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 text-center mb-6">
@@ -121,7 +120,7 @@ export function HomePage() {
             </h3>
             <button
               onClick={handleClientAccess}
-              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center justify-center space-x-2 group"
+              className="w-full bg-gradient-to-r from-green-500 to-lime-600 text-white py-3 px-6 rounded-lg font-medium hover:from-green-600 hover:to-lime-700 transition-all duration-200 flex items-center justify-center space-x-2 group"
             >
               <span>Access Client</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -150,7 +149,7 @@ export function HomePage() {
       {/* Floating Feedback Button */}
       <button
         onClick={() => setShowFeedback(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-full shadow-lg hover:from-green-600 hover:to-lime-700 hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
         title="Submit UI Feedback"
       >
         <MessageSquare className="w-6 h-6" />
@@ -187,7 +186,7 @@ export function HomePage() {
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   placeholder="Enter your feedback here..."
-                  className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-colors"
+                  className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none transition-colors"
                 />
                 <div className="flex space-x-4 mt-6">
                   <button
@@ -199,7 +198,7 @@ export function HomePage() {
                   <button
                     onClick={handleSubmitFeedback}
                     disabled={submitting || !feedback.trim()}
-                    className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors flex items-center justify-center space-x-2"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-xl hover:from-green-600 hover:to-lime-700 disabled:opacity-50 font-medium transition-colors flex items-center justify-center space-x-2"
                   >
                     {submitting ? (
                       <>

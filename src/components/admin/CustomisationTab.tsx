@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Upload, Eye, Palette, Type, Image } from 'lucide-react';
+import { Palette, Upload, Save } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { Database } from '../../lib/database.types';
-import { useAuth } from '../../hooks/useAuth';
-
-type AdminSettings = Database['public']['Tables']['admin_settings']['Row'];
 
 export function CustomisationTab() {
-  const [settings, setSettings] = useState<AdminSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [brandColors, setBrandColors] = useState({
+    primary: '#10b981',
+    secondary: '#3b82f6',
+    accent: '#8b5cf6',
+    background: '#f9fafb',
+    text: '#111827'
+  });
+  const [logoUrl, setLogoUrl] = useState('');
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState('ClientHub');
   const [primaryColor, setPrimaryColor] = useState('#22c55e');
   const [secondaryColor, setSecondaryColor] = useState('#3b82f6');
-  const [logoUrl, setLogoUrl] = useState('');
-  const { profile } = useAuth();
 
   useEffect(() => {
     fetchSettings();
@@ -29,19 +29,23 @@ export function CustomisationTab() {
 
       if (error) throw error;
       
-      if (data && data.length > 0) {
-        const settingsData = data[0];
-        setSettings(settingsData);
-        setTitle(settingsData.title || 'ClientHub');
-        const colors = settingsData.brand_colors as any;
-        setPrimaryColor(colors?.primary || '#22c55e');
-        setSecondaryColor(colors?.secondary || '#3b82f6');
-        setLogoUrl(settingsData.logo_url || '');
-      }
+              if (data && data.length > 0) {
+          const settingsData = data[0];
+          const colors = settingsData.brand_colors as Record<string, string>;
+          setBrandColors({
+            primary: colors?.primary || '#10b981',
+            secondary: colors?.secondary || '#3b82f6',
+            accent: colors?.accent || '#8b5cf6',
+            background: colors?.background || '#f9fafb',
+            text: colors?.text || '#111827'
+          });
+          setTitle(settingsData.title || 'ClientHub');
+          setLogoUrl(settingsData.logo_url || '');
+        }
     } catch (error) {
       console.error('Error fetching settings:', error);
     } finally {
-      setLoading(false);
+      // setLoading(false); // This line was removed from the new_code, so it's removed here.
     }
   };
 
@@ -50,27 +54,15 @@ export function CustomisationTab() {
     try {
       const settingsData = {
         title,
-        brand_colors: {
-          primary: primaryColor,
-          secondary: secondaryColor,
-        },
+        brand_colors: brandColors,
         logo_url: logoUrl || null,
       };
 
-      if (settings) {
-        const { error } = await supabase
-          .from('admin_settings')
-          .update(settingsData)
-          .eq('id', settings.id);
-        
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('admin_settings')
-          .insert(settingsData);
-        
-        if (error) throw error;
-      }
+      const { error } = await supabase
+        .from('admin_settings')
+        .upsert(settingsData);
+      
+      if (error) throw error;
 
       alert('Settings saved successfully!');
       fetchSettings();
@@ -82,6 +74,8 @@ export function CustomisationTab() {
     }
   };
 
+
+
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -90,18 +84,7 @@ export function CustomisationTab() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="animate-pulse space-y-6">
-        <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {[1, 2].map(i => (
-            <div key={i} className="h-64 bg-gray-200 rounded-lg"></div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  // The loading state and its return block were removed from the new_code, so they are removed here.
 
   return (
     <div className="space-y-6">
@@ -125,7 +108,7 @@ export function CustomisationTab() {
             {/* Platform Title */}
             <div>
               <div className="flex items-center space-x-2 mb-3">
-                <Type className="w-4 h-4 text-gray-500" />
+                {/* Type icon was removed from imports, so it's removed here. */}
                 <label className="block text-sm font-medium text-gray-900">
                   Platform Title
                 </label>
@@ -134,7 +117,7 @@ export function CustomisationTab() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                 placeholder="ClientHub"
               />
               <p className="text-xs text-gray-500 mt-2">This will appear in the header and client-facing pages</p>
@@ -158,7 +141,7 @@ export function CustomisationTab() {
                       type="text"
                       value={primaryColor}
                       onChange={(e) => setPrimaryColor(e.target.value)}
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono transition-colors"
+                      className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm font-mono transition-colors"
                     />
                   </div>
                   <p className="text-xs text-gray-500">Used for buttons and accents</p>
@@ -180,7 +163,7 @@ export function CustomisationTab() {
                       type="text"
                       value={secondaryColor}
                       onChange={(e) => setSecondaryColor(e.target.value)}
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono transition-colors"
+                      className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm font-mono transition-colors"
                     />
                   </div>
                   <p className="text-xs text-gray-500">Used for gradients and highlights</p>
@@ -191,7 +174,7 @@ export function CustomisationTab() {
             {/* Logo Settings */}
             <div>
               <div className="flex items-center space-x-2 mb-3">
-                <Image className="w-4 h-4 text-gray-500" />
+                {/* Image icon was removed from imports, so it's removed here. */}
                 <label className="block text-sm font-medium text-gray-900">
                   Logo
                 </label>
@@ -201,7 +184,7 @@ export function CustomisationTab() {
                   type="url"
                   value={logoUrl}
                   onChange={(e) => setLogoUrl(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                   placeholder="https://example.com/logo.png"
                 />
                 <div className="flex items-center space-x-3">
@@ -228,7 +211,7 @@ export function CustomisationTab() {
             <button
               onClick={saveSettings}
               disabled={saving}
-              className="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white py-4 px-6 rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all duration-200 font-medium shadow-sm"
+              className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-green-500 to-lime-600 text-white py-4 px-6 rounded-xl hover:from-green-600 hover:to-lime-700 disabled:opacity-50 transition-all duration-200 font-medium shadow-sm"
             >
               <Save className="w-4 h-4" />
               <span>{saving ? 'Saving...' : 'Save Settings'}</span>
@@ -240,7 +223,7 @@ export function CustomisationTab() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-100">
             <div className="flex items-center space-x-2">
-              <Eye className="w-5 h-5 text-gray-600" />
+              {/* Eye icon was removed from imports, so it's removed here. */}
               <h3 className="text-lg font-semibold text-gray-900">Live Preview</h3>
             </div>
             <p className="text-gray-600 text-sm mt-1">See how your changes will look</p>

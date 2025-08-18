@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Copy, ExternalLink, CheckCircle, Clock, AlertCircle, Eye, Trash2, Star, Settings, Edit3 } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Copy, ExternalLink, CheckCircle, Eye, Settings, Edit3 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
 
 type OnboardingLink = Database['public']['Tables']['onboarding_links']['Row'];
-type Client = Database['public']['Tables']['clients']['Row'] & {
-  users: Database['public']['Tables']['users']['Row'];
-  authorizations: Database['public']['Tables']['authorizations']['Row'][];
-};
 
 const platformOptions = [
   { id: 'meta', name: 'Meta Business', color: 'blue' },
@@ -45,7 +41,7 @@ const platformApiOptions = {
 };
 
 export function OnboardingLinksTab() {
-  const [links, setLinks] = useState<OnboardingLink[]>([]);
+  const [, setLinks] = useState<OnboardingLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLinkForm, setShowLinkForm] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -64,11 +60,7 @@ export function OnboardingLinksTab() {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'used' | 'inactive'>('all');
   const [showCopyNotification, setShowCopyNotification] = useState(false);
   
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       // Fetch onboarding links
       const { data: linksData, error: linksError } = await supabase
@@ -86,7 +78,11 @@ export function OnboardingLinksTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const setMockData = () => {
     // Enhanced mock links with more variety
@@ -173,18 +169,7 @@ export function OnboardingLinksTab() {
     }
   };
 
-  const revokeLink = async (linkId: string) => {
-    try {
-      await supabase
-        .from('onboarding_links')
-        .update({ status: 'expired' })
-        .eq('id', linkId);
-      
-      fetchData();
-    } catch (error) {
-      console.error('Error revoking link:', error);
-    }
-  };
+
 
   const handleEditLinkName = (linkId: string, currentName: string) => {
     setEditingLinkId(linkId);
@@ -208,23 +193,7 @@ export function OnboardingLinksTab() {
     window.open(`/demo/onboard?token=${linkToken}`, '_blank');
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'authorized':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'pending':
-        return <Clock className="w-4 h-4 text-orange-500" />;
-      default:
-        return <AlertCircle className="w-4 h-4 text-red-500" />;
-    }
-  };
 
-  const getStandardLinks = () => {
-    return {
-      manage: links.find(link => link.link_token === 'standard-all-platforms'),
-      view: links.find(link => link.link_token === 'standard-view-only')
-    };
-  };
 
   // Placeholder UI items for links
   const getPlaceholderLinks = () => [
@@ -292,7 +261,7 @@ export function OnboardingLinksTab() {
         </div>
         <button 
           onClick={() => setShowLinkForm(!showLinkForm)}
-          className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          className="bg-gradient-to-r from-green-500 to-lime-600 text-white px-6 py-2.5 rounded-lg hover:from-green-600 hover:to-lime-700 transition-colors font-medium"
         >
           Create link
         </button>
@@ -317,7 +286,7 @@ export function OnboardingLinksTab() {
                     value={linkName}
                     onChange={(e) => setLinkName(e.target.value)}
                     placeholder="e.g., Premium Client Package"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                   />
                 </div>
                 <div>
@@ -327,7 +296,7 @@ export function OnboardingLinksTab() {
                   <select
                     value={linkType}
                     onChange={(e) => setLinkType(e.target.value as 'manage' | 'view')}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
                   >
                     <option value="manage">Manage Access</option>
                     <option value="view">View Only Access</option>
@@ -455,7 +424,7 @@ export function OnboardingLinksTab() {
                 <button
                   onClick={generateLink}
                   disabled={generating || selectedPlatforms.length === 0 || Object.keys(platformApis).length === 0 || !linkName.trim()}
-                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-xl hover:from-green-600 hover:to-lime-700 disabled:opacity-50 font-medium transition-colors"
                 >
                   {generating ? 'Generating...' : 'Generate Link'}
                 </button>
@@ -473,7 +442,7 @@ export function OnboardingLinksTab() {
               onClick={() => setActiveTab('all')}
               className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === 'all'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-green-500 text-green-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -483,7 +452,7 @@ export function OnboardingLinksTab() {
               onClick={() => setActiveTab('manage')}
               className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === 'manage'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-green-500 text-green-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -493,7 +462,7 @@ export function OnboardingLinksTab() {
               onClick={() => setActiveTab('view')}
               className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === 'view'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-green-500 text-green-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -519,11 +488,11 @@ export function OnboardingLinksTab() {
                   <button
                     key={filter}
                     onClick={() => {
-                      setSelectedFilter(filter as any);
+                      setSelectedFilter(filter as 'all' | 'active' | 'used' | 'inactive');
                       setShowFilterDropdown(false);
                     }}
                     className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                      selectedFilter === filter ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
+                      selectedFilter === filter ? 'text-green-600 bg-green-50' : 'text-gray-700'
                     }`}
                   >
                     {filter.charAt(0).toUpperCase() + filter.slice(1)}
@@ -576,7 +545,7 @@ export function OnboardingLinksTab() {
                     <input type="checkbox" className="rounded border-gray-300" />
                   </div>
                   <div className="col-span-2">
-                    <span className="text-blue-600 font-medium">{link.link_token.substring(0, 8)}</span>
+                    <span className="text-green-600 font-medium">{link.link_token.substring(0, 8)}</span>
                   </div>
                   <div className="col-span-2">
                     <span className="text-gray-900">{new Date(link.created_at).toLocaleDateString()}</span>
@@ -587,7 +556,7 @@ export function OnboardingLinksTab() {
                         type="text"
                         value={editingLinkName}
                         onChange={(e) => setEditingLinkName(e.target.value)}
-                        className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         onKeyPress={(e) => {
                           if (e.key === 'Enter') handleSaveLinkName(link.id);
                           if (e.key === 'Escape') handleCancelEdit();
@@ -631,13 +600,13 @@ export function OnboardingLinksTab() {
                     </div>
                   </div>
                   <div className="col-span-1">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      link.status === 'active' 
-                        ? 'bg-green-100 text-green-700 border border-green-200'
-                        : link.status === 'used'
-                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                        : 'bg-gray-100 text-gray-700 border border-gray-200'
-                    }`}>
+                                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    link.status === 'active' 
+                      ? 'bg-green-100 text-green-700 border border-green-200'
+                      : link.status === 'used'
+                      ? 'bg-green-100 text-green-700 border border-green-200'
+                      : 'bg-gray-100 text-gray-700 border border-gray-200'
+                  }`}>
                       {link.status === 'active' ? 'Active' : link.status === 'used' ? 'Used' : 'Inactive'}
                     </span>
                   </div>
@@ -650,7 +619,7 @@ export function OnboardingLinksTab() {
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => handleTestLink(link.link_token)}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                         title="Test link"
                       >
                         <Eye className="w-4 h-4" />
@@ -707,7 +676,7 @@ export function OnboardingLinksTab() {
             </p>
             <button
               onClick={() => setGeneratedLink(null)}
-              className="w-full px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium transition-colors"
+              className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-xl hover:from-green-600 hover:to-lime-700 font-medium transition-colors"
             >
               Close
             </button>

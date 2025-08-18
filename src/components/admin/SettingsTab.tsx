@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { CheckCircle, AlertCircle, ExternalLink, Plus, Copy, Mail, UserCheck, UserX, MoreVertical, Search, Filter } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { CheckCircle, AlertCircle, ExternalLink, Copy, Mail, UserCheck, UserX, MoreVertical, Search, Filter } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
@@ -55,17 +55,12 @@ export function SettingsTab() {
   const [showCopyNotification, setShowCopyNotification] = useState(false);
   const { profile } = useAuth();
 
-  useEffect(() => {
-    fetchConnections();
-    fetchInvites();
-  }, []);
-
-  const fetchConnections = async () => {
+  const fetchConnections = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('platform_connections')
         .select('*')
-        .order('platform');
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setConnections(data || []);
@@ -76,7 +71,7 @@ export function SettingsTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const setMockData = () => {
     const mockConnections = [
@@ -103,7 +98,7 @@ export function SettingsTab() {
     setConnections(mockConnections);
   };
 
-  const fetchInvites = async () => {
+  const fetchInvites = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('team_invites')
@@ -117,7 +112,7 @@ export function SettingsTab() {
       // Use mock data for testing
       setMockInviteData();
     }
-  };
+  }, []);
 
   const setMockInviteData = () => {
     const mockInvites = [
@@ -181,6 +176,11 @@ export function SettingsTab() {
     setInvites(mockInvites);
   };
 
+  useEffect(() => {
+    fetchConnections();
+    fetchInvites();
+  }, [fetchConnections, fetchInvites]);
+
   const sendInvite = async () => {
     if (!email.trim()) return;
     
@@ -218,7 +218,7 @@ export function SettingsTab() {
     }
   };
 
-  const resendInvite = async (inviteId: string) => {
+  const resendInvite = async () => {
     try {
       // In a real app, this would send a new email
       alert('Invite resent successfully!');
@@ -276,7 +276,7 @@ export function SettingsTab() {
       const { error } = await supabase
         .from('platform_connections')
         .upsert({
-          platform: platform as any,
+          platform: platform as 'meta' | 'google' | 'tiktok' | 'shopify',
           status: 'connected',
           connected_by: profile?.id || 'test-admin-user',
         });
@@ -334,7 +334,7 @@ export function SettingsTab() {
       case 'admin':
         return 'bg-purple-100 text-purple-700';
       case 'editor':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-green-100 text-green-700';
       default:
         return 'bg-gray-100 text-gray-700';
     }
@@ -459,7 +459,7 @@ export function SettingsTab() {
                   ) : (
                     <button
                       onClick={() => handleConnect(platform)}
-                      className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl font-medium hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 text-sm shadow-sm"
+                      className="w-full bg-gradient-to-r from-green-500 to-lime-600 text-white py-3 px-4 rounded-xl font-medium hover:from-green-600 hover:to-lime-700 transition-colors flex items-center justify-center space-x-2 text-sm shadow-sm"
                     >
                       <span>Connect Platform</span>
                       <ExternalLink className="w-4 h-4" />
@@ -482,7 +482,7 @@ export function SettingsTab() {
             </div>
             <button 
               onClick={() => setShowInviteForm(!showInviteForm)}
-              className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="bg-gradient-to-r from-green-500 to-lime-600 text-white px-6 py-2.5 rounded-lg hover:from-green-600 hover:to-lime-700 transition-colors font-medium"
             >
               Invite Member
             </button>
@@ -502,7 +502,7 @@ export function SettingsTab() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="colleague@company.com"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm transition-colors"
                   />
                 </div>
                 <div>
@@ -511,8 +511,8 @@ export function SettingsTab() {
                   </label>
                   <select
                     value={role}
-                    onChange={(e) => setRole(e.target.value as any)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-colors"
+                    onChange={(e) => setRole(e.target.value as 'admin' | 'editor' | 'viewer')}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm transition-colors"
                   >
                     {roleOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -522,7 +522,7 @@ export function SettingsTab() {
                   </select>
                 </div>
               </div>
-              <div className="text-sm text-blue-800 bg-blue-50 p-4 rounded-xl border border-blue-200">
+              <div className="text-sm text-green-800 bg-green-50 p-4 rounded-xl border border-green-200">
                 <strong>{roleOptions.find(r => r.value === role)?.label}:</strong>{' '}
                 {roleOptions.find(r => r.value === role)?.description}
               </div>
@@ -537,7 +537,7 @@ export function SettingsTab() {
                 <button
                   onClick={sendInvite}
                   disabled={inviting || !email.trim()}
-                  className="flex-1 px-5 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 text-sm font-medium transition-colors"
+                  className="flex-1 px-5 py-3 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-xl hover:from-green-600 hover:to-lime-700 disabled:opacity-50 text-sm font-medium transition-colors"
                 >
                   {inviting ? 'Sending...' : 'Send Invite'}
                 </button>
@@ -556,7 +556,7 @@ export function SettingsTab() {
                 placeholder="Search team members..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
               />
             </div>
             <div className="relative">
@@ -577,11 +577,11 @@ export function SettingsTab() {
                     <button
                       key={filter}
                       onClick={() => {
-                        setSelectedFilter(filter as any);
+                        setSelectedFilter(filter as 'all' | 'active' | 'invited' | 'expired');
                         setShowFilterDropdown(false);
                       }}
                       className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                        selectedFilter === filter ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
+                        selectedFilter === filter ? 'text-green-600 bg-green-50' : 'text-gray-700'
                       }`}
                     >
                       {filter.charAt(0).toUpperCase() + filter.slice(1)}
@@ -657,13 +657,13 @@ export function SettingsTab() {
                           <>
                             <button
                               onClick={() => copyToClipboard(`${window.location.origin}/invite/${invite.invite_token}`)}
-                              className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                               title="Copy invite link"
                             >
                               <Copy className="w-4 h-4" />
                             </button>
                             <button
-                              onClick={() => resendInvite(invite.id)}
+                              onClick={() => resendInvite()}
                               className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                               title="Resend invite"
                             >
@@ -709,7 +709,7 @@ export function SettingsTab() {
           <p className="text-gray-600 text-sm mt-1">Your current account details and permissions</p>
         </div>
         <div className="p-6">
-          <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200">
+          <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-5 border border-green-200">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-lg">
@@ -756,7 +756,7 @@ export function SettingsTab() {
             </p>
             <button
               onClick={() => setGeneratedInvite(null)}
-              className="w-full px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium transition-colors"
+              className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-xl hover:from-green-600 hover:to-lime-700 font-medium transition-colors"
             >
               Close
             </button>

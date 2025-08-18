@@ -1,14 +1,13 @@
-import React, { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import React from 'react';
 import { useAuth } from '../hooks/useAuth';
 
 interface ProtectedRouteProps {
-  children: ReactNode;
+  children: React.ReactNode;
   adminOnly?: boolean;
 }
 
 export function ProtectedRoute({ children, adminOnly = false }: ProtectedRouteProps) {
-  const { user, profile, loading } = useAuth();
+  const { profile, loading } = useAuth();
 
   if (loading) {
     return (
@@ -18,15 +17,20 @@ export function ProtectedRoute({ children, adminOnly = false }: ProtectedRoutePr
     );
   }
 
-  // For testing - allow access without authentication
-  // if (!user) {
-  //   return <Navigate to="/auth" replace />;
-  // }
+  if (!profile) {
+    return null; // Will redirect in parent component
+  }
 
-  // For testing - allow admin access without role check
-  // if (adminOnly && profile?.role !== 'admin') {
-  //   return <Navigate to="/dashboard" replace />;
-  // }
+  if (adminOnly && profile.role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
+          <p className="text-gray-600">You don't have permission to access this page.</p>
+        </div>
+      </div>
+    );
+  }
 
   return <>{children}</>;
 }

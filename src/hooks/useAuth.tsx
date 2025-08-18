@@ -5,13 +5,18 @@ import { Database } from '../lib/database.types';
 
 type UserProfile = Database['public']['Tables']['users']['Row'];
 
+interface AuthError {
+  message: string;
+  status?: number;
+}
+
 interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, name: string, role: 'admin' | 'client') => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signUp: (email: string, password: string, name: string, role: 'admin' | 'client') => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   setTestUser: (role: 'admin' | 'client') => void;
 }
@@ -71,35 +76,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      return { error: error ? { message: error.message } : null };
+    } catch {
+      return { error: { message: 'An unexpected error occurred' } };
+    }
   };
 
   const signUp = async (email: string, password: string, name: string, role: 'admin' | 'client') => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    if (error) return { error };
+      if (error) return { error: { message: error.message } };
 
-    if (data.user) {
-      // Create user profile
-      const { error: profileError } = await supabase
-        .from('users')
-        .insert({
-          id: data.user.id,
-          name,
-          role,
-        });
+      if (data.user) {
+        // Create user profile
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert({
+            id: data.user.id,
+            name,
+            role,
+          });
 
-      if (profileError) return { error: profileError };
+        if (profileError) return { error: { message: profileError.message } };
+      }
+
+      return { error: null };
+    } catch {
+      return { error: { message: 'An unexpected error occurred' } };
     }
-
-    return { error: null };
   };
 
   const signOut = async () => {

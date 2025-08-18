@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { CheckCircle, Clock, AlertCircle, Eye, Search, Filter } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Search, Filter, Eye } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
-import { useAuth } from '../../hooks/useAuth';
 
 type Client = Database['public']['Tables']['clients']['Row'] & {
   users: Database['public']['Tables']['users']['Row'];
@@ -20,28 +19,23 @@ export function ClientsTab() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [clientSearchTerm, setClientSearchTerm] = useState('');
-  const [clientSortOrder, setClientSortOrder] = useState<'earliest' | 'latest'>('latest');
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'inactive' | 'pending'>('all');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'pending' | 'inactive'>('all');
-  const { profile } = useAuth();
+  const [clientSortOrder, setClientSortOrder] = useState<'latest' | 'earliest'>('latest');
 
-  useEffect(() => {
-    fetchClients();
-  }, []);
-
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     try {
-      const { data: clientsData, error: clientsError } = await supabase
+      const { data, error } = await supabase
         .from('clients')
         .select(`
           *,
-          users!inner(*),
+          users(*),
           authorizations(*)
         `)
         .order('created_at', { ascending: false });
 
-      if (clientsError) throw clientsError;
-      setClients(clientsData || []);
+      if (error) throw error;
+      setClients(data || []);
     } catch (error) {
       console.error('Error fetching clients:', error);
       // Use mock data for testing
@@ -49,7 +43,11 @@ export function ClientsTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchClients();
+  }, [fetchClients]);
 
   const setMockData = () => {
     // Enhanced mock clients with more variety and realistic data
@@ -469,16 +467,7 @@ export function ClientsTab() {
     setClients(mockClients);
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'authorized':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'pending':
-        return <Clock className="w-4 h-4 text-orange-500" />;
-      default:
-        return <AlertCircle className="w-4 h-4 text-red-500" />;
-    }
-  };
+
 
   // Filter and sort clients
   const filteredAndSortedClients = () => {
@@ -557,7 +546,7 @@ export function ClientsTab() {
               placeholder="Search clients..."
               value={clientSearchTerm}
               onChange={(e) => setClientSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
             />
           </div>
           <div className="relative">
@@ -578,11 +567,11 @@ export function ClientsTab() {
                   <button
                     key={filter}
                     onClick={() => {
-                      setSelectedFilter(filter as any);
+                      setSelectedFilter(filter as 'all' | 'active' | 'inactive' | 'pending');
                       setShowFilterDropdown(false);
                     }}
                     className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                      selectedFilter === filter ? 'text-blue-600 bg-blue-50' : 'text-gray-700'
+                      selectedFilter === filter ? 'text-green-600 bg-green-50' : 'text-gray-700'
                     }`}
                   >
                     {filter.charAt(0).toUpperCase() + filter.slice(1)}
@@ -635,7 +624,7 @@ export function ClientsTab() {
                 </div>
                 <div className="col-span-3">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl flex items-center justify-center shadow-sm">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-lime-500 rounded-xl flex items-center justify-center shadow-sm">
                       <span className="text-white font-bold text-sm">
                         {client.company_name ? client.company_name.charAt(0).toUpperCase() : '?'}
                       </span>

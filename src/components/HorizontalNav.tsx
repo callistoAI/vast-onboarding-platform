@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Link, Users, Settings, UserCheck, Palette } from 'lucide-react';
+import { Link, Settings, UserCheck, Palette } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 interface NavItem {
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   label: string;
   path: string;
   adminOnly?: boolean;
