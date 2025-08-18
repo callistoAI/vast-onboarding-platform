@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Copy, ExternalLink, CheckCircle, Eye, Settings, Edit3, ChevronDown, Link } from 'lucide-react';
+import { Copy, ExternalLink, CheckCircle, Eye, Settings, Edit3, ChevronDown, Link, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
@@ -762,13 +762,8 @@ export function OnboardingLinksTab() {
             </div>
           ) : (
             filteredLinks().map((link) => (
-              <div key={link.id} className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-all duration-200 ${
-                (link.link_token === 'basic-manage-access' && activeTab === 'manage') || 
-                (link.link_token === 'basic-view-access' && activeTab === 'view')
-                  ? 'border-indigo-300 bg-indigo-50' 
-                  : 'border-gray-200'
-              }`}>
-                <div className="grid grid-cols-10 gap-6 items-center px-6 py-4">
+              <div key={link.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+                <div className="grid grid-cols-12 gap-6 items-center px-6 py-4">
                   <div className="col-span-3">
                     {editingLinkId === link.id ? (
                       <input
@@ -794,6 +789,9 @@ export function OnboardingLinksTab() {
                         </button>
                       </div>
                     )}
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-gray-900">{new Date(link.created_at).toLocaleDateString()}</span>
                   </div>
                   <div className="col-span-3">
                     <div className="flex items-center space-x-2">
@@ -851,9 +849,8 @@ export function OnboardingLinksTab() {
                         <Copy className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleSettingsClick(link)}
                         className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                        title="Settings"
+                        title="More options"
                       >
                         <Settings className="w-4 h-4" />
                       </button>
