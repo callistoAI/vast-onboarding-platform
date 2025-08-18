@@ -74,11 +74,36 @@ export function DemoOnboardPage() {
   const currentConfig = platformConfigs[currentPlatform as keyof typeof platformConfigs];
   const isLastPlatform = currentPlatformIndex === platformOrder.length - 1;
 
-  // Calculate progress percentage
-  const getProgressPercentage = () => {
-    if (currentStep === 'intro') return 0;
-    if (currentStep === 'complete') return 100;
-    return ((currentPlatformIndex + 1) / platformOrder.length) * 100;
+  // Get platforms that will be connected
+  const getPlatformsText = () => {
+    const platforms = ['Meta', 'Google', 'TikTok', 'Shopify'];
+    if (platforms.length === 1) return platforms[0];
+    if (platforms.length === 2) return `${platforms[0]} and ${platforms[1]}`;
+    return `${platforms.slice(0, -1).join(', ')}, and ${platforms[platforms.length - 1]}`;
+  };
+
+  // Calculate progress steps
+  const getProgressSteps = () => {
+    if (currentStep === 'intro') {
+      return [
+        { label: 'Connect Platforms', active: true, completed: false },
+        { label: 'Authorize Access', active: false, completed: false },
+        { label: 'Complete Setup', active: false, completed: false }
+      ];
+    } else if (currentStep === 'platform') {
+      const connectCompleted = currentPlatformIndex > 0 || showPermissions;
+      return [
+        { label: 'Connect Platforms', active: !showPermissions, completed: connectCompleted },
+        { label: 'Authorize Access', active: showPermissions, completed: false },
+        { label: 'Complete Setup', active: false, completed: false }
+      ];
+    } else {
+      return [
+        { label: 'Connect Platforms', active: false, completed: true },
+        { label: 'Authorize Access', active: false, completed: true },
+        { label: 'Complete Setup', active: true, completed: true }
+      ];
+    }
   };
 
   const handleStartDemo = () => {
@@ -151,18 +176,10 @@ export function DemoOnboardPage() {
     navigate('/dashboard');
   };
 
+  const progressSteps = getProgressSteps();
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Progress Bar */}
-      <div className="w-full bg-white border-b border-gray-200">
-        <div className="h-1 bg-gray-200">
-          <div 
-            className="h-full bg-gradient-to-r from-green-500 to-lime-500 transition-all duration-500 ease-out"
-            style={{ width: `${getProgressPercentage()}%` }}
-          />
-        </div>
-      </div>
-
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
@@ -184,28 +201,58 @@ export function DemoOnboardPage() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-6 py-8">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
         <div className="max-w-2xl w-full">
           {/* Intro Step */}
           {currentStep === 'intro' && (
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-purple-700 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <span className="text-white font-bold text-xl">V</span>
+              {/* Logo */}
+              <div className="w-24 h-24 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-400 via-pink-500 to-blue-500 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">V</span>
+                </div>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">Welcome to Platform Onboarding</h1>
-              <p className="text-lg text-gray-600 mb-8">
-                Connect your business platforms to get started with your marketing dashboard.
-              </p>
               
-              <div className="grid grid-cols-4 gap-4 mb-8">
-                {Object.entries(platformConfigs).map(([platform, config]) => (
-                  <div key={platform} className="text-center">
-                    <div className={`w-12 h-12 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-xl flex items-center justify-center mx-auto mb-2`}>
-                      <span className="text-white font-bold">{config.name.charAt(0)}</span>
+              {/* Main Message */}
+              <h1 className="text-3xl font-bold text-gray-900 mb-12 leading-tight">
+                Vast would like to manage your {getPlatformsText()}
+              </h1>
+              
+              {/* Progress Steps */}
+              <div className="mb-12">
+                <div className="flex items-center justify-center space-x-8 mb-4">
+                  {progressSteps.map((step, index) => (
+                    <div key={index} className="flex items-center">
+                      <div className="flex flex-col items-center">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mb-2 ${
+                          step.completed 
+                            ? 'bg-purple-600 text-white' 
+                            : step.active 
+                            ? 'bg-purple-100 text-purple-600 border-2 border-purple-600' 
+                            : 'bg-gray-200 text-gray-500'
+                        }`}>
+                          {step.completed ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            index + 1
+                          )}
+                        </div>
+                        <span className={`text-sm font-medium ${
+                          step.active ? 'text-purple-600' : step.completed ? 'text-purple-600' : 'text-gray-400'
+                        }`}>
+                          {step.label}
+                        </span>
+                      </div>
+                      {index < progressSteps.length - 1 && (
+                        <div className={`w-16 h-0.5 mx-4 ${
+                          progressSteps[index + 1].completed || progressSteps[index + 1].active 
+                            ? 'bg-purple-600' 
+                            : 'bg-gray-300'
+                        }`} />
+                      )}
                     </div>
-                    <p className="text-sm font-medium text-gray-900">{config.name}</p>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -213,6 +260,43 @@ export function DemoOnboardPage() {
           {/* Platform Step */}
           {currentStep === 'platform' && (
             <div className="text-center">
+              {/* Progress Steps */}
+              <div className="mb-8">
+                <div className="flex items-center justify-center space-x-8 mb-6">
+                  {progressSteps.map((step, index) => (
+                    <div key={index} className="flex items-center">
+                      <div className="flex flex-col items-center">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mb-2 ${
+                          step.completed 
+                            ? 'bg-purple-600 text-white' 
+                            : step.active 
+                            ? 'bg-purple-100 text-purple-600 border-2 border-purple-600' 
+                            : 'bg-gray-200 text-gray-500'
+                        }`}>
+                          {step.completed ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            index + 1
+                          )}
+                        </div>
+                        <span className={`text-sm font-medium ${
+                          step.active ? 'text-purple-600' : step.completed ? 'text-purple-600' : 'text-gray-400'
+                        }`}>
+                          {step.label}
+                        </span>
+                      </div>
+                      {index < progressSteps.length - 1 && (
+                        <div className={`w-16 h-0.5 mx-4 ${
+                          progressSteps[index + 1].completed || progressSteps[index + 1].active 
+                            ? 'bg-purple-600' 
+                            : 'bg-gray-300'
+                        }`} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="mb-6">
                 <div className={`w-16 h-16 bg-gradient-to-br from-${currentConfig.color}-400 to-${currentConfig.color}-500 rounded-2xl flex items-center justify-center mx-auto mb-4`}>
                   <span className="text-white font-bold text-xl">{currentConfig.name.charAt(0)}</span>
@@ -307,6 +391,43 @@ export function DemoOnboardPage() {
           {/* Complete Step */}
           {currentStep === 'complete' && (
             <div className="text-center">
+              {/* Progress Steps */}
+              <div className="mb-8">
+                <div className="flex items-center justify-center space-x-8 mb-6">
+                  {progressSteps.map((step, index) => (
+                    <div key={index} className="flex items-center">
+                      <div className="flex flex-col items-center">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mb-2 ${
+                          step.completed 
+                            ? 'bg-purple-600 text-white' 
+                            : step.active 
+                            ? 'bg-purple-100 text-purple-600 border-2 border-purple-600' 
+                            : 'bg-gray-200 text-gray-500'
+                        }`}>
+                          {step.completed ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            index + 1
+                          )}
+                        </div>
+                        <span className={`text-sm font-medium ${
+                          step.active ? 'text-purple-600' : step.completed ? 'text-purple-600' : 'text-gray-400'
+                        }`}>
+                          {step.label}
+                        </span>
+                      </div>
+                      {index < progressSteps.length - 1 && (
+                        <div className={`w-16 h-0.5 mx-4 ${
+                          progressSteps[index + 1].completed || progressSteps[index + 1].active 
+                            ? 'bg-purple-600' 
+                            : 'bg-gray-300'
+                        }`} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-6" />
               <h1 className="text-3xl font-bold text-gray-900 mb-4">Setup Complete!</h1>
               <p className="text-lg text-gray-600 mb-8">
@@ -339,7 +460,7 @@ export function DemoOnboardPage() {
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between">
+          <div className="flex justify-between mt-8">
             {(currentStep === 'platform' || currentStep === 'complete') && (
               <button
                 onClick={handleBack}
@@ -354,9 +475,9 @@ export function DemoOnboardPage() {
               <div className="w-full flex justify-center">
                 <button
                   onClick={handleContinue}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-lime-500 text-white px-8 py-3 rounded-lg font-medium hover:from-green-600 hover:to-lime-600 transition-colors"
+                  className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-8 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-purple-800 transition-colors"
                 >
-                  <span>Get Started</span>
+                  <span>Continue</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -365,7 +486,7 @@ export function DemoOnboardPage() {
             {currentStep === 'platform' && (showPermissions || platformStatuses[currentPlatform] === 'rejected') && (
               <button
                 onClick={handleContinue}
-                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-lime-500 text-white px-6 py-3 rounded-lg font-medium hover:from-green-600 hover:to-lime-600 transition-colors ml-auto"
+                className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-purple-800 transition-colors ml-auto"
               >
                 <span>{isLastPlatform ? 'Complete' : 'Continue'}</span>
                 <ArrowRight className="w-4 h-4" />
