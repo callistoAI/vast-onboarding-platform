@@ -7,10 +7,10 @@ import { useAuth } from '../../hooks/useAuth';
 type OnboardingLink = Database['public']['Tables']['onboarding_links']['Row'];
 
 const platformOptions = [
-  { id: 'meta', name: 'Meta Business', color: 'purple' },
-  { id: 'google', name: 'Google Ads', color: 'indigo' },
-  { id: 'tiktok', name: 'TikTok Ads', color: 'teal' },
-  { id: 'shopify', name: 'Shopify', color: 'cyan' }
+  { id: 'meta', name: 'Meta Business', color: '#6200EE' },
+  { id: 'google', name: 'Google Ads', color: '#3700B3' },
+  { id: 'tiktok', name: 'TikTok Ads', color: '#03DAC6' },
+  { id: 'shopify', name: 'Shopify', color: '#018786' }
 ];
 
 const platformApiOptions = {
@@ -334,9 +334,13 @@ export function OnboardingLinksTab() {
                               />
                               <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${
                                 selectedPlatforms.includes(platform.id)
-                                  ? `bg-gradient-to-r from-${platform.color}-500 to-${platform.color}-600 border-${platform.color}-500`
+                                  ? 'border-transparent'
                                   : 'border-gray-300 bg-white hover:border-gray-400'
-                              }`}>
+                              }`}
+                              style={selectedPlatforms.includes(platform.id) ? {
+                                background: `linear-gradient(135deg, ${platform.color}, ${platform.color}dd)`,
+                                borderColor: platform.color
+                              } : {}}>
                                 {selectedPlatforms.includes(platform.id) && (
                                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -345,7 +349,13 @@ export function OnboardingLinksTab() {
                               </div>
                             </div>
                             <div className="flex items-center space-x-3">
-                              <div className={`w-10 h-10 bg-gradient-to-br from-${platform.color}-400 to-${platform.color}-500 rounded-xl flex items-center justify-center shadow-sm`}>
+                              <div 
+                                className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
+                                style={{ background: `linear-gradient(135deg, ${platform.color}, ${platform.color}dd)` }}
+                              >
+                                className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
+                                style={{ background: `linear-gradient(135deg, ${platform.color}, ${platform.color}dd)` }}
+                              >
                                 <span className="text-white font-bold text-sm">
                                   {platform.name.charAt(0)}
                                 </span>
@@ -565,8 +575,8 @@ export function OnboardingLinksTab() {
                         <div className="flex items-center space-x-2">
                           <span className="text-gray-900 font-medium">{link.name}</span>
                           <button
-                            onClick={() => handleEditLinkName(link.id, link.name)}
-                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                            className="w-6 h-6 rounded-full flex items-center justify-center shadow-sm"
+                            style={{ background: config?.color ? `linear-gradient(135deg, ${config.color}, ${config.color}dd)` : '#6b7280' }}
                             title="Edit name"
                           >
                             <Edit3 className="w-4 h-4" />

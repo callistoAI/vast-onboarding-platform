@@ -11,25 +11,25 @@ const platformConfigs = {
   meta: {
     name: 'Meta Business',
     description: 'Connect to Facebook and Instagram Business accounts',
-    color: 'purple',
+    color: '#6200EE',
     authUrl: 'https://business.facebook.com/oauth', // Placeholder
   },
   google: {
     name: 'Google Ads',
     description: 'Access Google Ads campaigns and analytics',
-    color: 'indigo',
+    color: '#3700B3',
     authUrl: 'https://accounts.google.com/oauth', // Placeholder
   },
   tiktok: {
     name: 'TikTok Ads',
     description: 'Manage TikTok advertising campaigns',
-    color: 'teal',
+    color: '#03DAC6',
     authUrl: 'https://ads.tiktok.com/oauth', // Placeholder
   },
   shopify: {
     name: 'Shopify',
     description: 'Connect to Shopify store data',
-    color: 'cyan',
+    color: '#018786',
     authUrl: 'https://shopify.com/oauth', // Placeholder
   }
 };
@@ -418,7 +418,10 @@ export function SettingsTab() {
                 <div key={platform} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
-                      <div className={`w-14 h-14 rounded-xl flex items-center justify-center shadow-lg`} style={{ background: `linear-gradient(135deg, ${config.color}, ${config.color}dd)` }}>
+                      <div 
+                        className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg"
+                        style={{ background: `linear-gradient(135deg, ${config.color}, ${config.color}dd)` }}
+                      >
                         <span className="text-white font-bold text-lg">
                           {config.name.charAt(0)}
                         </span>
