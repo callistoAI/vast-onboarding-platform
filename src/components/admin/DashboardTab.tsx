@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Copy, ExternalLink, CheckCircle, Eye, Settings, Edit3, ChevronDown, Link } from 'lucide-react';
+import { Copy, ExternalLink, CheckCircle, Eye, Edit3, ChevronDown, Link, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
@@ -735,11 +735,12 @@ export function OnboardingLinksTab() {
       <div className="space-y-4">
         {/* Table Header */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div className="grid grid-cols-10 gap-4 px-6 py-4 text-sm font-medium text-gray-500 bg-white border-b border-gray-100">
+          <div className="grid grid-cols-12 gap-4 px-6 py-4 text-sm font-medium text-gray-500 bg-white border-b border-gray-100">
             <div className="col-span-3">Name</div>
-            <div className="col-span-4">URL</div>
-            <div className="col-span-2">Platforms</div>
-            <div className="col-span-1">Status</div>
+            <div className="col-span-3">URL</div>
+            <div className="col-span-3">Platforms</div>
+            <div className="col-span-2">Status</div>
+            <div className="col-span-1">Actions</div>
           </div>
         </div>
 
@@ -753,7 +754,7 @@ export function OnboardingLinksTab() {
           ) : (
             filteredLinks().map((link) => (
               <div key={link.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
-                <div className="grid grid-cols-10 gap-4 items-center px-6 py-4">
+                <div className="grid grid-cols-12 gap-4 items-center px-6 py-4">
                   <div className="col-span-3">
                     {editingLinkId === link.id ? (
                       <input
@@ -780,55 +781,12 @@ export function OnboardingLinksTab() {
                       </div>
                     )}
                   </div>
-                  <div className="col-span-4">
+                  <div className="col-span-3">
                     <div className="flex items-center space-x-2">
                       <code className="text-sm font-mono text-gray-600 truncate max-w-xs">/onboard/{link.link_token}</code>
-                      <div className="flex items-center space-x-1 ml-auto">
-                        <button
-                          onClick={() => handleTestLink(link.link_token)}
-                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                          title="Test link"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Copy link"
-                        >
-                          <Copy className="w-4 h-4" />
-                        </button>
-                        <div className="relative group">
-                          <button
-                            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                            title="More options"
-                          >
-                            <Settings className="w-4 h-4" />
-                          </button>
-                          <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 min-w-36">
-                            <button
-                              onClick={() => handleEditLinkName(link.id, link.note || '')}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium"
-                            >
-                              Edit Name
-                            </button>
-                            <button
-                              onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium"
-                            >
-                              Copy Link
-                            </button>
-                            <button
-                              className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
-                            >
-                              Delete Link
-                            </button>
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-3">
                     <div className="flex space-x-1">
                       {link.platforms.slice(0, 3).map((platform) => {
                         const config = platformOptions.find(p => p.id === platform);
@@ -851,7 +809,7 @@ export function OnboardingLinksTab() {
                       )}
                     </div>
                   </div>
-                  <div className="col-span-1">
+                  <div className="col-span-2">
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                       link.status === 'active' 
                         ? 'bg-green-100 text-green-800' 
@@ -861,6 +819,36 @@ export function OnboardingLinksTab() {
                     }`}>
                       {link.status.charAt(0).toUpperCase() + link.status.slice(1)}
                     </span>
+                  </div>
+                  <div className="col-span-1">
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={() => handleTestLink(link.link_token)}
+                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        title="Test link"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Copy link"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (confirm('Are you sure you want to delete this link?')) {
+                            console.log('Deleting link:', link.id);
+                            // In a real app, this would delete from the database
+                          }
+                        }}
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Delete link"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
