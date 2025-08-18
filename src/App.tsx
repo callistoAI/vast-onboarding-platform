@@ -47,6 +47,14 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/client/settings" 
+            element={
+              <ProtectedRoute clientOnly>
+                <DashboardPage />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="/settings" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

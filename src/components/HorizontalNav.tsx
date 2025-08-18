@@ -8,6 +8,7 @@ interface NavItem {
   label: string;
   path: string;
   adminOnly?: boolean;
+  clientOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -15,6 +16,7 @@ const navItems: NavItem[] = [
   { icon: UserCheck, label: 'Clients', path: '/admin/clients', adminOnly: true },
   { icon: Palette, label: 'Customisation', path: '/admin/customisation', adminOnly: true },
   { icon: Settings, label: 'Settings', path: '/admin/settings', adminOnly: true },
+  { icon: Settings, label: 'Settings', path: '/client/settings', clientOnly: true },
 ];
 
 export function HorizontalNav() {
@@ -23,7 +25,8 @@ export function HorizontalNav() {
   const { profile } = useAuth();
 
   const filteredNavItems = navItems.filter(item => 
-    !item.adminOnly || profile?.role === 'admin'
+    (!item.adminOnly || profile?.role === 'admin') &&
+    (!item.clientOnly || profile?.role === 'client')
   );
 
   return (

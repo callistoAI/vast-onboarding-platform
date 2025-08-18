@@ -4,6 +4,7 @@ import { OnboardingLinksTab } from './admin/DashboardTab';
 import { ClientsTab } from './admin/ClientsTab';
 import { SettingsTab } from './admin/SettingsTab';
 import { CustomisationTab } from './admin/CustomisationTab';
+import { ClientSettingsTab } from './client/ClientSettingsTab';
 
 export function AdminDashboard() {
   const location = useLocation();
@@ -16,6 +17,8 @@ export function AdminDashboard() {
         return 'settings';
       case '/admin/customisation':
         return 'customisation';
+      case '/client/settings':
+        return 'client-settings';
       default:
         return 'dashboard';
     }
@@ -31,6 +34,8 @@ export function AdminDashboard() {
         return <SettingsTab />;
       case 'customisation':
         return <CustomisationTab />;
+      case 'client-settings':
+        return <ClientSettingsTab />;
       default:
         return <OnboardingLinksTab />;
     }
