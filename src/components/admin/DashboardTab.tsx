@@ -389,16 +389,50 @@ export function OnboardingLinksTab() {
   const filteredLinks = () => {
     let filtered = [...links];
     
+    // Create standard links that appear at the top
+    const standardLinks = [
+      {
+        id: 'standard-manage',
+        created_by: 'admin1',
+        platforms: ['meta', 'google', 'tiktok', 'shopify'],
+        expires_at: null,
+        note: 'Standard Manage Link',
+        status: 'active' as const,
+        link_token: 'standard-manage-access',
+        used_by: null,
+        used_at: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        isStandard: true,
+        standardType: 'manage'
+      },
+      {
+        id: 'standard-view',
+        created_by: 'admin1',
+        platforms: ['meta', 'google', 'tiktok', 'shopify'],
+        expires_at: null,
+        note: 'Standard View Link',
+        status: 'active' as const,
+        link_token: 'standard-view-access',
+        used_by: null,
+        used_at: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        isStandard: true,
+        standardType: 'view'
+      }
+    ];
+
     // Apply tab filter
     if (activeTab === 'manage') {
-      // Show first 3 links for manage tab
-      filtered = filtered.slice(0, 3);
+      // Show standard manage link + first 3 regular links for manage tab
+      filtered = [standardLinks[0], ...filtered.slice(0, 3)];
     } else if (activeTab === 'view') {
-      // Show links 3-5 for view tab
-      filtered = filtered.slice(3, 6);
+      // Show standard view link + links 3-5 for view tab
+      filtered = [standardLinks[1], ...filtered.slice(3, 6)];
     } else {
-      // Show first 6 links for all tab
-      filtered = filtered.slice(0, 6);
+      // Show both standard links + first 6 regular links for all tab
+      filtered = [...standardLinks, ...filtered.slice(0, 6)];
     }
     
     // Apply status filter
@@ -753,7 +787,13 @@ export function OnboardingLinksTab() {
             </div>
           ) : (
             filteredLinks().map((link) => (
-              <div key={link.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+              <div key={link.id} className={`rounded-xl border shadow-sm hover:shadow-md transition-all duration-200 ${
+                link.isStandard && link.standardType === 'manage'
+                  ? 'bg-gradient-to-r from-cyan-50 to-teal-50 border-cyan-200 shadow-cyan-100 hover:shadow-cyan-200 ring-1 ring-cyan-200/50'
+                  : link.isStandard && link.standardType === 'view'
+                  ? 'bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 shadow-purple-100 hover:shadow-purple-200 ring-1 ring-purple-200/50'
+                  : 'bg-white border-gray-200'
+              }`}>
                 <div className="grid grid-cols-12 gap-6 items-center px-8 py-6">
                   <div className="col-span-3">
                     {editingLinkId === link.id ? (
@@ -770,7 +810,16 @@ export function OnboardingLinksTab() {
                       />
                     ) : (
                       <div className="flex items-center space-x-2">
-                        <span className="text-gray-900 font-semibold text-base">{link.note}</span>
+                        <div className="flex items-center space-x-3">
+                          {link.isStandard && (
+                            <div className={`w-2 h-2 rounded-full ${
+                              link.standardType === 'manage' ? 'bg-cyan-500' : 'bg-purple-500'
+                            } animate-pulse`}></div>
+                          )}
+                          <span className={`font-semibold text-base ${
+                            link.isStandard ? 'text-gray-800' : 'text-gray-900'
+                          }`}>{link.note}</span>
+                        </div>
                         <button
                           onClick={() => handleEditLinkName(link.id, link.note || '')}
                           className="text-gray-400 hover:text-gray-600 transition-colors"
