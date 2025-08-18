@@ -66,6 +66,10 @@ export function OnboardingLinksTab() {
   const [showSettingsModal, setShowSettingsModal] = useState<string | null>(null);
   const [editingLink, setEditingLink] = useState<OnboardingLink | null>(null);
   
+  // New state for settings modal
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [currentEditingLink, setCurrentEditingLink] = useState<OnboardingLink | null>(null);
+  
   const fetchData = useCallback(async () => {
     try {
       // Fetch onboarding links
