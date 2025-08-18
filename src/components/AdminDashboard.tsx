@@ -19,6 +19,8 @@ export function AdminDashboard() {
         return 'customisation';
       case '/client/settings':
         return 'client-settings';
+      case '/client/settings':
+        return 'client-settings';
       default:
         return 'dashboard';
     }
