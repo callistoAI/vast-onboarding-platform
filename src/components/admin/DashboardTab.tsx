@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Copy, ExternalLink, CheckCircle, Eye, Settings, Edit3, ChevronDown, Link, X } from 'lucide-react';
+import { Copy, ExternalLink, CheckCircle, Eye, Settings, Edit3, ChevronDown, Link } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
@@ -63,12 +63,6 @@ export function OnboardingLinksTab() {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'used' | 'inactive'>('all');
   const [showCopyNotification, setShowCopyNotification] = useState(false);
-  const [showSettingsModal, setShowSettingsModal] = useState<string | null>(null);
-  const [editingLink, setEditingLink] = useState<OnboardingLink | null>(null);
-  
-  // New state for settings modal
-  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-  const [currentEditingLink, setCurrentEditingLink] = useState<OnboardingLink | null>(null);
   
   const fetchData = useCallback(async () => {
     try {
@@ -108,33 +102,31 @@ export function OnboardingLinksTab() {
   const setMockData = () => {
     // Enhanced mock links with more variety and different statuses - expanded for complete UI
     const mockLinks = [
-      // Basic Manage Link (always at top for manage tab)
       {
         id: '1',
         created_by: 'admin1',
         platforms: ['meta', 'google', 'tiktok', 'shopify'],
         expires_at: null,
-        note: 'Basic Manage Access',
+        note: 'Premium Client Package',
         status: 'active' as const,
-        link_token: 'basic-manage-access',
+        link_token: 'premium-client-pkg-001',
         used_by: null,
         used_at: null,
         created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
         updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       },
-      // Basic View Link (always at top for view tab)
       {
         id: '2',
         created_by: 'admin1',
         platforms: ['meta', 'google'],
         expires_at: null,
-        note: 'Basic View Access',
-        status: 'active' as const,
-        link_token: 'basic-view-access',
-        used_by: null,
-        used_at: null,
+        note: 'Social Media Analytics',
+        status: 'used' as const,
+        link_token: 'social-analytics-002',
+        used_by: 'client1',
+        used_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
         created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
       },
       {
         id: '3',
@@ -399,15 +391,11 @@ export function OnboardingLinksTab() {
     
     // Apply tab filter
     if (activeTab === 'manage') {
-      // Show basic manage link first, then other links
-      const basicManageLink = filtered.find(link => link.link_token === 'basic-manage-access');
-      const otherLinks = filtered.filter(link => link.link_token !== 'basic-manage-access').slice(0, 4);
-      filtered = basicManageLink ? [basicManageLink, ...otherLinks] : otherLinks;
+      // Show first 3 links for manage tab
+      filtered = filtered.slice(0, 3);
     } else if (activeTab === 'view') {
-      // Show basic view link first, then other links
-      const basicViewLink = filtered.find(link => link.link_token === 'basic-view-access');
-      const otherLinks = filtered.filter(link => link.link_token !== 'basic-view-access' && link.link_token !== 'basic-manage-access').slice(0, 4);
-      filtered = basicViewLink ? [basicViewLink, ...otherLinks] : otherLinks;
+      // Show links 3-5 for view tab
+      filtered = filtered.slice(3, 6);
     } else {
       // Show first 6 links for all tab
       filtered = filtered.slice(0, 6);
@@ -901,244 +889,6 @@ export function OnboardingLinksTab() {
             >
               Close
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Settings Modal */}
-      {showSettingsModal && editingLink && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full mx-4 shadow-2xl">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-semibold text-gray-900">Link Settings</h3>
-              <button
-                onClick={() => {
-                  setShowSettingsModal(null);
-                  setEditingLink(null);
-                }}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="space-y-6">
-              {/* Link Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Link Name
-                </label>
-                <input
-                  type="text"
-                  value={editingLink.note || ''}
-                  onChange={(e) => setEditingLink({ ...editingLink, note: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                  placeholder="Enter link name"
-                />
-              </div>
-
-              {/* Status */}
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Status
-                </label>
-                <select
-                  value={editingLink.status}
-                  onChange={(e) => setEditingLink({ ...editingLink, status: e.target.value as 'active' | 'expired' | 'used' })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                >
-                  <option value="active">Active</option>
-                  <option value="expired">Expired</option>
-                  <option value="used">Used</option>
-                </select>
-              </div>
-
-              {/* URL (Read-only) */}
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Onboarding URL
-                </label>
-                <div className="flex items-center space-x-2">
-                  <code className="flex-1 text-sm bg-gray-50 p-3 rounded-xl border text-gray-800 break-all font-mono">
-                    {window.location.origin}/onboard/{editingLink.link_token}
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(`${window.location.origin}/onboard/${editingLink.link_token}`)}
-                    className="p-3 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                  >
-                    <Copy className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Platforms */}
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Connected Platforms
-                </label>
-                <div className="flex space-x-2">
-                  {editingLink.platforms.map((platform) => {
-                    const config = platformOptions.find(p => p.id === platform);
-                    return (
-                      <div
-                        key={platform}
-                        className={`flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-${config?.color}-100 to-${config?.color}-200 rounded-lg border border-${config?.color}-300`}
-                      >
-                        <div className={`w-6 h-6 bg-gradient-to-br from-${config?.color}-400 to-${config?.color}-500 rounded-full flex items-center justify-center shadow-sm`}>
-                          <span className="text-white font-bold text-xs">
-                            {config?.name.charAt(0)}
-                          </span>
-                        </div>
-                        <span className="text-sm font-medium text-gray-800">{config?.name}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex space-x-4 mt-8 pt-6 border-t border-gray-200">
-              <button
-                onClick={() => {
-                  setShowSettingsModal(null);
-                  setEditingLink(null);
-                }}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteLink}
-                className="px-6 py-3 border border-red-300 text-red-700 rounded-xl hover:bg-red-50 font-medium transition-colors"
-              >
-                Delete Link
-              </button>
-              <button
-                onClick={handleSaveLink}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 font-medium transition-colors"
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Settings Modal */}
-      {settingsModalOpen && currentEditingLink && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full mx-4 shadow-2xl">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-semibold text-gray-900">Link Settings</h3>
-              <button
-                onClick={() => {
-                  setSettingsModalOpen(false);
-                  setCurrentEditingLink(null);
-                }}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="space-y-6">
-              {/* Link Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Link Name
-                </label>
-                <input
-                  type="text"
-                  value={currentEditingLink.note || ''}
-                  onChange={(e) => setCurrentEditingLink({ ...currentEditingLink, note: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                  placeholder="Enter link name"
-                />
-              </div>
-
-              {/* Status */}
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Status
-                </label>
-                <select
-                  value={currentEditingLink.status}
-                  onChange={(e) => setCurrentEditingLink({ ...currentEditingLink, status: e.target.value as 'active' | 'expired' | 'used' })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                >
-                  <option value="active">Active</option>
-                  <option value="expired">Expired</option>
-                  <option value="used">Used</option>
-                </select>
-              </div>
-
-              {/* URL (Read-only) */}
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Onboarding URL
-                </label>
-                <div className="flex items-center space-x-2">
-                  <code className="flex-1 text-sm bg-gray-50 p-3 rounded-xl border text-gray-800 break-all font-mono">
-                    {window.location.origin}/onboard/{currentEditingLink.link_token}
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(`${window.location.origin}/onboard/${currentEditingLink.link_token}`)}
-                    className="p-3 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                  >
-                    <Copy className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Platforms */}
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-2">
-                  Connected Platforms
-                </label>
-                <div className="flex space-x-2">
-                  {currentEditingLink.platforms.map((platform) => {
-                    const config = platformOptions.find(p => p.id === platform);
-                    return (
-                      <div
-                        key={platform}
-                        className={`flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-${config?.color}-100 to-${config?.color}-200 rounded-lg border border-${config?.color}-300`}
-                      >
-                        <div className={`w-6 h-6 bg-gradient-to-br from-${config?.color}-400 to-${config?.color}-500 rounded-full flex items-center justify-center shadow-sm`}>
-                          <span className="text-white font-bold text-xs">
-                            {config?.name.charAt(0)}
-                          </span>
-                        </div>
-                        <span className="text-sm font-medium text-gray-800">{config?.name}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex space-x-4 mt-8 pt-6 border-t border-gray-200">
-              <button
-                onClick={() => {
-                  setSettingsModalOpen(false);
-                  setCurrentEditingLink(null);
-                }}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteLink}
-                className="px-6 py-3 border border-red-300 text-red-700 rounded-xl hover:bg-red-50 font-medium transition-colors"
-              >
-                Delete Link
-              </button>
-              <button
-                onClick={handleSaveLink}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 font-medium transition-colors"
-              >
-                Save Changes
-              </button>
-            </div>
           </div>
         </div>
       )}
