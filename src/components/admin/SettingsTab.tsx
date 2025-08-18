@@ -547,107 +547,37 @@ export function SettingsTab() {
           </div>
         )}
 
-        {/* Search and Filter Bar */}
-        <div className="px-6 py-4 border-b border-gray-100">
-          <div className="flex items-center space-x-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search team members..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-              />
-            </div>
-            <div className="relative">
-              <button
-                onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-                className="flex items-center space-x-2 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                <Filter className="w-4 h-4" />
-                <span>Filter: {selectedFilter.charAt(0).toUpperCase() + selectedFilter.slice(1)}</span>
-                <svg className={`w-4 h-4 transition-transform ${showFilterDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              
-              {showFilterDropdown && (
-                <div className="absolute right-0 top-12 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-10 min-w-32">
-                  {['all', 'active', 'invited', 'expired'].map((filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => {
-                        setSelectedFilter(filter as 'all' | 'active' | 'invited' | 'expired');
-                        setShowFilterDropdown(false);
-                      }}
-                      className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                        selectedFilter === filter ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700'
-                      }`}
-                    >
-                      {filter.charAt(0).toUpperCase() + filter.slice(1)}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Team Members List */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-          {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-100">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Team Members</h3>
-              <div className="flex items-center space-x-3">
-                {/* Search */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search team members..."
-                    className="w-64 pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
-                  />
-                </div>
-                {/* Filter Dropdown */}
-                <div className="relative">
-                  <select
-                    value={selectedRoleFilter}
-                    onChange={(e) => setSelectedRoleFilter(e.target.value as 'all' | 'admin' | 'editor' | 'viewer')}
-                    className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-8 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
-                  >
-                    <option value="all">All Roles</option>
-                    <option value="admin">Admin</option>
-                    <option value="editor">Editor</option>
-                    <option value="viewer">Viewer</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
-                  </div>
-                </div>
+        <div className="space-y-4">
+          {/* Table Header */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="grid grid-cols-12 gap-6 px-6 py-4 text-sm font-medium text-gray-500 border-b border-gray-100">
+              <div className="col-span-1">
+                <input type="checkbox" className="rounded border-gray-300" />
               </div>
+              <div className="col-span-4">Member</div>
+              <div className="col-span-2">Role</div>
+              <div className="col-span-2">Status</div>
+              <div className="col-span-2">Joined</div>
+              <div className="col-span-1">Actions</div>
             </div>
           </div>
 
-          {/* Team Members Table */}
-          <div className="overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-100">
-                {filteredInvites().map((invite) => (
-                  <tr key={invite.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
+          {/* Table Body - Separated Rows */}
+          <div className="space-y-3">
+            {filteredInvites().length === 0 ? (
+              <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center">
+                <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500">No team members match the current filter</p>
+              </div>
+            ) : (
+              filteredInvites().map((invite) => (
+                <div key={invite.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+                  <div className="grid grid-cols-12 gap-6 items-center px-6 py-4">
+                    <div className="col-span-1">
+                      <input type="checkbox" className="rounded border-gray-300" />
+                    </div>
+                    <div className="col-span-4">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 rounded-xl flex items-center justify-center shadow-sm">
                           <span className="text-sm font-semibold text-white">
@@ -659,37 +589,37 @@ export function SettingsTab() {
                           <p className="text-sm text-gray-500">ID: {invite.id.substring(0, 8)}</p>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
+                    </div>
+                    <div className="col-span-2">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getRoleColor(invite.role)}`}>
                         {invite.role.charAt(0).toUpperCase() + invite.role.slice(1)}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
+                    </div>
+                    <div className="col-span-2">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(invite.status)}`}>
                         {getStatusIcon(invite.status)}
                         <span className="ml-1 capitalize">{invite.status}</span>
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
+                    </div>
+                    <div className="col-span-2">
                       <span className="text-gray-900">
                         {invite.created_at ? new Date(invite.created_at).toLocaleDateString() : '-'}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
+                    </div>
+                    <div className="col-span-1">
                       <div className="flex items-center space-x-1">
                         {invite.status === 'invited' && invite.email && (
                           <>
                             <button
                               onClick={() => copyToClipboard(`${window.location.origin}/invite/${invite.invite_token}`)}
-                              className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                              className="p-2 text-gray-400 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-colors"
                               title="Copy invite link"
                             >
                               <Copy className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => resendInvite()}
-                              className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                              className="p-2 text-gray-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
                               title="Resend invite"
                             >
                               <Mail className="w-4 h-4" />
@@ -718,33 +648,122 @@ export function SettingsTab() {
                           )}
                         </div>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+
+        {/* Team Members List */}
+        <div className="space-y-4">
+          {/* Table Header */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="grid grid-cols-12 gap-6 px-6 py-4 text-sm font-medium text-gray-500 border-b border-gray-100">
+              <div className="col-span-1">
+                <input type="checkbox" className="rounded border-gray-300" />
+              </div>
+              <div className="col-span-4">Member</div>
+              <div className="col-span-2">Role</div>
+              <div className="col-span-2">Status</div>
+              <div className="col-span-2">Joined</div>
+              <div className="col-span-1">Actions</div>
+            </div>
           </div>
 
-          {/* Empty State */}
-          {filteredInvites().length === 0 && searchTerm ? (
-            <div className="px-6 py-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <UserCheck className="w-8 h-8 text-gray-400" />
+          {/* Table Body - Separated Rows */}
+          <div className="space-y-3">
+            {filteredInvites().length === 0 ? (
+              <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center">
+                <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500">No team members match the current filter</p>
               </div>
-              <p className="text-gray-500">No team members match your search</p>
-            </div>
-          ) : (
-            filteredInvites().length === 0 && (
-              <div className="px-6 py-12 text-center">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-gray-400" />
+            ) : (
+              filteredInvites().map((invite) => (
+                <div key={invite.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+                  <div className="grid grid-cols-12 gap-6 items-center px-6 py-4">
+                    <div className="col-span-1">
+                      <input type="checkbox" className="rounded border-gray-300" />
+                    </div>
+                    <div className="col-span-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 rounded-xl flex items-center justify-center shadow-sm">
+                          <span className="text-sm font-semibold text-white">
+                            {invite.email ? invite.email.charAt(0).toUpperCase() : '?'}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">{invite.email || 'Loading...'}</p>
+                          <p className="text-sm text-gray-500">ID: {invite.id.substring(0, 8)}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-span-2">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getRoleColor(invite.role)}`}>
+                        {invite.role.charAt(0).toUpperCase() + invite.role.slice(1)}
+                      </span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(invite.status)}`}>
+                        {getStatusIcon(invite.status)}
+                        <span className="ml-1 capitalize">{invite.status}</span>
+                      </span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="text-gray-900">
+                        {invite.created_at ? new Date(invite.created_at).toLocaleDateString() : '-'}
+                      </span>
+                    </div>
+                    <div className="col-span-1">
+                      <div className="flex items-center space-x-1">
+                        {invite.status === 'invited' && invite.email && (
+                          <>
+                            <button
+                              onClick={() => copyToClipboard(`${window.location.origin}/invite/${invite.invite_token}`)}
+                              className="p-2 text-gray-400 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-colors"
+                              title="Copy invite link"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => resendInvite()}
+                              className="p-2 text-gray-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
+                              title="Resend invite"
+                            >
+                              <Mail className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                        <div className="relative group">
+                          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
+                          {invite.email && (
+                            <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 min-w-36">
+                              <button
+                                onClick={() => changeRole(invite.id, invite.role === 'admin' ? 'editor' : 'admin')}
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium"
+                              >
+                                Change Role
+                              </button>
+                              <button
+                                onClick={() => removeInvite(invite.id)}
+                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No team members found</h3>
-                <p className="text-gray-500">Invite team members to collaborate on your projects.</p>
-              </div>
-            )
-          )}
-        </div>
+              ))
+            )}
+          </div>
         </div>
 
       {/* Account Information */}
