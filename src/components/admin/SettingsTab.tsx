@@ -172,7 +172,7 @@ export function SettingsTab() {
         expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
         updated_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      }
+      },
       {
         id: '6',
         email: 'alex.thompson@creativestudio.com',
