@@ -63,6 +63,8 @@ export function OnboardingLinksTab() {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'used' | 'inactive'>('all');
   const [showCopyNotification, setShowCopyNotification] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState<string | null>(null);
+  const [editingLink, setEditingLink] = useState<OnboardingLink | null>(null);
   
   const fetchData = useCallback(async () => {
     try {
@@ -102,31 +104,33 @@ export function OnboardingLinksTab() {
   const setMockData = () => {
     // Enhanced mock links with more variety and different statuses - expanded for complete UI
     const mockLinks = [
+      // Basic Manage Link (always at top for manage tab)
       {
         id: '1',
         created_by: 'admin1',
         platforms: ['meta', 'google', 'tiktok', 'shopify'],
         expires_at: null,
-        note: 'Premium Client Package',
+        note: 'Basic Manage Access',
         status: 'active' as const,
-        link_token: 'premium-client-pkg-001',
+        link_token: 'basic-manage-access',
         used_by: null,
         used_at: null,
         created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
         updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       },
+      // Basic View Link (always at top for view tab)
       {
         id: '2',
         created_by: 'admin1',
         platforms: ['meta', 'google'],
         expires_at: null,
-        note: 'Social Media Analytics',
-        status: 'used' as const,
-        link_token: 'social-analytics-002',
-        used_by: 'client1',
-        used_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        note: 'Basic View Access',
+        status: 'active' as const,
+        link_token: 'basic-view-access',
+        used_by: null,
+        used_at: null,
         created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
       },
       {
         id: '3',
@@ -391,11 +395,15 @@ export function OnboardingLinksTab() {
     
     // Apply tab filter
     if (activeTab === 'manage') {
-      // Show first 3 links for manage tab
-      filtered = filtered.slice(0, 3);
+      // Show basic manage link first, then other links
+      const basicManageLink = filtered.find(link => link.link_token === 'basic-manage-access');
+      const otherLinks = filtered.filter(link => link.link_token !== 'basic-manage-access').slice(0, 4);
+      filtered = basicManageLink ? [basicManageLink, ...otherLinks] : otherLinks;
     } else if (activeTab === 'view') {
-      // Show links 3-5 for view tab
-      filtered = filtered.slice(3, 6);
+      // Show basic view link first, then other links
+      const basicViewLink = filtered.find(link => link.link_token === 'basic-view-access');
+      const otherLinks = filtered.filter(link => link.link_token !== 'basic-view-access' && link.link_token !== 'basic-manage-access').slice(0, 4);
+      filtered = basicViewLink ? [basicViewLink, ...otherLinks] : otherLinks;
     } else {
       // Show first 6 links for all tab
       filtered = filtered.slice(0, 6);
