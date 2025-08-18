@@ -642,12 +642,12 @@ export function OnboardingLinksTab() {
                 </button>
                 <button
                   onClick={generateLink}
-                  disabled={generating || selectedPlatforms.length === 0 || Object.keys(platformApis).length === 0 || !linkName.trim()}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 disabled:opacity-50 font-medium transition-colors"
-                >
-                  {generating ? 'Generating...' : 'Generate Link'}
-                </button>
-              </div>
+            <div className="grid grid-cols-12 gap-4 px-8 py-5 text-sm font-medium text-gray-500 border-b border-gray-100">
+              <div className="col-span-4">Name</div>
+              <div className="col-span-4">URL</div>
+              <div className="col-span-2">Platforms</div>
+              <div className="col-span-1">Status</div>
+              <div className="col-span-1">Actions</div>
             </div>
           </div>
         </div>
@@ -754,8 +754,8 @@ export function OnboardingLinksTab() {
           ) : (
             filteredLinks().map((link) => (
               <div key={link.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
-                <div className="grid grid-cols-12 gap-6 items-center px-8 py-6">
-                  <div className="col-span-3">
+                <div className="grid grid-cols-12 gap-4 items-center px-8 py-6">
+                  <div className="col-span-4">
                     {editingLinkId === link.id ? (
                       <input
                         type="text"
@@ -781,14 +781,14 @@ export function OnboardingLinksTab() {
                       </div>
                     )}
                   </div>
-                  <div className="col-span-3">
+                  <div className="col-span-4">
                     <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 font-mono text-sm text-gray-700 max-w-full">
                       <div className="truncate">
                         https://app.leadsie.com/onboard/{link.link_token}
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-3">
+                  <div className="col-span-2">
                     <div className="flex space-x-2">
                       {link.platforms.slice(0, 3).map((platform) => {
                         const config = platformOptions.find(p => p.id === platform);
@@ -811,13 +811,13 @@ export function OnboardingLinksTab() {
                       )}
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1">
                     <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${
                       link.status === 'active' 
                         ? 'bg-green-100 text-green-800' 
                         : link.status === 'used'
                         ? 'bg-blue-100 text-blue-800'
-                        : 'bg-red-100 text-red-800'
+                        : 'bg-orange-100 text-orange-800'
                     }`}>
                       {link.status.charAt(0).toUpperCase() + link.status.slice(1)}
                     </span>
