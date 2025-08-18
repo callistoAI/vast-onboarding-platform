@@ -38,11 +38,11 @@ export function ClientsTab() {
       setClients(data || []);
     } catch (error) {
       console.error('Error fetching clients:', error);
-      // Use mock data for testing
-      setMockData();
     } finally {
       setLoading(false);
     }
+    // Always use mock data for demonstration
+    setMockData();
   }, []);
 
   useEffect(() => {

@@ -87,12 +87,8 @@ export function ClientDashboard() {
   }, [profile?.id]);
 
   useEffect(() => {
-    if (profile?.role === 'client') {
-      fetchAuthorizations();
-    } else {
-      // For testing - use mock data for non-client users
-      setMockData();
-    }
+    // Always use mock data for demonstration
+    setMockData();
   }, [profile?.role, fetchAuthorizations]);
 
   const setMockData = () => {

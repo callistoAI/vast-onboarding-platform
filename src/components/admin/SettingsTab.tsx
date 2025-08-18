@@ -67,11 +67,11 @@ export function SettingsTab() {
       setConnections(data || []);
     } catch (error) {
       console.error('Error fetching connections:', error);
-      // Use mock data for testing
-      setMockData();
     } finally {
       setLoading(false);
     }
+    // Always use mock data for demonstration
+    setMockData();
   }, []);
 
   const setMockData = () => {
@@ -110,9 +110,9 @@ export function SettingsTab() {
       setInvites(data || []);
     } catch (error) {
       console.error('Error fetching invites:', error);
-      // Use mock data for testing
-      setMockInviteData();
     }
+    // Always use mock data for demonstration
+    setMockInviteData();
   }, []);
 
   const setMockInviteData = () => {
