@@ -784,12 +784,9 @@ export function ClientsTab() {
       <div className="space-y-4">
         {/* Table Header */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-          <div className="grid grid-cols-12 gap-6 px-6 py-4 text-sm font-medium text-gray-500 border-b border-gray-100">
-            <div className="col-span-1">
-              <input type="checkbox" className="rounded border-gray-300" />
-            </div>
+          <div className="grid grid-cols-12 gap-4 px-6 py-4 text-sm font-medium text-gray-500 border-b border-gray-100">
             <div className="col-span-3">Company</div>
-            <div className="col-span-2">Client</div>
+            <div className="col-span-3">Client</div>
             <div className="col-span-2">Status</div>
             <div className="col-span-2">Platforms</div>
             <div className="col-span-2">Joined</div>
@@ -806,10 +803,7 @@ export function ClientsTab() {
           ) : (
             filteredAndSortedClients().map((client) => (
               <div key={client.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
-                <div className="grid grid-cols-12 gap-6 items-center px-6 py-4">
-                  <div className="col-span-1">
-                    <input type="checkbox" className="rounded border-gray-300" />
-                  </div>
+                <div className="grid grid-cols-12 gap-4 items-center px-6 py-4">
                   <div className="col-span-3">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center shadow-sm">
@@ -823,7 +817,7 @@ export function ClientsTab() {
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-3">
                     <div>
                       <p className="font-medium text-gray-900">{client.users?.name || 'Loading...'}</p>
                       <p className="text-sm text-gray-500">
@@ -847,7 +841,7 @@ export function ClientsTab() {
                       }
                     </span>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-2 pr-2">
                     <div className="flex space-x-1">
                       {platformOptions.map((platform) => {
                         const auth = client.authorizations?.find?.(a => a.platform === platform.id);
