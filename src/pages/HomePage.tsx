@@ -60,8 +60,8 @@ export function HomePage() {
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-sm hidden">
-              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-lime-500 rounded-lg flex items-center justify-center shadow-sm hidden">
+              <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-xl flex items-center justify-center shadow-sm hidden">
+              <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-lg flex items-center justify-center shadow-sm hidden">
                 <span className="text-white font-bold">V</span>
               </div>
               </div>
@@ -95,7 +95,7 @@ export function HomePage() {
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {/* Admin Dashboard */}
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-400 to-lime-400 rounded-xl mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-xl mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
               <Shield className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 text-center mb-6">
@@ -103,7 +103,7 @@ export function HomePage() {
             </h3>
             <button
               onClick={handleAdminAccess}
-              className="w-full bg-gradient-to-r from-green-500 to-lime-500 text-white py-3 px-6 rounded-lg font-medium hover:from-green-600 hover:to-lime-600 transition-all duration-200 flex items-center justify-center space-x-2 group"
+              className="w-full bg-gradient-to-r from-cyan-500 to-teal-600 text-white py-3 px-6 rounded-lg font-medium hover:from-cyan-600 hover:to-teal-700 transition-all duration-200 flex items-center justify-center space-x-2 group"
             >
               <span>Access Admin</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -112,7 +112,7 @@ export function HomePage() {
 
           {/* Client Dashboard */}
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl transition-all duration-300 group">
-            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-400 to-lime-500 rounded-2xl mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
+            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-sky-400 to-blue-500 rounded-2xl mb-6 mx-auto group-hover:scale-110 transition-transform duration-300">
               <Users className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 text-center mb-6">
@@ -120,7 +120,7 @@ export function HomePage() {
             </h3>
             <button
               onClick={handleClientAccess}
-              className="w-full bg-gradient-to-r from-green-500 to-lime-600 text-white py-3 px-6 rounded-lg font-medium hover:from-green-600 hover:to-lime-700 transition-all duration-200 flex items-center justify-center space-x-2 group"
+              className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:from-sky-600 hover:to-blue-700 transition-all duration-200 flex items-center justify-center space-x-2 group"
             >
               <span>Access Client</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -149,7 +149,7 @@ export function HomePage() {
       {/* Floating Feedback Button */}
       <button
         onClick={() => setShowFeedback(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-full shadow-lg hover:from-green-600 hover:to-lime-700 hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full shadow-lg hover:from-purple-600 hover:to-indigo-700 hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
         title="Submit UI Feedback"
       >
         <MessageSquare className="w-6 h-6" />
@@ -171,8 +171,8 @@ export function HomePage() {
             
             {submitted ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Send className="w-8 h-8 text-green-600" />
+                <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Send className="w-8 h-8 text-indigo-600" />
                 </div>
                 <h4 className="text-xl font-semibold text-gray-900 mb-2">Thank You!</h4>
                 <p className="text-gray-600">Your feedback has been submitted successfully.</p>
@@ -186,7 +186,7 @@ export function HomePage() {
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   placeholder="Enter your feedback here..."
-                  className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none transition-colors"
+                  className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 resize-none transition-colors"
                 />
                 <div className="flex space-x-4 mt-6">
                   <button
@@ -198,7 +198,7 @@ export function HomePage() {
                   <button
                     onClick={handleSubmitFeedback}
                     disabled={submitting || !feedback.trim()}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-xl hover:from-green-600 hover:to-lime-700 disabled:opacity-50 font-medium transition-colors flex items-center justify-center space-x-2"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-500 to-teal-600 text-white rounded-xl hover:from-cyan-600 hover:to-teal-700 disabled:opacity-50 font-medium transition-colors flex items-center justify-center space-x-2"
                   >
                     {submitting ? (
                       <>

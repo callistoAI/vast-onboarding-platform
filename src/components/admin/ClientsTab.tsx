@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Filter, Eye } from 'lucide-react';
+import { Search, Filter, Eye, ChevronDown, Edit3, MoreVertical, Users } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 
@@ -546,7 +546,7 @@ export function ClientsTab() {
               placeholder="Search clients..."
               value={clientSearchTerm}
               onChange={(e) => setClientSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
             />
           </div>
           <div className="relative">
@@ -571,7 +571,7 @@ export function ClientsTab() {
                       setShowFilterDropdown(false);
                     }}
                     className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                      selectedFilter === filter ? 'text-green-600 bg-green-50' : 'text-gray-700'
+                      selectedFilter === filter ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700'
                     }`}
                   >
                     {filter.charAt(0).toUpperCase() + filter.slice(1)}
@@ -607,86 +607,131 @@ export function ClientsTab() {
       </div>
       
       {/* Clients List */}
-      <div className="space-y-3">
-        {filteredAndSortedClients().length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center">
-            <Eye className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">
-              {clientSearchTerm ? 'No clients match your search' : 'No clients onboarded yet'}
-            </p>
-          </div>
-        ) : (
-          [...filteredAndSortedClients(), ...getPlaceholderClients()].map((client) => (
-            <div key={client.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
-              <div className="grid grid-cols-12 gap-6 items-center px-6 py-4">
-                <div className="col-span-1">
-                  <input type="checkbox" className="rounded border-gray-300" />
-                </div>
-                <div className="col-span-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-lime-500 rounded-xl flex items-center justify-center shadow-sm">
-                      <span className="text-white font-bold text-sm">
-                        {client.company_name ? client.company_name.charAt(0).toUpperCase() : '?'}
-                      </span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">{client.company_name || 'Loading...'}</h4>
-                      <p className="text-sm text-gray-500">ID: {client.id.substring(0, 8)}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-2">
-                  <div>
-                    <p className="font-medium text-gray-900">{client.users?.name || 'Loading...'}</p>
-                    <p className="text-sm text-gray-500">
-                      {client.users?.name ? `${client.users.name.toLowerCase().replace(' ', '.')}@company.com` : 'Loading...'}
-                    </p>
-                  </div>
-                </div>
-                <div className="col-span-3">
-                  <div className="flex space-x-1">
-                    {platformOptions.map((platform) => {
-                      const auth = client.authorizations?.find?.(a => a.platform === platform.id);
-                      return (
-                        <div
-                          key={platform.id}
-                          className={`w-7 h-7 bg-gradient-to-br from-${platform.color}-400 to-${platform.color}-500 rounded-lg flex items-center justify-center shadow-sm relative`}
-                          title={`${platform.name}: ${auth?.status || 'Not connected'}`}
-                        >
-                          <span className="text-white font-bold text-xs">
-                            {platform.name.charAt(0)}
-                          </span>
-                          {auth?.status === 'authorized' && (
-                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
-                              <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
-                            </div>
-                          )}
-                          {auth?.status === 'pending' && (
-                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"></div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {client.authorizations?.filter?.(a => a.status === 'authorized').length || 0} of {client.authorizations?.length || 0} connected
-                  </p>
-                </div>
-                <div className="col-span-2">
-                  <span className="text-gray-900">
-                    {client.created_at ? new Date(client.created_at).toLocaleDateString() : '-'}
-                  </span>
-                </div>
-                <div className="col-span-1">
-                  <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
-                    <Eye className="w-4 h-4" />
-                  </button>
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900">Client Management</h3>
+            <div className="flex items-center space-x-3">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  value={clientSearchTerm}
+                  onChange={(e) => setClientSearchTerm(e.target.value)}
+                  placeholder="Search clients..."
+                  className="w-64 pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
+                />
+              </div>
+              {/* Filter Dropdown */}
+              <div className="relative">
+                <select
+                  value={selectedFilter}
+                  onChange={(e) => setSelectedFilter(e.target.value as 'all' | 'active' | 'inactive' | 'pending')}
+                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-8 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
+                >
+                  <option value="all">All Clients</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="pending">Pending</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
-          ))
+          </div>
+        </div>
+
+        {/* Clients Table */}
+        <div className="overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Platforms</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-100">
+              {filteredAndSortedClients().map((client) => (
+                <tr key={client.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center shadow-sm">
+                        <span className="text-white font-bold text-sm">
+                          {client.company_name ? client.company_name.charAt(0).toUpperCase() : '?'}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{client.company_name}</div>
+                        <div className="text-xs text-gray-500">Client ID: {client.id.substring(0, 8)}...</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-gray-900">{client.company_name}</div>
+                    <div className="text-xs text-gray-500">Company</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800 border border-teal-200">
+                      Active
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-wrap gap-1">
+                      <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
+                        Meta
+                      </span>
+                      <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
+                        Google
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {new Date(client.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        className="p-2 text-gray-400 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-colors"
+                        title="View details"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        className="p-2 text-gray-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
+                        title="Edit client"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button
+                        className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                        title="More options"
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Empty State */}
+        {filteredAndSortedClients().length === 0 && (
+          <div className="px-6 py-12 text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Users className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No clients found</h3>
+            <p className="text-gray-500">Clients will appear here once they complete onboarding.</p>
+          </div>
         )}
       </div>
     </div>

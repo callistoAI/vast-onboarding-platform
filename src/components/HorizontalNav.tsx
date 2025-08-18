@@ -40,7 +40,7 @@ export function HorizontalNav() {
               onClick={() => navigate(item.path)}
               className={`px-6 py-3 text-sm font-medium transition-all duration-200 relative ${
                 isActive
-                  ? 'text-green-600'
+                  ? 'text-indigo-600'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -48,7 +48,7 @@ export function HorizontalNav() {
             </button>
             {/* Active indicator line */}
             {isActive && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-green-500 to-lime-500 rounded-full"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-full"></div>
             )}
             {/* Hover indicator line */}
             {!isActive && (

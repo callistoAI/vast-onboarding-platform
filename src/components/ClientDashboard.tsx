@@ -201,7 +201,7 @@ export function ClientDashboard() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'authorized':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return <CheckCircle className="w-5 h-5 text-indigo-500" />;
       case 'pending':
         return <Clock className="w-5 h-5 text-orange-500" />;
       default:
@@ -212,7 +212,7 @@ export function ClientDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'authorized':
-        return 'text-green-700 bg-green-50 border-green-200';
+        return 'text-indigo-700 bg-indigo-50 border-indigo-200';
       case 'pending':
         return 'text-orange-700 bg-orange-50 border-orange-200';
       default:
@@ -251,10 +251,10 @@ export function ClientDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Connected</p>
-              <p className="text-3xl font-bold text-green-600">{authorizedCount}</p>
+              <p className="text-3xl font-bold text-teal-600">{authorizedCount}</p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-teal-600" />
             </div>
           </div>
         </div>
@@ -275,10 +275,10 @@ export function ClientDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Platforms</p>
-              <p className="text-3xl font-bold text-green-600">{authorizations.length}</p>
+              <p className="text-3xl font-bold text-cyan-600">{authorizations.length}</p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <Activity className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center">
+              <Activity className="w-6 h-6 text-cyan-600" />
             </div>
           </div>
         </div>
@@ -304,7 +304,7 @@ export function ClientDashboard() {
         </div>
         <div className="bg-gray-200 rounded-full h-3 mb-4">
           <div 
-            className="bg-gradient-to-r from-green-500 to-lime-600 rounded-full h-3 transition-all duration-500"
+            className="bg-gradient-to-r from-cyan-500 to-teal-600 rounded-full h-3 transition-all duration-500"
             style={{ width: `${completionRate}%` }}
           ></div>
         </div>
@@ -344,16 +344,16 @@ export function ClientDashboard() {
               </div>
 
               {status === 'pending' ? (
-                <button className="w-full bg-gradient-to-r from-green-500 to-lime-600 text-white py-3 px-4 rounded-xl font-medium hover:from-green-600 hover:to-lime-700 transition-all duration-200 flex items-center justify-center space-x-2">
+                <button className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white py-3 px-4 rounded-xl font-medium hover:from-sky-600 hover:to-blue-700 transition-all duration-200 flex items-center justify-center space-x-2">
                   <span>Authorize Access</span>
                   <ExternalLink className="w-4 h-4" />
                 </button>
               ) : (
                 <div className="space-y-3">
-                  <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                  <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
                     <div className="flex items-center space-x-2">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <p className="text-sm text-green-800 font-medium">
+                      <CheckCircle className="w-5 h-5 text-teal-600" />
+                      <p className="text-sm text-teal-800 font-medium">
                         Connected on {new Date(auth?.created_at || '').toLocaleDateString()}
                       </p>
                     </div>
@@ -374,8 +374,8 @@ export function ClientDashboard() {
       {/* Help Section */}
                 <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-6">
             <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Shield className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Shield className="w-6 h-6 text-purple-600" />
               </div>
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Need Help?</h3>
@@ -385,7 +385,7 @@ export function ClientDashboard() {
             <div className="flex space-x-3">
               <button 
                 onClick={() => setShowSupportForm(true)}
-                className="bg-gradient-to-r from-green-500 to-lime-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:from-green-600 hover:to-lime-700 transition-all duration-200"
+                className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:from-purple-600 hover:to-indigo-700 transition-all duration-200"
               >
                 Contact Support
               </button>
@@ -453,7 +453,7 @@ export function ClientDashboard() {
               </button>
               <button
                 onClick={handleSavePermissions}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-xl hover:from-green-600 hover:to-lime-700 font-medium transition-colors"
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl hover:from-sky-600 hover:to-blue-700 font-medium transition-colors"
               >
                 Save Changes
               </button>
@@ -478,8 +478,8 @@ export function ClientDashboard() {
             
             {supportSubmitted ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Send className="w-8 h-8 text-green-600" />
+                <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Send className="w-8 h-8 text-cyan-600" />
                 </div>
                 <h4 className="text-xl font-semibold text-gray-900 mb-2">Message Sent!</h4>
                 <p className="text-gray-600">Our support team will get back to you soon.</p>
@@ -493,7 +493,7 @@ export function ClientDashboard() {
                   value={supportMessage}
                   onChange={(e) => setSupportMessage(e.target.value)}
                   placeholder="Describe your issue or question..."
-                  className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none transition-colors"
+                  className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 resize-none transition-colors"
                 />
                 <div className="flex space-x-4 mt-6">
                   <button
@@ -505,7 +505,7 @@ export function ClientDashboard() {
                   <button
                     onClick={handleSubmitSupport}
                     disabled={submittingSupport || !supportMessage.trim()}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-lime-600 text-white rounded-xl hover:from-green-600 hover:to-lime-700 disabled:opacity-50 font-medium transition-colors flex items-center justify-center space-x-2"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-500 to-teal-600 text-white rounded-xl hover:from-cyan-600 hover:to-teal-700 disabled:opacity-50 font-medium transition-colors flex items-center justify-center space-x-2"
                   >
                     {submittingSupport ? (
                       <>

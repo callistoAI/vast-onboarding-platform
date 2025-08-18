@@ -38,9 +38,9 @@ export function Header() {
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-yellow-500 rounded-lg flex items-center justify-center shadow-sm hidden">
+              <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-lg flex items-center justify-center shadow-sm hidden">
               </div>
-              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-lime-500 rounded-lg flex items-center justify-center shadow-sm hidden">
+              <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-lg flex items-center justify-center shadow-sm hidden">
                 <span className="text-white font-bold text-sm">V</span>
               </div>
             </button>
