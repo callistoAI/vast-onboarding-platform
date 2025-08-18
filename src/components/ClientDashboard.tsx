@@ -256,56 +256,56 @@ export function ClientDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8 animate-in fade-in slide-in-from-left-4 duration-700">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 animate-in fade-in slide-in-from-left-4 duration-700">Dashboard</h1>
-        <p className="text-gray-600 animate-in fade-in slide-in-from-left-4 duration-700 delay-150">Manage your platform authorizations and view connection status</p>
+      <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-500">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+        <p className="text-gray-600">Manage your platform authorizations and view connection status</p>
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-2 transition-all duration-300 p-6 group">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Connected</p>
-              <p className="text-3xl font-bold text-teal-600 transition-all duration-500 group-hover:scale-110">{authorizedCount}</p>
+              <p className="text-3xl font-bold text-teal-600">{authorizedCount}</p>
             </div>
-            <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-teal-200">
+            <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
               <CheckCircle className="w-6 h-6 text-teal-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-2 transition-all duration-300 p-6 group">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Pending</p>
-              <p className="text-3xl font-bold text-orange-600 transition-all duration-500 group-hover:scale-110">{authorizations.length - authorizedCount}</p>
+              <p className="text-3xl font-bold text-orange-600">{authorizations.length - authorizedCount}</p>
             </div>
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-orange-200">
+            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
               <Clock className="w-6 h-6 text-orange-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-2 transition-all duration-300 p-6 group">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Platforms</p>
-              <p className="text-3xl font-bold text-cyan-600 transition-all duration-500 group-hover:scale-110">{authorizations.length}</p>
+              <p className="text-3xl font-bold text-cyan-600">{authorizations.length}</p>
             </div>
-            <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-cyan-200">
+            <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center">
               <Activity className="w-6 h-6 text-cyan-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-2 transition-all duration-300 p-6 group">
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Complete</p>
-              <p className="text-3xl font-bold text-purple-600 transition-all duration-500 group-hover:scale-110">{Math.round(completionRate)}%</p>
+              <p className="text-3xl font-bold text-purple-600">{Math.round(completionRate)}%</p>
             </div>
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-purple-200">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-purple-600" />
             </div>
           </div>
@@ -313,7 +313,7 @@ export function ClientDashboard() {
       </div>
 
       {/* Progress Overview */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 p-6 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Connection Progress</h3>
           <span className="text-sm font-medium text-gray-600">{Math.round(completionRate)}% Complete</span>
@@ -331,17 +331,17 @@ export function ClientDashboard() {
       </div>
 
       {/* Platform Authorizations */}
-      <div className="space-y-4 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-700">
+      <div className="space-y-4 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-400">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Platform Connections</h2>
         {Object.entries(platformConfigs).map(([platform, config]) => {
           const auth = authorizations.find(a => a.platform === platform);
           const status = auth?.status || 'pending';
           
           return (
-            <div key={platform} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6 group">
+            <div key={platform} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-4">
-                  <div className={`w-14 h-14 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl`}>
+                  <div className={`w-14 h-14 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-xl flex items-center justify-center shadow-lg`}>
                     <span className="text-white font-bold text-lg">
                       {config.name.charAt(0)}
                     </span>
@@ -360,7 +360,7 @@ export function ClientDashboard() {
               </div>
 
               {status === 'pending' ? (
-                <button className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white py-3 px-4 rounded-xl font-medium hover:from-sky-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2">
+                <button className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white py-3 px-4 rounded-xl font-medium hover:from-sky-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-2">
                   <span>Authorize Access</span>
                   <ExternalLink className="w-4 h-4" />
                 </button>
@@ -376,7 +376,7 @@ export function ClientDashboard() {
                   </div>
                   <button 
                     onClick={() => handleManageConnection(platform)}
-                    className="w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 hover:scale-105 transition-all duration-300"
+                    className="w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 hover:scale-105 transition-all duration-200"
                   >
                     Manage Connection
                   </button>
@@ -388,9 +388,9 @@ export function ClientDashboard() {
       </div>
 
       {/* Help Section */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 p-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-900 group">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 p-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-500">
             <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:bg-purple-200">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
                 <Shield className="w-6 h-6 text-purple-600" />
               </div>
           <div className="flex-1">
@@ -401,7 +401,7 @@ export function ClientDashboard() {
             <div className="flex space-x-3">
               <button 
                 onClick={() => setShowSupportForm(true)}
-                className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:from-purple-600 hover:to-indigo-700 hover:scale-105 hover:shadow-lg transition-all duration-300"
+                className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:from-purple-600 hover:to-indigo-700 hover:scale-105 hover:shadow-lg transition-all duration-200"
               >
                 Contact Support
               </button>
@@ -412,8 +412,8 @@ export function ClientDashboard() {
 
       {/* Manage Connection Modal */}
       {showManageConnection && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-4 duration-500">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl animate-in zoom-in-95 duration-300">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-semibold text-gray-900">
                 Manage {platformConfigs[showManageConnection as keyof typeof platformConfigs].name} Access
@@ -463,13 +463,13 @@ export function ClientDashboard() {
             <div className="flex space-x-4">
               <button
                 onClick={() => setShowManageConnection(null)}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:scale-105 font-medium transition-all duration-300"
+                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:scale-105 font-medium transition-all duration-200"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSavePermissions}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl hover:from-sky-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg font-medium transition-all duration-300"
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl hover:from-sky-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg font-medium transition-all duration-200"
               >
                 Save Changes
               </button>
@@ -480,8 +480,8 @@ export function ClientDashboard() {
 
       {/* Support Form Modal */}
       {showSupportForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-4 duration-500">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl animate-in zoom-in-95 duration-300">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-semibold text-gray-900">Contact Support</h3>
               <button
@@ -494,7 +494,7 @@ export function ClientDashboard() {
             
             {supportSubmitted ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-in zoom-in-95 duration-300">
                   <Send className="w-8 h-8 text-cyan-600" />
                 </div>
                 <h4 className="text-xl font-semibold text-gray-900 mb-2">Message Sent!</h4>
@@ -514,14 +514,14 @@ export function ClientDashboard() {
                 <div className="flex space-x-4 mt-6">
                   <button
                     onClick={() => setShowSupportForm(false)}
-                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:scale-105 font-medium transition-all duration-300"
+                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:scale-105 font-medium transition-all duration-200"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSubmitSupport}
                     disabled={submittingSupport || !supportMessage.trim()}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-500 to-teal-600 text-white rounded-xl hover:from-cyan-600 hover:to-teal-700 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:hover:scale-100 font-medium transition-all duration-300 flex items-center justify-center space-x-2"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-500 to-teal-600 text-white rounded-xl hover:from-cyan-600 hover:to-teal-700 hover:scale-105 hover:shadow-lg disabled:opacity-50 font-medium transition-all duration-200 flex items-center justify-center space-x-2"
                   >
                     {submittingSupport ? (
                       <>

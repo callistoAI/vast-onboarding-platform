@@ -53,8 +53,8 @@
     animation: zoomIn95 var(--duration, 0.5s) ease-out var(--delay, 0s);
   }
   
-  .zoom-in-50 {
-    animation: zoomIn50 var(--duration, 0.5s) ease-out var(--delay, 0s);
+  .duration-200 {
+    --duration: 0.2s;
   }
   
   .duration-300 {
@@ -65,18 +65,6 @@
     --duration: 0.5s;
   }
   
-  .duration-700 {
-    --duration: 0.7s;
-  }
-  
-  .duration-1000 {
-    --duration: 1s;
-  }
-  
-  .delay-150 {
-    --delay: 0.15s;
-  }
-  
   .delay-200 {
     --delay: 0.2s;
   }
@@ -85,16 +73,12 @@
     --delay: 0.3s;
   }
   
+  .delay-400 {
+    --delay: 0.4s;
+  }
+  
   .delay-500 {
     --delay: 0.5s;
-  }
-  
-  .delay-700 {
-    --delay: 0.7s;
-  }
-  
-  .delay-900 {
-    --delay: 0.9s;
   }
 }
 
@@ -186,17 +170,6 @@
   from {
     opacity: 0;
     transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes zoomIn50 {
-  from {
-    opacity: 0;
-    transform: scale(0.5);
   }
   to {
     opacity: 1;

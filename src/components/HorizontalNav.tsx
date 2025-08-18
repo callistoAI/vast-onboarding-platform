@@ -37,11 +37,11 @@ export function HorizontalNav() {
         return (
           <div
             key={item.path}
-            className="relative"
+            className="relative group"
           >
             <button
               onClick={() => navigate(item.path)}
-              className={`px-6 py-3 text-sm font-medium transition-all duration-300 relative hover:scale-105 ${
+              className={`px-6 py-3 text-sm font-medium transition-all duration-200 relative hover:scale-105 ${
                 isActive
                   ? 'text-indigo-600'
                   : 'text-gray-500 hover:text-gray-700'
@@ -51,11 +51,11 @@ export function HorizontalNav() {
             </button>
             {/* Active indicator line */}
             {isActive && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-full animate-in slide-in-from-left-full duration-500"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-full animate-in slide-in-from-left-full duration-300"></div>
             )}
             {/* Hover indicator line */}
             {!isActive && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-300 rounded-full opacity-0 hover:opacity-100 transition-all duration-300 hover:bg-gradient-to-r hover:from-gray-400 hover:to-gray-500"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-300 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200"></div>
             )}
           </div>
         );
