@@ -173,11 +173,11 @@ export function ClientSettingsTab() {
               <label className="block text-sm font-medium text-gray-900 mb-2">
                 Confirm New Password
               </label>
-              <div className="relative">
+                  value="test-client@example.com"
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                <button className="px-6 py-3 bg-cyan-600 text-white rounded-xl font-medium hover:bg-cyan-700 transition-colors">
                   className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
                   placeholder="Confirm new password"
                 />
@@ -288,6 +288,7 @@ export function ClientSettingsTab() {
                 <div>
                   <p className="text-lg font-medium text-gray-900">Sign in with Google</p>
                   <p className="text-sm text-gray-500">Connect your Google account for easier access</p>
+                  <p className="text-sm text-gray-500">Connect your Google account for easier access</p>
                 </div>
               </div>
               <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
@@ -296,8 +297,8 @@ export function ClientSettingsTab() {
             </div>
           </div>
         </div>
-      </div>
-
+          {/* User Email Section */}
+          <div className="pt-6 border-t border-gray-200">
       {/* Save Button */}
       <div className="flex justify-end">
         <button
