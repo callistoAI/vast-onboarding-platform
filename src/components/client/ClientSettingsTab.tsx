@@ -106,7 +106,7 @@ export function ClientSettingsTab() {
             </label>
             <input
               type="email"
-              defaultValue="test-client@example.com"
+              defaultValue="client@techflow.com"
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors"
             />
             <p className="text-sm text-gray-500 mt-2">
