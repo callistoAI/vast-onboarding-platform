@@ -788,11 +788,11 @@ export function ClientsTab() {
             <div className="col-span-1">
               <input type="checkbox" className="rounded border-gray-300" />
             </div>
-            <div className="col-span-3">Client</div>
-            <div className="col-span-2">Company</div>
+            <div className="col-span-3">Company</div>
+            <div className="col-span-2">Client</div>
             <div className="col-span-2">Status</div>
             <div className="col-span-2">Platforms</div>
-            <div className="col-span-2">Created</div>
+            <div className="col-span-2">Joined</div>
           </div>
         </div>
 
