@@ -650,10 +650,15 @@ export function ClientsTab() {
             client_id: '15',
             platform: 'tiktok' as const,
             status: 'authorized' as const,
+          const clientStatus = ['1', '3', '5', '7', '9', '11', '13', '15'].includes(client.id) 
+            ? 'active' 
+            : ['2', '4', '6', '8'].includes(client.id) 
+            ? 'pending' 
+            : 'inactive';
             scopes: [],
-            token_data: {},
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
+          if (selectedFilter === 'active') return clientStatus === 'active';
+          if (selectedFilter === 'pending') return clientStatus === 'pending';
+          if (selectedFilter === 'inactive') return clientStatus === 'inactive';
           },
         ],
       }
@@ -788,11 +793,11 @@ export function ClientsTab() {
             <div className="col-span-1">
               <input type="checkbox" className="rounded border-gray-300" />
             </div>
-            <div className="col-span-3">Client</div>
-            <div className="col-span-2">Company</div>
+            <div className="col-span-3">Company</div>
+            <div className="col-span-2">Client</div>
             <div className="col-span-2">Status</div>
             <div className="col-span-2">Platforms</div>
-            <div className="col-span-2">Created</div>
+            <div className="col-span-2">Joined</div>
           </div>
         </div>
 
@@ -833,15 +838,15 @@ export function ClientsTab() {
                   </div>
                   <div className="col-span-2">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                      client.id === '1' || client.id === '3' || client.id === '5' || client.id === '7' || client.id === '9' || client.id === '11' || client.id === '13' || client.id === '15'
-                        ? 'bg-teal-100 text-teal-700 border-teal-200'
-                        : client.id === '2' || client.id === '4' || client.id === '6' || client.id === '8'
+                      ['1', '3', '5', '7', '9', '11', '13', '15'].includes(client.id)
+                        ? 'bg-green-100 text-green-700 border-green-200'
+                        : ['2', '4', '6', '8'].includes(client.id)
                         ? 'bg-orange-100 text-orange-700 border-orange-200'
                         : 'bg-red-100 text-red-700 border-red-200'
                     }`}>
-                      {client.id === '1' || client.id === '3' || client.id === '5' || client.id === '7' || client.id === '9' || client.id === '11' || client.id === '13' || client.id === '15'
+                      {['1', '3', '5', '7', '9', '11', '13', '15'].includes(client.id)
                         ? 'Active'
-                        : client.id === '2' || client.id === '4' || client.id === '6' || client.id === '8'
+                        : ['2', '4', '6', '8'].includes(client.id)
                         ? 'Pending'
                         : 'Inactive'
                       }
