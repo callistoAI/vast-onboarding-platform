@@ -788,11 +788,11 @@ export function ClientsTab() {
             <div className="col-span-1">
               <input type="checkbox" className="rounded border-gray-300" />
             </div>
-            <div className="col-span-3">Company</div>
-            <div className="col-span-2">Client</div>
+            <div className="col-span-3">Client</div>
+            <div className="col-span-2">Company</div>
             <div className="col-span-2">Status</div>
             <div className="col-span-2">Platforms</div>
-            <div className="col-span-2">Joined</div>
+            <div className="col-span-2">Created</div>
           </div>
         </div>
 
@@ -832,8 +832,19 @@ export function ClientsTab() {
                     </div>
                   </div>
                   <div className="col-span-2">
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-teal-100 text-teal-700 border border-teal-200">
-                      Active
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                      client.id === '1' || client.id === '3' || client.id === '5' || client.id === '7' || client.id === '9' || client.id === '11' || client.id === '13' || client.id === '15'
+                        ? 'bg-teal-100 text-teal-700 border-teal-200'
+                        : client.id === '2' || client.id === '4' || client.id === '6' || client.id === '8'
+                        ? 'bg-orange-100 text-orange-700 border-orange-200'
+                        : 'bg-red-100 text-red-700 border-red-200'
+                    }`}>
+                      {client.id === '1' || client.id === '3' || client.id === '5' || client.id === '7' || client.id === '9' || client.id === '11' || client.id === '13' || client.id === '15'
+                        ? 'Active'
+                        : client.id === '2' || client.id === '4' || client.id === '6' || client.id === '8'
+                        ? 'Pending'
+                        : 'Inactive'
+                      }
                     </span>
                   </div>
                   <div className="col-span-2">
