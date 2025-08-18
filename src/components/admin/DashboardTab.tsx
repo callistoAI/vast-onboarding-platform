@@ -199,7 +199,7 @@ export function OnboardingLinksTab() {
         platforms: ['google', 'shopify'],
         expires_at: null,
         note: 'Analytics Dashboard',
-        status: 'used' as const,
+        status: 'expired' as const,
         link_token: 'analytics-dashboard-008',
         used_by: null,
         used_at: null,
@@ -703,11 +703,11 @@ export function OnboardingLinksTab() {
             
             {showFilterDropdown && (
               <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-10 min-w-32">
-                {['all', 'active', 'used', 'expired'].map((filter) => (
+                {['all', 'active', 'used', 'inactive'].map((filter) => (
                   <button
                     key={filter}
                     onClick={() => {
-                      setSelectedFilter(filter as 'all' | 'active' | 'used' | 'expired');
+                      setSelectedFilter(filter as 'all' | 'active' | 'used' | 'inactive');
                       setShowFilterDropdown(false);
                     }}
                     className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
