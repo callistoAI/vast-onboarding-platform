@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { AdminDashboard } from '../components/AdminDashboard';
 import { ClientDashboard } from '../components/ClientDashboard';
+import { ClientSettingsTab } from '../components/client/ClientSettingsTab';
 import { Layout } from '../components/Layout';
 
 export function DashboardPage() {
   const { profile, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!loading && !profile) {
@@ -25,7 +27,15 @@ export function DashboardPage() {
 
   return (
     <Layout>
-      {profile?.role === 'admin' ? <AdminDashboard /> : <ClientDashboard />}
+      {profile?.role === 'admin' ? (
+        <AdminDashboard />
+      ) : profile?.role === 'client' && location.pathname === '/client/settings' ? (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <ClientSettingsTab />
+        </div>
+      ) : (
+        <ClientDashboard />
+      )}
     </Layout>
   );
 }
