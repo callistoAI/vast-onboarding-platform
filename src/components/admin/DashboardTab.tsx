@@ -199,7 +199,7 @@ export function OnboardingLinksTab() {
         platforms: ['google', 'shopify'],
         expires_at: null,
         note: 'Analytics Dashboard',
-        status: 'expired' as const,
+        status: 'used' as const,
         link_token: 'analytics-dashboard-008',
         used_by: null,
         used_at: null,
