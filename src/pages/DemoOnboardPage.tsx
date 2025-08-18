@@ -153,7 +153,7 @@ export function DemoOnboardPage() {
               <img 
                 src="/vast-logo.png" 
                 alt="Platform Logo" 
-                className="w-10 h-10 rounded-xl object-cover shadow-sm"
+                className="w-28 h-28 object-contain mx-auto mb-6"
                 onError={(e) => {
                   // Fallback to letter logo if image fails to load
                   const target = e.target as HTMLImageElement;
@@ -161,7 +161,7 @@ export function DemoOnboardPage() {
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-pink-600 rounded-xl flex items-center justify-center shadow-sm hidden">
+              <div className="w-28 h-28 bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg flex items-center justify-center mx-auto mb-6 shadow-lg hidden">
                 <span className="text-white font-bold text-sm">V</span>
               </div>
               <h1 className="text-2xl font-bold text-gray-900">Vast Onboarding Demo</h1>

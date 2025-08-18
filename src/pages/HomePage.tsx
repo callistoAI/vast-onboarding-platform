@@ -53,17 +53,15 @@ export function HomePage() {
               <img 
                 src="/vast-logo.png" 
                 alt="Vast Logo" 
-                className="w-10 h-10 rounded-xl object-cover shadow-sm"
+                className="w-12 h-12 object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-xl flex items-center justify-center shadow-sm hidden">
-              <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-pink-500 rounded-lg flex items-center justify-center shadow-sm hidden">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg flex items-center justify-center shadow-sm hidden">
                 <span className="text-white font-bold">V</span>
-              </div>
               </div>
               <h1 className="text-2xl font-bold text-gray-900">Vast Onboarding</h1>
             </div>

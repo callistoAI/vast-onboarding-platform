@@ -25,20 +25,20 @@ export function Header() {
           <div className="flex items-center ml-8 flex-shrink-0">
             <button
               onClick={handleHome}
-              className="flex items-center space-x-3 hover:opacity-80 transition-opacity group"
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity group p-1"
               title="Home"
             >
               <img 
                 src="/vast-logo.png" 
                 alt="Vast Logo" 
-                className="w-8 h-8 object-cover"
+                className="w-10 h-10 object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-lime-500 flex items-center justify-center hidden">
+              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-lime-500 rounded-lg flex items-center justify-center hidden">
                 <span className="text-white font-bold text-sm">V</span>
               </div>
             </button>
