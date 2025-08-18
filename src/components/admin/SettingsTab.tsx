@@ -418,7 +418,7 @@ export function SettingsTab() {
                 <div key={platform} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
-                      <div className={`w-14 h-14 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-xl flex items-center justify-center shadow-lg`}>
+                      <div className={`w-14 h-14 rounded-xl flex items-center justify-center shadow-lg`} style={{ background: `linear-gradient(135deg, ${config.color}, ${config.color}dd)` }}>
                         <span className="text-white font-bold text-lg">
                           {config.name.charAt(0)}
                         </span>

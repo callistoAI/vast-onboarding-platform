@@ -6,13 +6,13 @@ import { Database } from '../../lib/database.types';
 type Client = Database['public']['Tables']['clients']['Row'] & {
   users: Database['public']['Tables']['users']['Row'];
   authorizations: Database['public']['Tables']['authorizations']['Row'][];
-};
+}
 
 const platformOptions = [
-  { id: 'meta', name: 'Meta Business', color: 'purple' },
-  { id: 'google', name: 'Google Ads', color: 'indigo' },
-  { id: 'tiktok', name: 'TikTok Ads', color: 'teal' },
-  { id: 'shopify', name: 'Shopify', color: 'cyan' }
+  { id: 'meta', name: 'Meta Business', color: '#6200EE' },
+  { id: 'google', name: 'Google Ads', color: '#3700B3' },
+  { id: 'tiktok', name: 'TikTok Ads', color: '#03DAC6' },
+  { id: 'shopify', name: 'Shopify', color: '#018786' }
 ];
 
 export function ClientsTab() {
@@ -649,7 +649,7 @@ export function ClientsTab() {
                           <div
                             key={platform.id}
                             className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-sm relative`}
-                            style={{ background: `linear-gradient(135deg, ${platform.color}, ${platform.color}dd)` }}
+                            style={{ background: `linear-gradient(135deg, ${platform.color}, ${platform.color}DD)` }}
                             title={`${platform.name}: ${auth?.status || 'Not connected'}`}
                           >
                             <span className="text-white font-bold text-xs">

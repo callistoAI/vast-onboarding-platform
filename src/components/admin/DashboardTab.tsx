@@ -345,7 +345,7 @@ export function OnboardingLinksTab() {
                               </div>
                             </div>
                             <div className="flex items-center space-x-3">
-                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm`} style={{ background: `linear-gradient(135deg, ${platform.color}, ${platform.color}dd)` }}>
+                              <div className={`w-10 h-10 bg-gradient-to-br from-${platform.color}-400 to-${platform.color}-500 rounded-xl flex items-center justify-center shadow-sm`}>
                                 <span className="text-white font-bold text-sm">
                                   {platform.name.charAt(0)}
                                 </span>
@@ -589,7 +589,8 @@ export function OnboardingLinksTab() {
                           return (
                             <div
                               key={platform}
-                              className={`w-6 h-6 bg-gradient-to-br from-${config?.color}-400 to-${config?.color}-500 rounded-full flex items-center justify-center shadow-sm`}
+                              className={`w-6 h-6 rounded-full flex items-center justify-center shadow-sm`}
+                              style={{ background: config?.color ? `linear-gradient(135deg, ${config.color}, ${config.color}dd)` : '#6b7280' }}
                               title={config?.name}
                             >
                               <span className="text-white font-bold text-xs">
