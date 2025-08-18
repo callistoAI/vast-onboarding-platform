@@ -9,7 +9,7 @@ type Authorization = Database['public']['Tables']['authorizations']['Row'];
 const platformConfigs = {
   meta: {
     name: 'Meta Business',
-    color: 'purple',
+    color: '[#6200EE]',
     description: 'Connect your Facebook and Instagram business accounts',
     permissions: [
       'Read and manage Facebook Pages',
@@ -20,7 +20,7 @@ const platformConfigs = {
   },
   google: {
     name: 'Google Ads',
-    color: 'indigo',
+    color: '[#3700B3]',
     description: 'Access Google Ads campaigns and analytics',
     permissions: [
       'View and manage Google Ads campaigns',
@@ -31,7 +31,7 @@ const platformConfigs = {
   },
   tiktok: {
     name: 'TikTok Ads',
-    color: 'teal',
+    color: '[#03DAC6]',
     description: 'Manage TikTok advertising campaigns',
     permissions: [
       'Create and manage TikTok ad campaigns',
@@ -42,7 +42,7 @@ const platformConfigs = {
   },
   shopify: {
     name: 'Shopify',
-    color: 'cyan',
+    color: '[#018786]',
     description: 'Connect your Shopify store data',
     permissions: [
       'Access Shopify store data',
