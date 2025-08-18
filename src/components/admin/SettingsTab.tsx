@@ -737,23 +737,8 @@ export function SettingsTab() {
           <p className="text-gray-600 text-sm mt-1">Manage your connected platform accounts and user information</p>
         </div>
         <div className="p-6 space-y-6">
-          {/* Connected Facebook Account */}
-          <div className="border border-gray-200 rounded-xl p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">f</span>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Connected Facebook Account</p>
-                  <p className="text-xl font-semibold text-gray-900">Henry Paquin</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Google Account */}
-          <div className="border border-gray-200 rounded-xl p-6">
+          <div className="border border-gray-200 rounded-xl p-6 mb-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="w-14 h-14 bg-white border border-gray-200 rounded-full flex items-center justify-center">
@@ -765,22 +750,17 @@ export function SettingsTab() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-lg font-medium text-gray-900">Google Account</p>
+                  <p className="text-lg font-medium text-gray-900">Sign in with Google</p>
                 </div>
               </div>
               <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                Link Google Account
+                Connect Google
               </button>
             </div>
           </div>
 
-          {/* User Information */}
-          <div className="space-y-6 pt-4 border-t border-gray-200">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">Joined Date</label>
-              <p className="text-2xl font-semibold text-gray-900">August 17th, 2025</p>
-            </div>
-
+          {/* User Email */}
+          <div className="pt-4 border-t border-gray-200">
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-2">User Email</label>
               <div className="flex space-x-3">
@@ -799,8 +779,7 @@ export function SettingsTab() {
                   <span className="text-white text-xs font-bold">i</span>
                 </div>
                 <p className="text-sm text-gray-600">
-                  This is where you will get updates about Leadsie. For connection notifications visit{' '}
-                  <a href="#" className="text-blue-600 hover:text-blue-700 underline">White-label Settings</a>.
+                  This is where you'll get updates about onboarding.
                 </p>
               </div>
             </div>
