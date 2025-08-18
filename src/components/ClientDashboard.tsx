@@ -96,7 +96,7 @@ export function ClientDashboard() {
   }, [profile?.role, fetchAuthorizations]);
 
   const setMockData = () => {
-    // Mock data for testing
+    // Expanded mock data for complete UI demonstration
     const mockAuthorizations = [
       {
         id: 'auth1',
@@ -138,6 +138,26 @@ export function ClientDashboard() {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },
+      {
+        id: 'auth5',
+        client_id: 'client1',
+        platform: 'meta' as const,
+        status: 'authorized' as const,
+        scopes: [],
+        token_data: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 'auth6',
+        client_id: 'client1',
+        platform: 'google' as const,
+        status: 'authorized' as const,
+        scopes: [],
+        token_data: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
     ] as Authorization[];
     
     setAuthorizations(mockAuthorizations);

@@ -116,6 +116,7 @@ export function SettingsTab() {
   }, []);
 
   const setMockInviteData = () => {
+    // Expanded mock invites for complete UI demonstration
     const mockInvites = [
       {
         id: '1',
@@ -171,6 +172,83 @@ export function SettingsTab() {
         expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
         updated_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      }
+      {
+        id: '6',
+        email: 'alex.thompson@creativestudio.com',
+        role: 'admin' as const,
+        status: 'active' as const,
+        invite_token: 'token303',
+        invited_by: 'admin1',
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '7',
+        email: 'jennifer.adams@futuretech.com',
+        role: 'editor' as const,
+        status: 'invited' as const,
+        invite_token: 'token404',
+        invited_by: 'admin1',
+        expires_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '8',
+        email: 'thomas.brown@peakperformance.com',
+        role: 'viewer' as const,
+        status: 'active' as const,
+        invite_token: 'token505',
+        invited_by: 'admin1',
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '9',
+        email: 'amanda.foster@urbanstyle.com',
+        role: 'editor' as const,
+        status: 'active' as const,
+        invite_token: 'token606',
+        invited_by: 'admin1',
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '10',
+        email: 'kevin.wright@velocitydigital.com',
+        role: 'viewer' as const,
+        status: 'invited' as const,
+        invite_token: 'token707',
+        invited_by: 'admin1',
+        expires_at: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '11',
+        email: 'rachel.green@horizonbusiness.com',
+        role: 'admin' as const,
+        status: 'active' as const,
+        invite_token: 'token808',
+        invited_by: 'admin1',
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '12',
+        email: 'mark.davis@innovativedesign.com',
+        role: 'editor' as const,
+        status: 'invited' as const,
+        invite_token: 'token909',
+        invited_by: 'admin1',
+        expires_at: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
       }
     ] as TeamInvite[];
     

@@ -100,7 +100,7 @@ export function OnboardingLinksTab() {
   }, [fetchData]);
 
   const setMockData = () => {
-    // Enhanced mock links with more variety and different statuses
+    // Enhanced mock links with more variety and different statuses - expanded for complete UI
     const mockLinks = [
       {
         id: '1',
@@ -219,6 +219,84 @@ export function OnboardingLinksTab() {
         created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
         updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       },
+      {
+        id: '10',
+        created_by: 'admin1',
+        platforms: ['meta', 'google', 'shopify'],
+        expires_at: null,
+        note: 'Enterprise Package',
+        status: 'active' as const,
+        link_token: 'enterprise-pkg-010',
+        used_by: null,
+        used_at: null,
+        created_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '11',
+        created_by: 'admin1',
+        platforms: ['tiktok'],
+        expires_at: null,
+        note: 'TikTok Specialist',
+        status: 'used' as const,
+        link_token: 'tiktok-specialist-011',
+        used_by: 'client4',
+        used_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '12',
+        created_by: 'admin1',
+        platforms: ['google', 'shopify'],
+        expires_at: null,
+        note: 'E-commerce Analytics',
+        status: 'active' as const,
+        link_token: 'ecommerce-analytics-012',
+        used_by: null,
+        used_at: null,
+        created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '13',
+        created_by: 'admin1',
+        platforms: ['meta', 'tiktok'],
+        expires_at: null,
+        note: 'Social Media Pro',
+        status: 'expired' as const,
+        link_token: 'social-media-pro-013',
+        used_by: null,
+        used_at: null,
+        created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '14',
+        created_by: 'admin1',
+        platforms: ['shopify'],
+        expires_at: null,
+        note: 'Store Management',
+        status: 'used' as const,
+        link_token: 'store-management-014',
+        used_by: 'client5',
+        used_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: '15',
+        created_by: 'admin1',
+        platforms: ['meta', 'google', 'tiktok', 'shopify'],
+        expires_at: null,
+        note: 'Complete Digital Suite',
+        status: 'active' as const,
+        link_token: 'complete-digital-015',
+        used_by: null,
+        used_at: null,
+        created_at: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(),
+      }
     ] as OnboardingLink[];
 
     setLinks(mockLinks);
