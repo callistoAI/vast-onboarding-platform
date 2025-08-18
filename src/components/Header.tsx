@@ -18,27 +18,27 @@ export function Header() {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50 min-h-[64px]">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50 min-h-[64px] backdrop-blur-sm bg-white/95">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center h-16 min-w-0">
           {/* Left side - Logo */}
           <div className="flex items-center flex-shrink-0">
             <button
               onClick={handleHome}
-              className="flex items-center space-x-3 hover:opacity-80 transition-opacity group p-1"
+              className="flex items-center space-x-3 hover:opacity-80 hover:scale-105 transition-all duration-300 group p-1"
               title="Home"
             >
               <img 
                 src="/vast-logo.png" 
                 alt="Vast Logo" 
-                className="w-10 h-10 object-contain"
+                className="w-10 h-10 object-contain transition-transform duration-300 group-hover:rotate-12"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-lime-500 rounded-lg flex items-center justify-center hidden">
+              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-lime-500 rounded-lg flex items-center justify-center hidden transition-transform duration-300 group-hover:rotate-12">
                 <span className="text-white font-bold text-sm">V</span>
               </div>
             </button>
@@ -56,8 +56,8 @@ export function Header() {
             {profile && (
               <>
                 <div className="relative group">
-                  <button className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 transition-colors">
-                    <div className="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full flex items-center justify-center">
+                  <button className="flex items-center space-x-2 p-1 rounded-lg hover:bg-gray-100 hover:scale-105 transition-all duration-300">
+                    <div className="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110">
                       <span className="text-sm font-semibold text-white">
                         {profile.name?.charAt(0)?.toUpperCase()}
                       </span>
@@ -65,14 +65,14 @@ export function Header() {
                   </button>
                   
                   {/* Dropdown Menu */}
-                  <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-lg shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 min-w-48">
+                  <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-lg shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10 min-w-48 animate-in slide-in-from-top-2 group-hover:animate-none">
                     <div className="px-4 py-2 border-b border-gray-100">
                       <p className="text-sm font-medium text-gray-900">{profile.name}</p>
                       <p className="text-xs text-gray-500 capitalize">{profile.role}</p>
                     </div>
                     <button
                       onClick={handleSignOut}
-                      className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:translate-x-1 transition-all duration-200"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Sign Out</span>
