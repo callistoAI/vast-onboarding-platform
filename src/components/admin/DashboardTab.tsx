@@ -345,7 +345,7 @@ export function OnboardingLinksTab() {
                               </div>
                             </div>
                             <div className="flex items-center space-x-3">
-                              <div className={`w-10 h-10 bg-gradient-to-br from-${platform.color}-400 to-${platform.color}-500 rounded-xl flex items-center justify-center shadow-sm`}>
+                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm`} style={{ background: `linear-gradient(135deg, ${platform.color}, ${platform.color}dd)` }}>
                                 <span className="text-white font-bold text-sm">
                                   {platform.name.charAt(0)}
                                 </span>

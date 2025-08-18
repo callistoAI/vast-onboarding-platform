@@ -9,7 +9,7 @@ type Authorization = Database['public']['Tables']['authorizations']['Row'];
 const platformConfigs = {
   meta: {
     name: 'Meta Business',
-    color: '[#6200EE]',
+    color: '#6200EE',
     description: 'Connect your Facebook and Instagram business accounts',
     permissions: [
       'Read and manage Facebook Pages',
@@ -20,7 +20,7 @@ const platformConfigs = {
   },
   google: {
     name: 'Google Ads',
-    color: '[#3700B3]',
+    color: '#3700B3',
     description: 'Access Google Ads campaigns and analytics',
     permissions: [
       'View and manage Google Ads campaigns',
@@ -31,7 +31,7 @@ const platformConfigs = {
   },
   tiktok: {
     name: 'TikTok Ads',
-    color: '[#03DAC6]',
+    color: '#03DAC6',
     description: 'Manage TikTok advertising campaigns',
     permissions: [
       'Create and manage TikTok ad campaigns',
@@ -42,7 +42,7 @@ const platformConfigs = {
   },
   shopify: {
     name: 'Shopify',
-    color: '[#018786]',
+    color: '#018786',
     description: 'Connect your Shopify store data',
     permissions: [
       'Access Shopify store data',
@@ -325,7 +325,7 @@ export function ClientDashboard() {
             <div key={platform} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-4">
-                  <div className={`w-14 h-14 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-xl flex items-center justify-center shadow-lg`}>
+                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center shadow-lg`} style={{ background: `linear-gradient(135deg, ${config.color}, ${config.color}dd)` }}>
                     <span className="text-white font-bold text-lg">
                       {config.name.charAt(0)}
                     </span>

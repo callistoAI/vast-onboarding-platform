@@ -648,7 +648,8 @@ export function ClientsTab() {
                         return (
                           <div
                             key={platform.id}
-                            className={`w-7 h-7 bg-gradient-to-br from-${platform.color}-400 to-${platform.color}-500 rounded-lg flex items-center justify-center shadow-sm relative`}
+                            className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-sm relative`}
+                            style={{ background: `linear-gradient(135deg, ${platform.color}, ${platform.color}dd)` }}
                             title={`${platform.name}: ${auth?.status || 'Not connected'}`}
                           >
                             <span className="text-white font-bold text-xs">
