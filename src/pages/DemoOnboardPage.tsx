@@ -50,29 +50,31 @@ const platformConfigs = {
   }
 };
 
-type Step = 'intro' | 'platform' | 'complete';
+type Step = 'intro' | 'meta' | 'google' | 'tiktok' | 'shopify' | 'complete';
 type PlatformStatus = 'pending' | 'connecting' | 'connected' | 'rejected';
+type PlatformPhase = 'connect' | 'permissions';
 
+const stepOrder: Step[] = ['intro', 'meta', 'google', 'tiktok', 'shopify', 'complete'];
 const platformOrder = ['meta', 'google', 'tiktok', 'shopify'];
 
 export function DemoOnboardPage() {
   const navigate = useNavigate();
   const { setTestUser } = useAuth();
   const [currentStep, setCurrentStep] = useState<Step>('intro');
-  const [currentPlatformIndex, setCurrentPlatformIndex] = useState(0);
   const [platformStatuses, setPlatformStatuses] = useState<Record<string, PlatformStatus>>({
     meta: 'pending',
     google: 'pending',
     tiktok: 'pending',
     shopify: 'pending'
   });
+  const [platformPhases, setPlatformPhases] = useState<Record<string, PlatformPhase>>({
+    meta: 'connect',
+    google: 'connect',
+    tiktok: 'connect',
+    shopify: 'connect'
+  });
   const [platformPermissions, setPlatformPermissions] = useState<Record<string, Record<string, boolean>>>({});
   const [isConnecting, setIsConnecting] = useState(false);
-  const [showPermissions, setShowPermissions] = useState(false);
-
-  const currentPlatform = platformOrder[currentPlatformIndex];
-  const currentConfig = platformConfigs[currentPlatform as keyof typeof platformConfigs];
-  const isLastPlatform = currentPlatformIndex === platformOrder.length - 1;
 
   // Get platforms that will be connected
   const getPlatformsText = () => {
@@ -84,90 +86,93 @@ export function DemoOnboardPage() {
 
   // Calculate progress steps
   const getProgressSteps = () => {
-    if (currentStep === 'intro') {
-      return [
-        { label: 'Connect Platforms', active: true, completed: false },
-        { label: 'Authorize Access', active: false, completed: false },
-        { label: 'Complete Setup', active: false, completed: false }
-      ];
-    } else if (currentStep === 'platform') {
-      const connectCompleted = currentPlatformIndex > 0 || showPermissions;
-      return [
-        { label: 'Connect Platforms', active: !showPermissions, completed: connectCompleted },
-        { label: 'Authorize Access', active: showPermissions, completed: false },
-        { label: 'Complete Setup', active: false, completed: false }
-      ];
-    } else {
-      return [
-        { label: 'Connect Platforms', active: false, completed: true },
-        { label: 'Authorize Access', active: false, completed: true },
-        { label: 'Complete Setup', active: true, completed: true }
-      ];
-    }
+    const steps = [
+      { id: 'meta', label: 'Meta', number: 1 },
+      { id: 'google', label: 'Google', number: 2 },
+      { id: 'tiktok', label: 'TikTok', number: 3 },
+      { id: 'shopify', label: 'Shopify', number: 4 },
+      { id: 'complete', label: 'Complete Setup', number: 5 }
+    ];
+
+    return steps.map(step => {
+      if (currentStep === 'intro') {
+        return { ...step, active: false, completed: false };
+      }
+      
+      const currentIndex = stepOrder.indexOf(currentStep);
+      const stepIndex = stepOrder.indexOf(step.id as Step);
+      
+      return {
+        ...step,
+        active: currentStep === step.id,
+        completed: stepIndex < currentIndex
+      };
+    });
   };
 
   const handleStartDemo = () => {
-    setCurrentStep('platform');
+    setCurrentStep('meta');
   };
 
-  const handleConnectPlatform = () => {
+  const handleConnectPlatform = (platform: string) => {
     setIsConnecting(true);
-    setPlatformStatuses(prev => ({ ...prev, [currentPlatform]: 'connecting' }));
+    setPlatformStatuses(prev => ({ ...prev, [platform]: 'connecting' }));
     
     // Simulate connection delay
     setTimeout(() => {
-      setPlatformStatuses(prev => ({ ...prev, [currentPlatform]: 'connected' }));
+      setPlatformStatuses(prev => ({ ...prev, [platform]: 'connected' }));
       
       // Initialize permissions for this platform (all granted by default)
+      const config = platformConfigs[platform as keyof typeof platformConfigs];
       const permissions: Record<string, boolean> = {};
-      currentConfig.permissions.forEach(permission => {
+      config.permissions.forEach(permission => {
         permissions[permission] = true;
       });
-      setPlatformPermissions(prev => ({ ...prev, [currentPlatform]: permissions }));
+      setPlatformPermissions(prev => ({ ...prev, [platform]: permissions }));
       
       setIsConnecting(false);
-      setShowPermissions(true);
+      setPlatformPhases(prev => ({ ...prev, [platform]: 'permissions' }));
     }, 2000);
   };
 
-  const handleRejectPlatform = () => {
-    setPlatformStatuses(prev => ({ ...prev, [currentPlatform]: 'rejected' }));
+  const handleRejectPlatform = (platform: string) => {
+    setPlatformStatuses(prev => ({ ...prev, [platform]: 'rejected' }));
     handleContinue();
   };
 
-  const handlePermissionChange = (permission: string, granted: boolean) => {
+  const handlePermissionChange = (platform: string, permission: string, granted: boolean) => {
     setPlatformPermissions(prev => ({
       ...prev,
-      [currentPlatform]: {
-        ...prev[currentPlatform],
+      [platform]: {
+        ...prev[platform],
         [permission]: granted
       }
     }));
   };
 
   const handleBack = () => {
-    if (currentStep === 'platform' && currentPlatformIndex > 0) {
-      setCurrentPlatformIndex(prev => prev - 1);
-      setShowPermissions(platformStatuses[platformOrder[currentPlatformIndex - 1]] === 'connected');
-    } else if (currentStep === 'platform' && currentPlatformIndex === 0) {
-      setCurrentStep('intro');
-    } else if (currentStep === 'complete') {
-      setCurrentStep('platform');
-      setCurrentPlatformIndex(platformOrder.length - 1);
-      setShowPermissions(true);
+    const currentIndex = stepOrder.indexOf(currentStep);
+    if (currentIndex > 0) {
+      const previousStep = stepOrder[currentIndex - 1];
+      setCurrentStep(previousStep);
+      
+      // Reset platform phase if going back to a platform step
+      if (platformOrder.includes(previousStep)) {
+        const platformStatus = platformStatuses[previousStep];
+        if (platformStatus === 'connected') {
+          setPlatformPhases(prev => ({ ...prev, [previousStep]: 'permissions' }));
+        } else {
+          setPlatformPhases(prev => ({ ...prev, [previousStep]: 'connect' }));
+        }
+      }
     }
   };
 
   const handleContinue = () => {
-    if (currentStep === 'intro') {
-      setCurrentStep('platform');
-    } else if (currentStep === 'platform') {
-      if (isLastPlatform) {
-        setCurrentStep('complete');
-      } else {
-        setCurrentPlatformIndex(prev => prev + 1);
-        setShowPermissions(false);
-      }
+    const currentIndex = stepOrder.indexOf(currentStep);
+    if (currentIndex < stepOrder.length - 1) {
+      const nextStep = stepOrder[currentIndex + 1];
+      setCurrentStep(nextStep);
     }
   };
 
@@ -177,6 +182,106 @@ export function DemoOnboardPage() {
   };
 
   const progressSteps = getProgressSteps();
+
+  const renderPlatformStep = (platform: string) => {
+    const config = platformConfigs[platform as keyof typeof platformConfigs];
+    const status = platformStatuses[platform];
+    const phase = platformPhases[platform];
+
+    return (
+      <div className="text-center">
+        {/* Platform Icon and Info */}
+        <div className="mb-8">
+          <div className={`w-20 h-20 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+            <span className="text-white font-bold text-2xl">{config.name.charAt(0)}</span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{config.name}</h2>
+          <p className="text-gray-600">{config.description}</p>
+        </div>
+
+        {phase === 'connect' ? (
+          // Connection Phase
+          <div className="bg-white rounded-xl border border-gray-200 p-8 mb-8 max-w-md mx-auto">
+            {status === 'pending' && !isConnecting && (
+              <div className="space-y-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-blue-800 font-medium">Ready to connect {config.name}</p>
+                </div>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => handleConnectPlatform(platform)}
+                    className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-black transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <span>Connect</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleRejectPlatform(platform)}
+                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                  >
+                    Skip
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {isConnecting && (
+              <div className="py-8">
+                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-blue-700 font-medium">Connecting to {config.name}...</p>
+              </div>
+            )}
+
+            {status === 'connected' && phase === 'connect' && (
+              <div className="py-8">
+                <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                <p className="text-green-700 font-medium">Successfully connected!</p>
+              </div>
+            )}
+
+            {status === 'rejected' && (
+              <div className="py-8">
+                <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+                <p className="text-orange-700 font-medium">Connection skipped</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          // Permissions Phase
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8 max-w-lg mx-auto">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Grant Access Permissions</h3>
+            <div className="space-y-3 text-left">
+              {config.permissions.map((permission) => (
+                <label key={permission} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={platformPermissions[platform]?.[permission] || false}
+                      onChange={(e) => handlePermissionChange(platform, permission, e.target.checked)}
+                      className="sr-only"
+                    />
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                      platformPermissions[platform]?.[permission]
+                        ? `bg-${config.color}-500 border-${config.color}-500`
+                        : 'border-gray-300 bg-white hover:border-gray-400'
+                    }`}>
+                      {platformPermissions[platform]?.[permission] && (
+                        <CheckCircle className="w-3 h-3 text-white" />
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3 flex-1">
+                    <Shield className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-900 text-sm">{permission}</span>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -200,6 +305,45 @@ export function DemoOnboardPage() {
         </div>
       </header>
 
+      {/* Progress Bar */}
+      <div className="bg-white border-b border-gray-200 py-6 flex-shrink-0">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex items-center justify-center space-x-8">
+            {progressSteps.map((step, index) => (
+              <div key={step.id} className="flex items-center">
+                <div className="flex flex-col items-center">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mb-2 transition-all ${
+                    step.completed 
+                      ? 'bg-purple-600 text-white' 
+                      : step.active 
+                      ? 'bg-purple-100 text-purple-600 border-2 border-purple-600' 
+                      : 'bg-gray-200 text-gray-500'
+                  }`}>
+                    {step.completed ? (
+                      <CheckCircle className="w-5 h-5" />
+                    ) : (
+                      step.number
+                    )}
+                  </div>
+                  <span className={`text-sm font-medium ${
+                    step.active ? 'text-purple-600' : step.completed ? 'text-purple-600' : 'text-gray-400'
+                  }`}>
+                    {step.label}
+                  </span>
+                </div>
+                {index < progressSteps.length - 1 && (
+                  <div className={`w-16 h-0.5 mx-4 transition-all ${
+                    progressSteps[index + 1].completed || progressSteps[index + 1].active 
+                      ? 'bg-purple-600' 
+                      : 'bg-gray-300'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-8">
         <div className="max-w-2xl w-full">
@@ -207,243 +351,41 @@ export function DemoOnboardPage() {
           {currentStep === 'intro' && (
             <div className="text-center">
               {/* Logo */}
-              <div className="w-24 h-24 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-400 via-pink-500 to-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">V</span>
+              <div className="w-32 h-32 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-12 shadow-xl relative">
+                <div className="w-24 h-24 bg-gradient-to-br from-orange-400 via-pink-500 to-blue-500 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-2xl">V</span>
                 </div>
               </div>
               
               {/* Main Message */}
-              <h1 className="text-3xl font-bold text-gray-900 mb-12 leading-tight">
+              <h1 className="text-4xl font-bold text-gray-900 mb-16 leading-tight">
                 Vast would like to manage your {getPlatformsText()}
               </h1>
-              
-              {/* Progress Steps */}
-              <div className="mb-12">
-                <div className="flex items-center justify-center space-x-8 mb-4">
-                  {progressSteps.map((step, index) => (
-                    <div key={index} className="flex items-center">
-                      <div className="flex flex-col items-center">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mb-2 ${
-                          step.completed 
-                            ? 'bg-purple-600 text-white' 
-                            : step.active 
-                            ? 'bg-purple-100 text-purple-600 border-2 border-purple-600' 
-                            : 'bg-gray-200 text-gray-500'
-                        }`}>
-                          {step.completed ? (
-                            <CheckCircle className="w-4 h-4" />
-                          ) : (
-                            index + 1
-                          )}
-                        </div>
-                        <span className={`text-sm font-medium ${
-                          step.active ? 'text-purple-600' : step.completed ? 'text-purple-600' : 'text-gray-400'
-                        }`}>
-                          {step.label}
-                        </span>
-                      </div>
-                      {index < progressSteps.length - 1 && (
-                        <div className={`w-16 h-0.5 mx-4 ${
-                          progressSteps[index + 1].completed || progressSteps[index + 1].active 
-                            ? 'bg-purple-600' 
-                            : 'bg-gray-300'
-                        }`} />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           )}
 
-          {/* Platform Step */}
-          {currentStep === 'platform' && (
-            <div className="text-center">
-              {/* Progress Steps */}
-              <div className="mb-8">
-                <div className="flex items-center justify-center space-x-8 mb-6">
-                  {progressSteps.map((step, index) => (
-                    <div key={index} className="flex items-center">
-                      <div className="flex flex-col items-center">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mb-2 ${
-                          step.completed 
-                            ? 'bg-purple-600 text-white' 
-                            : step.active 
-                            ? 'bg-purple-100 text-purple-600 border-2 border-purple-600' 
-                            : 'bg-gray-200 text-gray-500'
-                        }`}>
-                          {step.completed ? (
-                            <CheckCircle className="w-4 h-4" />
-                          ) : (
-                            index + 1
-                          )}
-                        </div>
-                        <span className={`text-sm font-medium ${
-                          step.active ? 'text-purple-600' : step.completed ? 'text-purple-600' : 'text-gray-400'
-                        }`}>
-                          {step.label}
-                        </span>
-                      </div>
-                      {index < progressSteps.length - 1 && (
-                        <div className={`w-16 h-0.5 mx-4 ${
-                          progressSteps[index + 1].completed || progressSteps[index + 1].active 
-                            ? 'bg-purple-600' 
-                            : 'bg-gray-300'
-                        }`} />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <div className={`w-16 h-16 bg-gradient-to-br from-${currentConfig.color}-400 to-${currentConfig.color}-500 rounded-2xl flex items-center justify-center mx-auto mb-4`}>
-                  <span className="text-white font-bold text-xl">{currentConfig.name.charAt(0)}</span>
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">{currentConfig.name}</h2>
-                <p className="text-gray-600">{currentConfig.description}</p>
-              </div>
-
-              {!showPermissions ? (
-                // Connection Phase
-                <div className="bg-white rounded-xl border border-gray-200 p-8 mb-6">
-                  {platformStatuses[currentPlatform] === 'pending' && !isConnecting && (
-                    <div className="space-y-6">
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <p className="text-blue-800 font-medium">Ready to connect {currentConfig.name}</p>
-                      </div>
-                      <div className="flex space-x-3">
-                        <button
-                          onClick={handleConnectPlatform}
-                          className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-black transition-colors flex items-center justify-center space-x-2"
-                        >
-                          <span>Connect</span>
-                          <ExternalLink className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={handleRejectPlatform}
-                          className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-                        >
-                          Skip
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {isConnecting && (
-                    <div className="py-8">
-                      <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                      <p className="text-blue-700 font-medium">Connecting to {currentConfig.name}...</p>
-                    </div>
-                  )}
-
-                  {platformStatuses[currentPlatform] === 'connected' && !showPermissions && (
-                    <div className="py-8">
-                      <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                      <p className="text-green-700 font-medium">Successfully connected!</p>
-                    </div>
-                  )}
-
-                  {platformStatuses[currentPlatform] === 'rejected' && (
-                    <div className="py-8">
-                      <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
-                      <p className="text-orange-700 font-medium">Connection skipped</p>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                // Permissions Phase
-                <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Review Permissions</h3>
-                  <div className="space-y-3">
-                    {currentConfig.permissions.map((permission) => (
-                      <label key={permission} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                        <div className="relative">
-                          <input
-                            type="checkbox"
-                            checked={platformPermissions[currentPlatform]?.[permission] || false}
-                            onChange={(e) => handlePermissionChange(permission, e.target.checked)}
-                            className="sr-only"
-                          />
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                            platformPermissions[currentPlatform]?.[permission]
-                              ? `bg-${currentConfig.color}-500 border-${currentConfig.color}-500`
-                              : 'border-gray-300 bg-white hover:border-gray-400'
-                          }`}>
-                            {platformPermissions[currentPlatform]?.[permission] && (
-                              <CheckCircle className="w-3 h-3 text-white" />
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-3 flex-1 text-left">
-                          <Shield className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-900 text-sm">{permission}</span>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          {/* Platform Steps */}
+          {platformOrder.includes(currentStep) && renderPlatformStep(currentStep)}
 
           {/* Complete Step */}
           {currentStep === 'complete' && (
             <div className="text-center">
-              {/* Progress Steps */}
-              <div className="mb-8">
-                <div className="flex items-center justify-center space-x-8 mb-6">
-                  {progressSteps.map((step, index) => (
-                    <div key={index} className="flex items-center">
-                      <div className="flex flex-col items-center">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mb-2 ${
-                          step.completed 
-                            ? 'bg-purple-600 text-white' 
-                            : step.active 
-                            ? 'bg-purple-100 text-purple-600 border-2 border-purple-600' 
-                            : 'bg-gray-200 text-gray-500'
-                        }`}>
-                          {step.completed ? (
-                            <CheckCircle className="w-4 h-4" />
-                          ) : (
-                            index + 1
-                          )}
-                        </div>
-                        <span className={`text-sm font-medium ${
-                          step.active ? 'text-purple-600' : step.completed ? 'text-purple-600' : 'text-gray-400'
-                        }`}>
-                          {step.label}
-                        </span>
-                      </div>
-                      {index < progressSteps.length - 1 && (
-                        <div className={`w-16 h-0.5 mx-4 ${
-                          progressSteps[index + 1].completed || progressSteps[index + 1].active 
-                            ? 'bg-purple-600' 
-                            : 'bg-gray-300'
-                        }`} />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-6" />
+              <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-8" />
               <h1 className="text-3xl font-bold text-gray-900 mb-4">Setup Complete!</h1>
-              <p className="text-lg text-gray-600 mb-8">
+              <p className="text-lg text-gray-600 mb-12">
                 Your platforms are connected and ready to use.
               </p>
               
-              <div className="grid grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-4 gap-6 mb-12 max-w-md mx-auto">
                 {platformOrder.map((platform) => {
                   const config = platformConfigs[platform as keyof typeof platformConfigs];
                   const status = platformStatuses[platform];
                   return (
                     <div key={platform} className="text-center">
-                      <div className={`w-12 h-12 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-xl flex items-center justify-center mx-auto mb-2 relative`}>
-                        <span className="text-white font-bold">{config.name.charAt(0)}</span>
+                      <div className={`w-16 h-16 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-xl flex items-center justify-center mx-auto mb-3 relative shadow-lg`}>
+                        <span className="text-white font-bold text-lg">{config.name.charAt(0)}</span>
                         {status === 'connected' && (
-                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
                             <CheckCircle className="w-3 h-3 text-white" />
                           </div>
                         )}
@@ -460,8 +402,8 @@ export function DemoOnboardPage() {
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8">
-            {(currentStep === 'platform' || currentStep === 'complete') && (
+          <div className="flex justify-between mt-12">
+            {currentStep !== 'intro' && (
               <button
                 onClick={handleBack}
                 className="flex items-center space-x-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
@@ -474,7 +416,7 @@ export function DemoOnboardPage() {
             {currentStep === 'intro' && (
               <div className="w-full flex justify-center">
                 <button
-                  onClick={handleContinue}
+                  onClick={handleStartDemo}
                   className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-8 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-purple-800 transition-colors"
                 >
                   <span>Continue</span>
@@ -483,12 +425,13 @@ export function DemoOnboardPage() {
               </div>
             )}
             
-            {currentStep === 'platform' && (showPermissions || platformStatuses[currentPlatform] === 'rejected') && (
+            {platformOrder.includes(currentStep) && (
               <button
                 onClick={handleContinue}
-                className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-purple-800 transition-colors ml-auto"
+                disabled={platformStatuses[currentStep] === 'pending' || (platformStatuses[currentStep] === 'connected' && platformPhases[currentStep] === 'connect')}
+                className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-purple-800 transition-colors ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span>{isLastPlatform ? 'Complete' : 'Continue'}</span>
+                <span>Continue</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}
