@@ -403,7 +403,12 @@ export function OnboardingLinksTab() {
     
     // Apply status filter
     if (selectedFilter !== 'all') {
-      filtered = filtered.filter(link => link.status === selectedFilter);
+      if (selectedFilter === 'inactive') {
+        // Show links that are neither active nor used (placeholder for inactive state)
+        filtered = filtered.filter(link => link.status !== 'active' && link.status !== 'used');
+      } else {
+        filtered = filtered.filter(link => link.status === selectedFilter);
+      }
     }
     
     return filtered.filter(link => {
