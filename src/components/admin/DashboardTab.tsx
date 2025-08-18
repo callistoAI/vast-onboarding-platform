@@ -403,7 +403,12 @@ export function OnboardingLinksTab() {
     
     // Apply status filter
     if (selectedFilter !== 'all') {
-      filtered = filtered.filter(link => link.status === selectedFilter);
+      if (selectedFilter === 'inactive') {
+        // Show links that are neither active nor used (placeholder for inactive state)
+        filtered = filtered.filter(link => link.status !== 'active' && link.status !== 'used');
+      } else {
+        filtered = filtered.filter(link => link.status === selectedFilter);
+      }
     }
     
     return filtered.filter(link => {
@@ -703,11 +708,11 @@ export function OnboardingLinksTab() {
             
             {showFilterDropdown && (
               <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-lg shadow-lg py-2 z-10 min-w-32">
-                {['all', 'active', 'used', 'inactive'].map((filter) => (
+                {['all', 'active', 'used', 'expired'].map((filter) => (
                   <button
                     key={filter}
                     onClick={() => {
-                      setSelectedFilter(filter as 'all' | 'active' | 'used' | 'inactive');
+                      setSelectedFilter(filter as 'all' | 'active' | 'used' | 'expired');
                       setShowFilterDropdown(false);
                     }}
                     className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
