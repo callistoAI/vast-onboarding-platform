@@ -231,81 +231,11 @@ export function OnboardingLinksTab() {
         used_at: null,
         created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
         updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: '11',
-        created_by: 'admin1',
-        platforms: ['tiktok'],
-        expires_at: null,
-        note: 'TikTok Specialist',
-        status: 'used' as const,
-        link_token: 'tiktok-specialist-011',
-        used_by: 'client4',
-        used_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-        created_at: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: '12',
-        created_by: 'admin1',
-        platforms: ['google', 'shopify'],
-        expires_at: null,
-        note: 'E-commerce Analytics',
-        status: 'active' as const,
-        link_token: 'ecommerce-analytics-012',
-        used_by: null,
-        used_at: null,
-        created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: '13',
-        created_by: 'admin1',
-        platforms: ['meta', 'tiktok'],
-        expires_at: null,
-        note: 'Social Media Pro',
-        status: 'expired' as const,
-        link_token: 'social-media-pro-013',
-        used_by: null,
-        used_at: null,
-        created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: '14',
-        created_by: 'admin1',
-        platforms: ['shopify'],
-        expires_at: null,
-        note: 'Store Management',
-        status: 'used' as const,
-        link_token: 'store-management-014',
-        used_by: 'client5',
-        used_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-        created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: '15',
-        created_by: 'admin1',
-        platforms: ['meta', 'google', 'tiktok', 'shopify'],
-        expires_at: null,
-        note: 'Complete Digital Suite',
-        status: 'active' as const,
-        link_token: 'complete-digital-015',
-        used_by: null,
-        used_at: null,
-        created_at: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString(),
       }
-    ] as OnboardingLink[];
-
-    setLinks(mockLinks);
+    ];
     
-    // Calculate counts
-    setTotalLinks(mockLinks.length);
-    setActiveLinks(mockLinks.filter(link => link.status === 'active').length);
-    setUsedLinks(mockLinks.filter(link => link.status === 'used').length);
-    setExpiredLinks(mockLinks.filter(link => link.status === 'expired').length);
+    console.log('Setting mock data with standard links:', mockLinks.filter(link => link.note === 'Standard Link' || link.note === 'Standard'));
+    setLinks(mockLinks);
   };
 
   const generateLink = async () => {
@@ -787,11 +717,17 @@ export function OnboardingLinksTab() {
             </div>
           ) : (
             filteredLinks().map((link) => (
-              <div key={link.id} className={`rounded-xl border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white border-gray-200 hover:shadow-md transition-shadow duration-200 ${
+              <div key={link.id} className={`rounded-xl border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ${
                 (link.note === 'Standard Link' || link.note === 'Standard') 
                   ? 'bg-gradient-to-r from-yellow-100 to-amber-100 border-yellow-300 shadow-lg shadow-yellow-200/50' 
-                  : ''
-              }`}>
+                  : 'bg-white border-gray-200'
+              } hover:shadow-md transition-shadow duration-200`}>
+                {/* Debug info for standard links */}
+                {(link.note === 'Standard Link' || link.note === 'Standard') && (
+                  <div className="text-xs text-red-500 px-2 py-1 bg-red-100">
+                    DEBUG: This is a standard link - {link.note}
+                  </div>
+                )}
                 <div className="grid grid-cols-12 gap-6 items-center px-8 py-6 group">
                   <div className="col-span-3">
                     {editingLinkId === link.id ? (
