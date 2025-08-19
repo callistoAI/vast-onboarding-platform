@@ -156,8 +156,8 @@ export function HomePage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl">
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageCircle className="w-8 h-8 text-indigo-600" />
+              <div className="w-16 h-16 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-200/50">
+                <MessageCircle className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-semibold text-gray-900 mb-2">Send Feedback</h3>
               <p className="text-gray-600">Help us improve the platform</p>

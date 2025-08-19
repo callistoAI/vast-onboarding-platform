@@ -67,8 +67,8 @@ export function Layout({ children }: LayoutProps) {
             
             {submitted ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Send className="w-8 h-8 text-indigo-500" />
+                <div className="w-16 h-16 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-cyan-200/50">
+                  <Send className="w-8 h-8 text-white" />
                 </div>
                 <h4 className="text-xl font-semibold text-gray-900 mb-2">Thank You!</h4>
                 <p className="text-gray-600">Your feedback has been submitted successfully.</p>

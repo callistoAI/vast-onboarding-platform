@@ -188,16 +188,30 @@ export function DemoOnboardPage() {
     const status = platformStatuses[platform];
     const phase = platformPhases[platform];
 
+    if (!config) return null;
+
     return (
-      <div className="text-center">
-        {/* Platform Icon and Info */}
-        <div className="mb-8">
-          <div className={`w-20 h-20 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
-            <span className="text-white font-bold text-2xl">{config.name.charAt(0)}</span>
+      <div key={platform} className="text-center">
+        {/* Platform Logo */}
+        <div className="w-24 h-24 bg-white border-2 border-gray-200 rounded-xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+          <img 
+            src={`/${platform}-logo.svg`} 
+            alt={config.name}
+            className="w-16 h-16 object-contain"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              target.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+          <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center hidden">
+            <span className="text-white font-bold text-lg">{config.name.charAt(0)}</span>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">{config.name}</h2>
-          <p className="text-gray-600">{config.description}</p>
         </div>
+
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          {config.name} Integration
+        </h2>
 
         {phase === 'connect' ? (
           // Connection Phase
@@ -288,19 +302,25 @@ export function DemoOnboardPage() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex justify-center items-center">
-          <img 
-            src="/vast-logo.png" 
-            alt="Vast Logo" 
-            className="w-8 h-8 object-contain"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-              target.nextElementSibling?.classList.remove('hidden');
-            }}
-          />
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center hidden">
-            <span className="text-white font-bold text-sm">V</span>
-          </div>
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center hover:opacity-80 transition-opacity duration-200"
+            title="Home"
+          >
+            <img 
+              src="/vast-logo.png" 
+              alt="Vast Logo" 
+              className="w-8 h-8 object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                target.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center hidden">
+              <span className="text-white font-bold text-sm">V</span>
+            </div>
+          </button>
         </div>
       </header>
 
@@ -396,7 +416,15 @@ export function DemoOnboardPage() {
                           src={`/${platform}-logo.svg`} 
                           alt={config.name}
                           className="w-10 h-10 object-contain"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.nextElementSibling?.classList.remove('hidden');
+                          }}
                         />
+                        <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center hidden">
+                          <span className="text-white font-bold text-sm">{config.name.charAt(0)}</span>
+                        </div>
                         {status === 'connected' && (
                           <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
                             <CheckCircle className="w-3 h-3 text-white" />

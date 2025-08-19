@@ -319,8 +319,8 @@ export function ClientSettingsTab() {
         <div className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
-                <MessageSquare className="w-5 h-5 text-indigo-600" />
+              <div className="w-10 h-10 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-200/50">
+                <MessageSquare className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h4 className="font-medium text-gray-900">Need help?</h4>

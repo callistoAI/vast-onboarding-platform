@@ -485,7 +485,7 @@ export function OnboardingLinksTab() {
               <p className="text-sm font-medium text-gray-600">Total Links</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{totalLinks}</p>
             </div>
-            <div className="w-12 h-8 bg-gradient-to-r from-blue-100 to-blue-200 rounded opacity-60"></div>
+            <div className="w-12 h-8 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-lg shadow-lg shadow-cyan-200/50 opacity-80"></div>
           </div>
         </div>
         
@@ -495,7 +495,7 @@ export function OnboardingLinksTab() {
               <p className="text-sm font-medium text-gray-600">Active Links</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{activeLinks}</p>
             </div>
-            <div className="w-12 h-8 bg-gradient-to-r from-green-100 to-green-200 rounded opacity-60"></div>
+            <div className="w-12 h-8 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-lg shadow-lg shadow-cyan-200/50 opacity-80"></div>
           </div>
         </div>
         
@@ -505,7 +505,7 @@ export function OnboardingLinksTab() {
               <p className="text-sm font-medium text-gray-600">Used Links</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{usedLinks}</p>
             </div>
-            <div className="w-12 h-8 bg-gradient-to-r from-purple-100 to-purple-200 rounded opacity-60"></div>
+            <div className="w-12 h-8 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-lg shadow-lg shadow-cyan-200/50 opacity-80"></div>
           </div>
         </div>
         
@@ -515,7 +515,7 @@ export function OnboardingLinksTab() {
               <p className="text-sm font-medium text-gray-600">Expired Links</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{expiredLinks}</p>
             </div>
-            <div className="w-12 h-8 bg-gradient-to-r from-orange-100 to-orange-200 rounded opacity-60"></div>
+            <div className="w-12 h-8 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-lg shadow-lg shadow-cyan-200/50 opacity-80"></div>
           </div>
         </div>
       </div>

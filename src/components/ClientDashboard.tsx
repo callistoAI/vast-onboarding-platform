@@ -269,8 +269,8 @@ export function ClientDashboard() {
               <p className="text-sm font-medium text-gray-600">Connected</p>
               <p className="text-3xl font-bold text-indigo-600">{authorizedCount}</p>
             </div>
-            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-indigo-600" />
+            <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-200/50">
+              <CheckCircle className="w-6 h-6 text-white" />
             </div>
           </div>
         </div>
@@ -281,8 +281,8 @@ export function ClientDashboard() {
               <p className="text-sm font-medium text-gray-600">Pending</p>
               <p className="text-3xl font-bold text-orange-600">{authorizations.length - authorizedCount}</p>
             </div>
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-              <Clock className="w-6 h-6 text-orange-600" />
+            <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-200/50">
+              <Clock className="w-6 h-6 text-white" />
             </div>
           </div>
         </div>
@@ -293,8 +293,8 @@ export function ClientDashboard() {
               <p className="text-sm font-medium text-gray-600">Total Platforms</p>
               <p className="text-3xl font-bold text-indigo-600">{authorizations.length}</p>
             </div>
-            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-              <Activity className="w-6 h-6 text-indigo-600" />
+            <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-200/50">
+              <Activity className="w-6 h-6 text-white" />
             </div>
           </div>
         </div>
@@ -305,8 +305,8 @@ export function ClientDashboard() {
               <p className="text-sm font-medium text-gray-600">Complete</p>
               <p className="text-3xl font-bold text-indigo-600">{Math.round(completionRate)}%</p>
             </div>
-            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-indigo-600" />
+            <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-200/50">
+              <TrendingUp className="w-6 h-6 text-white" />
             </div>
           </div>
         </div>
@@ -381,10 +381,10 @@ export function ClientDashboard() {
 
       {/* Help Section */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-            <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Shield className="w-6 h-6 text-indigo-600" />
-              </div>
+          <div className="flex items-start space-x-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-cyan-200/50">
+              <Shield className="w-6 h-6 text-white" />
+            </div>
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Need Help?</h3>
             <p className="text-gray-700 text-sm mb-4">
