@@ -286,7 +286,7 @@ export function DemoOnboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-12 px-6 rounded-2xl shadow-lg mb-8">
+      <header className="bg-white border-b border-gray-200 px-6 py-4 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <button
             onClick={() => navigate('/')}
@@ -296,14 +296,24 @@ export function DemoOnboardPage() {
             Exit Demo
           </button>
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
+            <img 
+              src="/vast-logo.png" 
+              alt="Vast Logo" 
+              className="w-8 h-8 object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                target.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center hidden">
               <span className="text-white font-bold text-sm">V</span>
             </div>
             <span className="text-lg font-semibold text-gray-900">Vast Onboarding</span>
           </div>
           <div className="w-20"></div>
         </div>
-      </div>
+      </header>
 
       {/* Progress Bar */}
       <div className="bg-white border-b border-gray-200 py-6 flex-shrink-0">
@@ -443,7 +453,7 @@ export function DemoOnboardPage() {
             {currentStep === 'complete' && (
               <button
                 onClick={handleAccessDashboard}
-                className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-lime-500 text-white px-8 py-3 rounded-lg font-medium hover:from-green-600 hover:to-lime-600 transition-colors ml-auto"
+                className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-700 transition-colors ml-auto"
               >
                 <span>Access Dashboard</span>
                 <ArrowRight className="w-4 h-4" />

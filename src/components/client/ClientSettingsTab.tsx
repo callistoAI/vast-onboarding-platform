@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, User, Bell, Lock, Eye, EyeOff, Save, CheckCircle } from 'lucide-react';
+import { Shield, User, Bell, Lock, Eye, EyeOff, Save, CheckCircle, MessageSquare } from 'lucide-react';
 
 export function ClientSettingsTab() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -12,6 +12,7 @@ export function ClientSettingsTab() {
   const [platformNotifications, setPlatformNotifications] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
 
   const handleSaveSettings = async () => {
     setSaving(true);
@@ -195,7 +196,7 @@ export function ClientSettingsTab() {
           <button
             onClick={handleChangePassword}
             disabled={saving || !currentPassword || !newPassword || !confirmPassword}
-            className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-teal-600 text-white rounded-xl hover:from-cyan-600 hover:to-teal-700 disabled:opacity-50 font-medium transition-colors"
+            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 font-medium transition-colors"
           >
             {saving ? 'Changing Password...' : 'Change Password'}
           </button>
@@ -303,11 +304,43 @@ export function ClientSettingsTab() {
         <button
           onClick={handleSaveSettings}
           disabled={saving}
-          className="flex items-center space-x-2 bg-gradient-to-r from-cyan-500 to-teal-600 text-white px-8 py-3 rounded-xl hover:from-cyan-600 hover:to-teal-700 disabled:opacity-50 font-medium transition-colors"
+          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 font-medium transition-colors"
         >
           <Save className="w-4 h-4" />
           <span>{saving ? 'Saving...' : 'Save Settings'}</span>
         </button>
+      </div>
+
+      {/* Support Section */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <div className="flex items-center space-x-2">
+            <MessageSquare className="w-5 h-5 text-gray-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Support & Help</h3>
+          </div>
+          <p className="text-gray-600 text-sm mt-1">Get help when you need it</p>
+        </div>
+        <div className="p-6">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900">Contact Support</h4>
+                  <p className="text-sm text-gray-600">Get help with technical issues</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowSupportModal(true)}
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 font-medium transition-colors"
+              >
+                Contact
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

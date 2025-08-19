@@ -3,11 +3,10 @@ import { useAuth } from '../hooks/useAuth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  adminOnly?: boolean;
-  clientOnly?: boolean;
+  requiredRole?: 'admin' | 'client';
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly, clientOnly }) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
   const { profile, loading } = useAuth();
 
   if (loading) {
@@ -25,7 +24,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminO
     return null; // Will redirect in parent component
   }
 
-  if (adminOnly && profile.role !== 'admin') {
+  if (requiredRole && profile.role !== requiredRole) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Users, Play, ArrowRight, MessageSquare, Send, X, MessageCircle } from 'lucide-react';
+import { Shield, Users, Play, ArrowRight, MessageSquare, Send, X, MessageCircle, TrendingUp } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 export function HomePage() {
@@ -76,17 +76,55 @@ export function HomePage() {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
-            Welcome to Vast Onboarding
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed mb-4">
-            This is a demo version using dummy data for UI review purposes only.
-          </p>
-          <p className="text-sm text-gray-500 max-w-xl mx-auto">
-            Please use the feedback button in the bottom right corner to submit any UI feedback or suggestions.
-          </p>
+      <div className="max-w-4xl mx-auto text-center">
+        <h1 className="text-5xl font-bold text-gray-900 mb-8 leading-tight">
+          Streamline Your Social Media Marketing
+        </h1>
+        <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
+          Connect your platforms, manage campaigns, and grow your business with our comprehensive social media marketing platform.
+        </p>
+
+        {/* CTA Buttons */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+          <button
+            onClick={() => navigate('/demo-onboard')}
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 hover:scale-105 hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+          >
+            <Play className="w-5 h-5" />
+            <span>Start Free Demo</span>
+          </button>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:from-indigo-600 hover:to-indigo-700 hover:scale-105 hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+          >
+            <ArrowRight className="w-5 h-5" />
+            <span>Access Platform</span>
+          </button>
+        </div>
+
+        {/* Features */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <div className="text-center">
+            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-xl mb-6 mx-auto">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">Secure Platform Access</h3>
+            <p className="text-gray-600">Safe and secure authorization for all your social media accounts</p>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-400 to-blue-500 rounded-xl mb-6 mx-auto">
+              <TrendingUp className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">Campaign Management</h3>
+            <p className="text-gray-600">Easily manage and optimize your social media campaigns</p>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl mb-6 mx-auto">
+              <Users className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">Team Collaboration</h3>
+            <p className="text-gray-600">Work together with your team on marketing strategies</p>
+          </div>
         </div>
 
         {/* Demo Cards */}

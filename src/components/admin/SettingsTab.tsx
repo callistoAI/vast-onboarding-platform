@@ -552,7 +552,7 @@ export function SettingsTab() {
                   ) : (
                     <button
                       onClick={() => handleConnect(platform)}
-                      className="w-full bg-gradient-to-r from-green-500 to-lime-600 text-white py-3 px-4 rounded-xl font-medium hover:from-green-600 hover:to-lime-700 transition-colors flex items-center justify-center space-x-2 text-sm shadow-sm"
+                      className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-600 hover:to-indigo-700 transition-colors flex items-center justify-center space-x-2 text-sm shadow-sm"
                     >
                       <span>Connect Platform</span>
                       <ExternalLink className="w-4 h-4" />
@@ -575,7 +575,7 @@ export function SettingsTab() {
             </div>
             <button 
               onClick={() => setShowInviteForm(!showInviteForm)}
-              className="bg-gradient-to-r from-indigo-500 to-pink-600 text-white px-6 py-2.5 rounded-lg hover:from-indigo-600 hover:to-pink-700 transition-colors font-medium"
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-colors font-medium"
             >
               Invite Member
             </button>
@@ -630,7 +630,7 @@ export function SettingsTab() {
                 <button
                   onClick={sendInvite}
                   disabled={inviting || !email.trim()}
-                  className="flex-1 px-5 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 disabled:opacity-50 text-sm font-medium transition-colors"
+                  className="flex-1 px-5 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 text-sm font-medium transition-colors"
                 >
                   {inviting ? 'Sending...' : 'Send Invite'}
                 </button>

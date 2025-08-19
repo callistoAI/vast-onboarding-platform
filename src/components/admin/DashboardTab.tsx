@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Copy, ExternalLink, CheckCircle, Eye, Edit3, Trash2 } from 'lucide-react';
+import { Copy, ExternalLink, CheckCircle, Eye, Edit3, Trash2, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
@@ -471,9 +471,9 @@ export function OnboardingLinksTab() {
         </div>
         <button 
           onClick={() => setShowLinkForm(!showLinkForm)}
-          className="bg-gradient-to-r from-indigo-500 to-pink-600 text-white px-6 py-2.5 rounded-lg hover:from-indigo-600 hover:to-pink-700 transition-colors duration-200 font-medium"
+          className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-colors duration-200 font-medium"
         >
-          Create link
+          Create Link
         </button>
       </div>
 
@@ -677,7 +677,7 @@ export function OnboardingLinksTab() {
                 <button
                   onClick={generateLink}
                   disabled={generating || selectedPlatforms.length === 0 || Object.keys(platformApis).length === 0 || !linkName.trim()}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 disabled:opacity-50 font-medium transition-colors duration-200"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 font-medium transition-colors duration-200"
                 >
                   {generating ? 'Generating...' : 'Generate Link'}
                 </button>

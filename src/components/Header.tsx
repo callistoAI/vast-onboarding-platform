@@ -13,19 +13,31 @@ export function Header() {
     navigate('/');
   };
 
-  const handleHome = () => {
-    navigate('/');
-  };
-
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 min-h-[64px] backdrop-blur-sm bg-white/95">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center h-16 min-w-0">
           {/* Left side - Logo */}
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
-              <span className="text-white font-bold text-lg">V</span>
-            </div>
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity duration-200 group p-1"
+              title="Home"
+            >
+              <img 
+                src="/vast-logo.png" 
+                alt="Vast Logo" 
+                className="w-10 h-10 object-contain"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm hidden">
+                <span className="text-white font-bold text-lg">V</span>
+              </div>
+            </button>
             <span className="text-xl font-bold text-gray-900">Vast Platform</span>
           </div>
 

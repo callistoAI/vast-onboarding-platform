@@ -362,27 +362,17 @@ export function ClientDashboard() {
               </div>
 
               {status === 'pending' ? (
-                <button className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white py-3 px-4 rounded-xl font-medium hover:from-sky-600 hover:to-blue-700 transition-colors duration-200 flex items-center justify-center space-x-2">
-                  <span>Authorize Access</span>
+                <button className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-600 hover:to-indigo-700 transition-colors duration-200 flex items-center justify-center space-x-2">
                   <ExternalLink className="w-4 h-4" />
+                  <span>Connect {config.name}</span>
                 </button>
               ) : (
-                <div className="space-y-3">
-                  <div className="bg-teal-50 border border-teal-200 rounded-xl p-4">
-                    <div className="flex items-center space-x-2">
-                      <CheckCircle className="w-5 h-5 text-teal-600" />
-                      <p className="text-sm text-teal-800 font-medium">
-                        Connected on {new Date(auth?.created_at || '').toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => handleManageConnection(platform)}
-                    className="w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    Manage Connection
-                  </button>
-                </div>
+                <button
+                  onClick={() => handleManageConnection(platform)}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:from-blue-600 hover:to-indigo-700 transition-colors duration-200"
+                >
+                  Manage Access
+                </button>
               )}
             </div>
           );
@@ -414,8 +404,8 @@ export function ClientDashboard() {
 
       {/* Manage Connection Modal */}
       {showManageConnection && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-semibold text-gray-900">
                 Manage {platformConfigs[showManageConnection as keyof typeof platformConfigs].name} Access
@@ -427,51 +417,36 @@ export function ClientDashboard() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
-            <p className="text-gray-600 mb-6">
-              Choose which permissions to grant for {platformConfigs[showManageConnection as keyof typeof platformConfigs].name}
-            </p>
-            
-            <div className="space-y-4 mb-8">
-              {platformConfigs[showManageConnection as keyof typeof platformConfigs].permissions.map((permission) => (
-                <label key={permission} className="flex items-center space-x-4 cursor-pointer p-4 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100">
-                  <div className="relative">
+
+            <div className="mb-6">
+              <h4 className="text-lg font-medium text-gray-900 mb-3">
+                Choose which permissions to grant for {platformConfigs[showManageConnection as keyof typeof platformConfigs].name}
+              </h4>
+              <div className="space-y-3">
+                {platformConfigs[showManageConnection as keyof typeof platformConfigs].permissions.map((permission) => (
+                  <label key={permission} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={platformPermissions[showManageConnection]?.[permission] || false}
                       onChange={(e) => handlePermissionChange(showManageConnection, permission, e.target.checked)}
-                      className="sr-only"
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                     />
-                    <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all duration-200 ${
-                      platformPermissions[showManageConnection]?.[permission]
-                        ? `bg-gradient-to-r from-${platformConfigs[showManageConnection as keyof typeof platformConfigs].color}-500 to-${platformConfigs[showManageConnection as keyof typeof platformConfigs].color}-600 border-${platformConfigs[showManageConnection as keyof typeof platformConfigs].color}-500`
-                        : 'border-gray-300 bg-white hover:border-gray-400'
-                    }`}>
-                      {platformPermissions[showManageConnection]?.[permission] && (
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3 flex-1">
-                    <Shield className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-900 font-medium">{permission}</span>
-                  </div>
-                </label>
-              ))}
+                    <span className="text-sm text-gray-700">{permission}</span>
+                  </label>
+                ))}
+              </div>
             </div>
-            
-            <div className="flex space-x-4">
+
+            <div className="flex space-x-3">
               <button
                 onClick={() => setShowManageConnection(null)}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors duration-200"
+                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSavePermissions}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl hover:from-sky-600 hover:to-blue-700 font-medium transition-colors duration-200"
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 font-medium transition-colors duration-200"
               >
                 Save Changes
               </button>
@@ -480,12 +455,12 @@ export function ClientDashboard() {
         </div>
       )}
 
-      {/* Support Form Modal */}
+      {/* Support Form */}
       {showSupportForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-semibold text-gray-900">Contact Support</h3>
+              <h3 className="text-2xl font-semibold text-gray-900">Get Support</h3>
               <button
                 onClick={() => setShowSupportForm(false)}
                 className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -493,37 +468,38 @@ export function ClientDashboard() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             {supportSubmitted ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Send className="w-8 h-8 text-cyan-600" />
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Send className="w-8 h-8 text-blue-600" />
                 </div>
                 <h4 className="text-xl font-semibold text-gray-900 mb-2">Message Sent!</h4>
-                <p className="text-gray-600">Our support team will get back to you soon.</p>
+                <p className="text-gray-600">We'll get back to you within 24 hours.</p>
               </div>
             ) : (
               <>
                 <p className="text-gray-600 mb-6">
-                  Having trouble with your platform connections? Describe your issue and our support team will help you resolve it.
+                  Need help? Send us a message and we'll get back to you as soon as possible.
                 </p>
                 <textarea
                   value={supportMessage}
                   onChange={(e) => setSupportMessage(e.target.value)}
                   placeholder="Describe your issue or question..."
-                  className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 resize-none transition-colors"
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-colors"
                 />
-                <div className="flex space-x-4 mt-6">
+                <div className="flex space-x-3 mt-6">
                   <button
                     onClick={() => setShowSupportForm(false)}
-                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors duration-200"
+                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSubmitSupport}
                     disabled={submittingSupport || !supportMessage.trim()}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-500 to-teal-600 text-white rounded-xl hover:from-cyan-600 hover:to-teal-700 disabled:opacity-50 font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
                   >
                     {submittingSupport ? (
                       <>
