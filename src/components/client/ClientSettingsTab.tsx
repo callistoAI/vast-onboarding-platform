@@ -304,7 +304,7 @@ export function ClientSettingsTab() {
         <button
           onClick={handleSaveSettings}
           disabled={saving}
-          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl disabled:opacity-50 font-medium transition-colors"
+          className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl disabled:opacity-50 font-medium transition-all duration-200 shadow-sm hover:shadow-md flex items-center space-x-2"
         >
           <Save className="w-4 h-4" />
           <span>{saving ? 'Saving...' : 'Save Settings'}</span>

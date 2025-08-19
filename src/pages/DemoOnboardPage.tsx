@@ -287,31 +287,20 @@ export function DemoOnboardPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex-shrink-0">
-        <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors group"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            Exit Demo
-          </button>
-          <div className="flex items-center space-x-3">
-            <img 
-              src="/vast-logo.png" 
-              alt="Vast Logo" 
-              className="w-8 h-8 object-contain"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                target.nextElementSibling?.classList.remove('hidden');
-              }}
-            />
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">V</span>
-            </div>
-            <span className="text-lg font-semibold text-gray-900">Vast Onboarding</span>
+        <div className="max-w-4xl mx-auto flex justify-center items-center">
+          <img 
+            src="/vast-logo.png" 
+            alt="Vast Logo" 
+            className="w-8 h-8 object-contain"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              target.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center hidden">
+            <span className="text-white font-bold text-sm">V</span>
           </div>
-          <div className="w-20"></div>
         </div>
       </header>
 
@@ -361,8 +350,18 @@ export function DemoOnboardPage() {
           {currentStep === 'intro' && (
             <div className="text-center">
               {/* Logo */}
-              <div className="w-32 h-32 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-12 shadow-xl relative">
-                <div className="w-24 h-24 bg-indigo-500 rounded-full flex items-center justify-center">
+              <div className="w-32 h-32 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center mx-auto mb-12 shadow-xl relative">
+                <img 
+                  src="/vast-logo.png" 
+                  alt="Vast Logo" 
+                  className="w-20 h-20 object-contain"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+                <div className="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center hidden">
                   <span className="text-white font-bold text-2xl">V</span>
                 </div>
               </div>
