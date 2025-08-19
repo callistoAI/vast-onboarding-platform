@@ -705,14 +705,14 @@ export function SettingsTab() {
                             <>
                               <button
                                 onClick={() => copyToClipboard(`${window.location.origin}/invite/${invite.invite_token}`)}
-                                className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium"
+                                className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 font-medium"
                               >
                                 <Copy className="w-4 h-4" />
                                 <span>Copy invite link</span>
                               </button>
                               <button
                                 onClick={() => resendInvite()}
-                                className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium"
+                                className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 font-medium"
                               >
                                 <Mail className="w-4 h-4" />
                                 <span>Resend invite</span>
@@ -725,7 +725,7 @@ export function SettingsTab() {
                                            invite.role === 'editor' ? 'viewer' : 'admin';
                               changeRole(invite.id, newRole);
                             }}
-                            className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium"
+                            className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 font-medium"
                           >
                             <Edit3 className="w-4 h-4" />
                             <span>Change Role</span>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Filter, Users } from 'lucide-react';
+import { Search, Users, ChevronDown } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 
@@ -18,7 +18,7 @@ const platformOptions = [
 export function ClientsTab() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
-  const [clientSearchTerm, setClientSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'inactive' | 'pending'>('all');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [clientSortOrder, setClientSortOrder] = useState<'latest' | 'earliest'>('latest');
@@ -669,10 +669,10 @@ export function ClientsTab() {
     let filtered = [...clients];
     
     // Apply search filter
-    if (clientSearchTerm) {
+    if (searchTerm) {
       filtered = filtered.filter(client => 
-        client.company_name.toLowerCase().includes(clientSearchTerm.toLowerCase()) ||
-        client.users.name.toLowerCase().includes(clientSearchTerm.toLowerCase())
+        client.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.users.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -731,38 +731,38 @@ export function ClientsTab() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search clients..."
-              value={clientSearchTerm}
-              onChange={(e) => setClientSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
           </div>
+
+          {/* Filter Dropdown */}
           <div className="relative">
             <button
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-              className="flex items-center space-x-2 px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex items-center space-x-2 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             >
-              <Filter className="w-4 h-4" />
-              <span>Filter: {selectedFilter.charAt(0).toUpperCase() + selectedFilter.slice(1)}</span>
-              <svg className={`w-4 h-4 transition-transform ${showFilterDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <span>Filter: {selectedFilter}</span>
+              <ChevronDown className="w-4 h-4" />
             </button>
-            
             {showFilterDropdown && (
-              <div className="absolute right-0 top-12 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-10 min-w-40">
-                {['all', 'active', 'pending', 'inactive'].map((filter) => (
+              <div className="absolute top-full left-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-10">
+                {['all', 'active', 'pending', 'inactive'].map((option) => (
                   <button
-                    key={filter}
+                    key={option}
                     onClick={() => {
-                      setSelectedFilter(filter as 'all' | 'active' | 'inactive' | 'pending');
+                      setSelectedFilter(option as 'all' | 'active' | 'inactive' | 'pending');
                       setShowFilterDropdown(false);
                     }}
-                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${
-                      selectedFilter === filter ? 'text-indigo-600 bg-indigo-50' : 'text-gray-700'
+                    className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                      selectedFilter === option
+                        ? 'bg-blue-50 text-blue-700 font-medium'
+                        : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    {filter.charAt(0).toUpperCase() + filter.slice(1)}
+                    {option.charAt(0).toUpperCase() + option.slice(1)}
                   </button>
                 ))}
               </div>
@@ -806,7 +806,7 @@ export function ClientsTab() {
                 <div className="grid grid-cols-12 gap-4 items-center px-6 py-4">
                   <div className="col-span-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center shadow-sm">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-sm">
                         <span className="text-white font-bold text-sm">
                           {client.company_name ? client.company_name.charAt(0).toUpperCase() : '?'}
                         </span>
@@ -848,12 +848,14 @@ export function ClientsTab() {
                         return (
                           <div
                             key={platform.id}
-                            className={`w-7 h-7 bg-gradient-to-br from-${platform.color}-400 to-${platform.color}-500 rounded-lg flex items-center justify-center shadow-sm relative`}
+                            className="w-7 h-7 bg-white border border-gray-200 rounded-lg flex items-center justify-center shadow-sm relative"
                             title={`${platform.name}: ${auth?.status || 'Not connected'}`}
                           >
-                            <span className="text-white font-bold text-xs">
-                              {platform.name.charAt(0)}
-                            </span>
+                            <img 
+                              src={`/${platform.id}-logo.svg`} 
+                              alt={platform.name}
+                              className="w-5 h-5 object-contain"
+                            />
                             {auth?.status === 'authorized' && (
                               <div className="absolute -top-1 -right-1 w-3 h-3 bg-teal-500 rounded-full flex items-center justify-center">
                                 <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">

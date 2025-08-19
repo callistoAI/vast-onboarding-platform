@@ -286,7 +286,7 @@ export function DemoOnboardPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex-shrink-0">
+      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-12 px-6 rounded-2xl shadow-lg mb-8">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <button
             onClick={() => navigate('/')}
@@ -296,14 +296,14 @@ export function DemoOnboardPage() {
             Exit Demo
           </button>
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">V</span>
             </div>
             <span className="text-lg font-semibold text-gray-900">Vast Onboarding</span>
           </div>
           <div className="w-20"></div>
         </div>
-      </header>
+      </div>
 
       {/* Progress Bar */}
       <div className="bg-white border-b border-gray-200 py-6 flex-shrink-0">
@@ -314,9 +314,9 @@ export function DemoOnboardPage() {
                 <div className="flex flex-col items-center">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mb-2 transition-all ${
                     step.completed 
-                      ? 'bg-purple-600 text-white' 
+                      ? 'bg-blue-600 text-white' 
                       : step.active 
-                      ? 'bg-purple-100 text-purple-600 border-2 border-purple-600' 
+                      ? 'bg-blue-100 text-blue-600 border-2 border-blue-600' 
                       : 'bg-gray-200 text-gray-500'
                   }`}>
                     {step.completed ? (
@@ -326,7 +326,7 @@ export function DemoOnboardPage() {
                     )}
                   </div>
                   <span className={`text-sm font-medium ${
-                    step.active ? 'text-purple-600' : step.completed ? 'text-purple-600' : 'text-gray-400'
+                    step.active ? 'text-blue-600' : step.completed ? 'text-blue-600' : 'text-gray-400'
                   }`}>
                     {step.label}
                   </span>
@@ -334,7 +334,7 @@ export function DemoOnboardPage() {
                 {index < progressSteps.length - 1 && (
                   <div className={`w-16 h-0.5 mx-4 transition-all ${
                     progressSteps[index + 1].completed || progressSteps[index + 1].active 
-                      ? 'bg-purple-600' 
+                      ? 'bg-blue-600' 
                       : 'bg-gray-300'
                   }`} />
                 )}
@@ -351,8 +351,8 @@ export function DemoOnboardPage() {
           {currentStep === 'intro' && (
             <div className="text-center">
               {/* Logo */}
-              <div className="w-32 h-32 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-12 shadow-xl relative">
-                <div className="w-24 h-24 bg-gradient-to-br from-orange-400 via-pink-500 to-blue-500 rounded-full flex items-center justify-center">
+              <div className="w-32 h-32 bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-12 shadow-xl relative">
+                <div className="w-24 h-24 bg-gradient-to-br from-blue-400 via-indigo-500 to-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-2xl">V</span>
                 </div>
               </div>
@@ -382,8 +382,12 @@ export function DemoOnboardPage() {
                   const status = platformStatuses[platform];
                   return (
                     <div key={platform} className="text-center">
-                      <div className={`w-16 h-16 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-xl flex items-center justify-center mx-auto mb-3 relative shadow-lg`}>
-                        <span className="text-white font-bold text-lg">{config.name.charAt(0)}</span>
+                      <div className="w-16 h-16 bg-white border-2 border-gray-200 rounded-xl flex items-center justify-center mx-auto mb-3 relative shadow-lg">
+                        <img 
+                          src={`/${platform}-logo.svg`} 
+                          alt={config.name}
+                          className="w-10 h-10 object-contain"
+                        />
                         {status === 'connected' && (
                           <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
                             <CheckCircle className="w-3 h-3 text-white" />
@@ -417,7 +421,7 @@ export function DemoOnboardPage() {
               <div className="w-full flex justify-center">
                 <button
                   onClick={handleStartDemo}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-8 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-purple-800 transition-colors"
+                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-8 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-800 transition-colors"
                 >
                   <span>Continue</span>
                   <ArrowRight className="w-4 h-4" />
@@ -429,7 +433,7 @@ export function DemoOnboardPage() {
               <button
                 onClick={handleContinue}
                 disabled={platformStatuses[currentStep] === 'pending' || (platformStatuses[currentStep] === 'connected' && platformPhases[currentStep] === 'connect')}
-                className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-lg font-medium hover:from-purple-700 hover:to-purple-800 transition-colors ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-800 transition-colors ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>Continue</span>
                 <ArrowRight className="w-4 h-4" />

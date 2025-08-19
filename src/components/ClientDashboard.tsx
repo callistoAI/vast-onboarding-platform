@@ -267,10 +267,10 @@ export function ClientDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Connected</p>
-              <p className="text-3xl font-bold text-teal-600">{authorizedCount}</p>
+              <p className="text-3xl font-bold text-blue-600">{authorizedCount}</p>
             </div>
-            <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-teal-600" />
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </div>
@@ -291,10 +291,10 @@ export function ClientDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Platforms</p>
-              <p className="text-3xl font-bold text-cyan-600">{authorizations.length}</p>
+              <p className="text-3xl font-bold text-indigo-600">{authorizations.length}</p>
             </div>
-            <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center">
-              <Activity className="w-6 h-6 text-cyan-600" />
+            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+              <Activity className="w-6 h-6 text-indigo-600" />
             </div>
           </div>
         </div>
@@ -303,10 +303,10 @@ export function ClientDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Complete</p>
-              <p className="text-3xl font-bold text-purple-600">{Math.round(completionRate)}%</p>
+              <p className="text-3xl font-bold text-blue-600">{Math.round(completionRate)}%</p>
             </div>
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </div>
@@ -320,7 +320,7 @@ export function ClientDashboard() {
         </div>
         <div className="bg-gray-200 rounded-full h-3 mb-4">
           <div 
-            className="bg-gradient-to-r from-cyan-500 to-teal-600 rounded-full h-3 transition-all duration-1000 ease-out"
+            className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full h-3 transition-all duration-1000 ease-out"
             style={{ width: `${completionRate}%` }}
           ></div>
         </div>
@@ -341,10 +341,12 @@ export function ClientDashboard() {
             <div key={platform} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-4">
-                  <div className={`w-14 h-14 bg-gradient-to-br from-${config.color}-400 to-${config.color}-500 rounded-xl flex items-center justify-center shadow-lg`}>
-                    <span className="text-white font-bold text-lg">
-                      {config.name.charAt(0)}
-                    </span>
+                  <div className="w-14 h-14 bg-white border-2 border-gray-200 rounded-xl flex items-center justify-center shadow-lg">
+                    <img 
+                      src={`/${platform}-logo.svg`} 
+                      alt={config.name}
+                      className="w-10 h-10 object-contain"
+                    />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">{config.name}</h3>

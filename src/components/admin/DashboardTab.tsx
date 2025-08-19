@@ -795,7 +795,7 @@ export function OnboardingLinksTab() {
                         type="text"
                         value={editingLinkName}
                         onChange={(e) => setEditingLinkName(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         onKeyPress={(e) => {
                           if (e.key === 'Enter') handleSaveLinkName(link.id);
                           if (e.key === 'Escape') handleCancelEdit();
@@ -809,7 +809,7 @@ export function OnboardingLinksTab() {
                         </div>
                         <button
                           onClick={() => handleEditLinkName(link.id, link.note || '')}
-                          className="text-gray-400 hover:text-gray-600 hover:scale-110 transition-all duration-200"
+                          className="text-gray-400 hover:text-blue-600 hover:scale-110 transition-all duration-200"
                           title="Edit name"
                         >
                           <Edit3 className="w-4 h-4" />
@@ -831,12 +831,14 @@ export function OnboardingLinksTab() {
                         return (
                           <div
                             key={platform}
-                            className={`w-8 h-8 bg-gradient-to-br from-${config?.color}-400 to-${config?.color}-500 rounded-lg flex items-center justify-center shadow-sm hover:scale-110 hover:shadow-md transition-all duration-200`}
+                            className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm hover:scale-110 hover:shadow-md transition-all duration-200 bg-white border border-gray-200"
                             title={config?.name}
                           >
-                            <span className="text-white font-bold text-xs">
-                              {config?.name.charAt(0)}
-                            </span>
+                            <img 
+                              src={`/${platform}-logo.svg`} 
+                              alt={config?.name}
+                              className="w-6 h-6 object-contain"
+                            />
                           </div>
                         );
                       })}
@@ -862,14 +864,14 @@ export function OnboardingLinksTab() {
                     <div className="flex items-center justify-center space-x-3">
                       <button
                         onClick={() => handleTestLink(link.link_token)}
-                        className="p-2.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-200"
+                        className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
                         title="Test link"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => copyToClipboard(`${window.location.origin}/onboard/${link.link_token}`)}
-                        className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                        className="p-2.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors duration-200"
                         title="Copy link"
                       >
                         <Copy className="w-4 h-4" />

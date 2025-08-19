@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { HorizontalNav } from './HorizontalNav';
 
@@ -22,26 +22,11 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center h-16 min-w-0">
           {/* Left side - Logo */}
-          <div className="flex items-center flex-shrink-0">
-            <button
-              onClick={handleHome}
-              className="flex items-center space-x-3 hover:opacity-80 transition-opacity duration-200 group p-1"
-              title="Home"
-            >
-              <img 
-                src="/vast-logo.png" 
-                alt="Vast Logo" 
-                className="w-10 h-10 object-contain"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  target.nextElementSibling?.classList.remove('hidden');
-                }}
-              />
-              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-lime-500 rounded-lg flex items-center justify-center hidden">
-                <span className="text-white font-bold text-sm">V</span>
-              </div>
-            </button>
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+              <span className="text-white font-bold text-lg">V</span>
+            </div>
+            <span className="text-xl font-bold text-gray-900">Vast Platform</span>
           </div>
 
           {/* Center - Navigation */}
