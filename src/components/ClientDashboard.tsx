@@ -320,7 +320,7 @@ export function ClientDashboard() {
         </div>
         <div className="bg-gray-200 rounded-full h-3 mb-4">
           <div 
-            className="bg-indigo-600 rounded-full h-3 transition-all duration-1000 ease-out"
+            className="bg-green-600 rounded-full h-3 transition-all duration-1000 ease-out"
             style={{ width: `${completionRate}%` }}
           ></div>
         </div>
@@ -369,7 +369,7 @@ export function ClientDashboard() {
               ) : (
                 <button
                   onClick={() => handleManageConnection(platform)}
-                  className="bg-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors duration-200"
+                  className="w-full bg-white border-2 border-indigo-600 text-indigo-600 px-6 py-3 rounded-xl text-sm font-medium hover:bg-indigo-50 transition-colors duration-200"
                 >
                   Manage Access
                 </button>

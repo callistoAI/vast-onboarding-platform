@@ -314,31 +314,25 @@ export function ClientSettingsTab() {
       {/* Support Section */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div className="px-6 py-4 border-b border-gray-100">
-          <div className="flex items-center space-x-2">
-            <MessageSquare className="w-5 h-5 text-gray-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Support & Help</h3>
-          </div>
-          <p className="text-gray-600 text-sm mt-1">Get help when you need it</p>
+          <h3 className="text-lg font-semibold text-gray-900">Support</h3>
         </div>
         <div className="p-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-indigo-600" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-900">Contact Support</h4>
-                  <p className="text-sm text-gray-600">Get help with technical issues</p>
-                </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                <MessageSquare className="w-5 h-5 text-indigo-600" />
               </div>
-              <button
-                onClick={() => setShowSupportModal(true)}
-                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl disabled:opacity-50 font-medium transition-colors"
-              >
-                Contact
-              </button>
+              <div>
+                <h4 className="font-medium text-gray-900">Need help?</h4>
+                <p className="text-sm text-gray-600">Contact our support team</p>
+              </div>
             </div>
+            <button
+              onClick={() => setShowSupportModal(true)}
+              className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-medium transition-colors"
+            >
+              Contact
+            </button>
           </div>
         </div>
       </div>

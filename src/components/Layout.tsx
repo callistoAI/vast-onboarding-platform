@@ -45,7 +45,7 @@ export function Layout({ children }: LayoutProps) {
       {/* Floating Feedback Button */}
       <button
         onClick={() => setShowFeedbackModal(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
         title="Submit UI Feedback"
       >
         <MessageSquare className="w-6 h-6" />
@@ -68,7 +68,7 @@ export function Layout({ children }: LayoutProps) {
             {submitted ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Send className="w-8 h-8 text-indigo-600" />
+                  <Send className="w-8 h-8 text-indigo-500" />
                 </div>
                 <h4 className="text-xl font-semibold text-gray-900 mb-2">Thank You!</h4>
                 <p className="text-gray-600">Your feedback has been submitted successfully.</p>
@@ -94,7 +94,7 @@ export function Layout({ children }: LayoutProps) {
                   <button
                     onClick={handleSubmitFeedback}
                     disabled={submitting || !feedback.trim()}
-                    className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
+                    className="flex-1 px-6 py-3 bg-indigo-500 text-white rounded-xl hover:bg-indigo-600 disabled:opacity-50 font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
                   >
                     {submitting ? (
                       <>
