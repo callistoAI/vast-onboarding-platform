@@ -17,3 +17,26 @@
 @layer utilities {
   /* Keep only essential utilities */
 }
+
+/* Prevent screen jolting and ensure consistent layout */
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Ensure consistent page heights */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Prevent layout shifts during page transitions */
+.page-transition {
+  min-height: 100vh;
+  width: 100%;
+}

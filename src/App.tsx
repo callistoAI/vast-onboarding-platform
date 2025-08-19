@@ -11,53 +11,55 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/demo/onboard" element={<DemoOnboardPage />} />
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/settings" 
-            element={
-              <ProtectedRoute adminOnly>
-                <DashboardPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/clients" 
-            element={
-              <ProtectedRoute adminOnly>
-                <DashboardPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/admin/customisation" 
-            element={
-              <ProtectedRoute adminOnly>
-                <DashboardPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/client/settings" 
-            element={
-              <ProtectedRoute clientOnly>
-                <DashboardPage />
-              </ProtectedRoute>
-            } 
-          />
-          <Route path="/settings" element={<Navigate to="/dashboard" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <div className="min-h-screen">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/demo/onboard" element={<DemoOnboardPage />} />
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/settings" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/clients" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/customisation" 
+              element={
+                <ProtectedRoute adminOnly>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/client/settings" 
+              element={
+                <ProtectedRoute clientOnly>
+                  <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/settings" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
       </Router>
     </AuthProvider>
   );
