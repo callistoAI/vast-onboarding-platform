@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, User, Bell, Lock, Eye, EyeOff, Save, CheckCircle, MessageSquare } from 'lucide-react';
+import { Shield, User, Bell, Lock, Eye, EyeOff, Save, CheckCircle, MessageSquare, X, Clock } from 'lucide-react';
 
 export function ClientSettingsTab() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -336,6 +336,69 @@ export function ClientSettingsTab() {
           </div>
         </div>
       </div>
+
+      {/* Support Modal */}
+      {showSupportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-lg w-full mx-4">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-semibold text-gray-900">Contact Support</h3>
+              <button
+                onClick={() => setShowSupportModal(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              <p className="text-gray-600">
+                Need help with your account or platform connections? Our support team is here to assist you.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg">
+                  <div className="w-10 h-10 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-200/50">
+                    <MessageSquare className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Email Support</h4>
+                    <p className="text-sm text-gray-600">support@vastplatform.com</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg">
+                  <div className="w-10 h-10 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-200/50">
+                    <Clock className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Response Time</h4>
+                    <p className="text-sm text-gray-600">Within 24 hours</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3 pt-4">
+                <button
+                  onClick={() => setShowSupportModal(false)}
+                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => {
+                    window.open('mailto:support@vastplatform.com', '_blank');
+                    setShowSupportModal(false);
+                  }}
+                  className="flex-1 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors"
+                >
+                  Send Email
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

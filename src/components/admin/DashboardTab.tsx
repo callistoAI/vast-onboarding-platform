@@ -495,7 +495,7 @@ export function OnboardingLinksTab() {
               <p className="text-sm font-medium text-gray-600">Active Links</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{activeLinks}</p>
             </div>
-            <div className="w-12 h-8 bg-gradient-to-r from-cyan-400 to-teal-500 rounded-lg shadow-lg shadow-cyan-200/50 opacity-80"></div>
+            <div className="w-12 h-8 bg-gradient-to-r from-green-400 to-green-500 rounded-lg shadow-lg shadow-green-200/50 opacity-80"></div>
           </div>
         </div>
         
@@ -787,7 +787,11 @@ export function OnboardingLinksTab() {
             </div>
           ) : (
             filteredLinks().map((link) => (
-              <div key={link.id} className="rounded-xl border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white border-gray-200 hover:shadow-md transition-shadow duration-200">
+              <div key={link.id} className={`rounded-xl border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white border-gray-200 hover:shadow-md transition-shadow duration-200 ${
+                (link.note === 'Standard Link' || link.note === 'Standard') 
+                  ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-200 shadow-lg shadow-yellow-200/30' 
+                  : ''
+              }`}>
                 <div className="grid grid-cols-12 gap-6 items-center px-8 py-6 group">
                   <div className="col-span-3">
                     {editingLinkId === link.id ? (
