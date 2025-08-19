@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { CheckCircle, AlertCircle, ExternalLink, Copy, Mail, UserCheck, UserX, MoreVertical, Search, Filter, ChevronDown, Eye, Edit3, Users } from 'lucide-react';
+import { Users, Mail, Copy, MoreVertical, Edit3, UserX, Settings, Plus, X, CheckCircle, AlertCircle, UserCheck, ExternalLink } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
@@ -644,11 +644,11 @@ export function SettingsTab() {
           {/* Table Header - Sticky */}
           <div className="sticky top-0 bg-white border-b border-gray-100 z-10">
             <div className="grid grid-cols-12 gap-4 px-6 py-4 text-sm font-medium text-gray-500">
-              <div className="col-span-4">Member</div>
+              <div className="col-span-3">Member</div>
               <div className="col-span-2">Role</div>
               <div className="col-span-2">Status</div>
               <div className="col-span-3">Joined</div>
-              <div className="col-span-1">Actions</div>
+              <div className="col-span-2">Actions</div>
             </div>
           </div>
 
@@ -663,7 +663,7 @@ export function SettingsTab() {
               filteredInvites().map((invite) => (
                 <div key={invite.id} className="hover:bg-gray-50 transition-colors">
                   <div className="grid grid-cols-12 gap-4 items-center px-6 py-4">
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-500 rounded-xl flex items-center justify-center shadow-sm">
                           <span className="text-sm font-semibold text-white">
@@ -695,30 +695,50 @@ export function SettingsTab() {
                         {invite.created_at ? new Date(invite.created_at).toLocaleDateString() : '-'}
                       </span>
                     </div>
-                    <div className="col-span-1">
-                      <div className="relative group">
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-                        <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20 min-w-40">
-                          <button
-                            onClick={() => {
-                              const newRole = invite.role === 'admin' ? 'editor' : 
-                                           invite.role === 'editor' ? 'viewer' : 'admin';
-                              changeRole(invite.id, newRole);
-                            }}
-                            className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium"
-                          >
-                            <Edit3 className="w-4 h-4" />
-                            <span>Change Role</span>
+                    <div className="col-span-2">
+                      <div className="flex items-center space-x-2">
+                        {invite.status === 'invited' && invite.email && (
+                          <>
+                            <button
+                              onClick={() => copyToClipboard(`${window.location.origin}/invite/${invite.invite_token}`)}
+                              className="p-2 text-gray-400 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-colors"
+                              title="Copy invite link"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => resendInvite()}
+                              className="p-2 text-gray-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
+                              title="Resend invite"
+                            >
+                              <Mail className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                        <div className="relative group">
+                          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                            <MoreVertical className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => removeInvite(invite.id)}
-                            className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
-                          >
-                            <UserX className="w-4 h-4" />
-                            <span>Remove</span>
-                          </button>
+                          <div className="absolute right-0 top-10 bg-white border border-gray-200 rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20 min-w-40">
+                            <button
+                              onClick={() => {
+                                const newRole = invite.role === 'admin' ? 'editor' : 
+                                             invite.role === 'editor' ? 'viewer' : 'admin';
+                                changeRole(invite.id, newRole);
+                              }}
+                              className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 font-medium"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                              <span>Change Role</span>
+                            </button>
+                            <button
+                              onClick={() => removeInvite(invite.id)}
+                              className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
+                            >
+                              <UserX className="w-4 h-4" />
+                              <span>Remove</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
