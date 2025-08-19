@@ -267,10 +267,10 @@ export function ClientDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Connected</p>
-              <p className="text-3xl font-bold text-blue-600">{authorizedCount}</p>
+              <p className="text-3xl font-bold text-indigo-600">{authorizedCount}</p>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-indigo-600" />
             </div>
           </div>
         </div>
@@ -303,10 +303,10 @@ export function ClientDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Complete</p>
-              <p className="text-3xl font-bold text-blue-600">{Math.round(completionRate)}%</p>
+              <p className="text-3xl font-bold text-indigo-600">{Math.round(completionRate)}%</p>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-indigo-600" />
             </div>
           </div>
         </div>
@@ -320,7 +320,7 @@ export function ClientDashboard() {
         </div>
         <div className="bg-gray-200 rounded-full h-3 mb-4">
           <div 
-            className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full h-3 transition-all duration-1000 ease-out"
+            className="bg-indigo-600 rounded-full h-3 transition-all duration-1000 ease-out"
             style={{ width: `${completionRate}%` }}
           ></div>
         </div>
@@ -362,14 +362,14 @@ export function ClientDashboard() {
               </div>
 
               {status === 'pending' ? (
-                <button className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-600 hover:to-indigo-700 transition-colors duration-200 flex items-center justify-center space-x-2">
+                <button className="w-full bg-indigo-600 text-white py-3 px-4 rounded-xl font-medium hover:bg-indigo-700 transition-colors duration-200 flex items-center justify-center space-x-2">
                   <ExternalLink className="w-4 h-4" />
                   <span>Connect {config.name}</span>
                 </button>
               ) : (
                 <button
                   onClick={() => handleManageConnection(platform)}
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:from-blue-600 hover:to-indigo-700 transition-colors duration-200"
+                  className="bg-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors duration-200"
                 >
                   Manage Access
                 </button>
@@ -382,8 +382,8 @@ export function ClientDashboard() {
       {/* Help Section */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
             <div className="flex items-start space-x-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Shield className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Shield className="w-6 h-6 text-indigo-600" />
               </div>
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Need Help?</h3>
@@ -393,7 +393,7 @@ export function ClientDashboard() {
             <div className="flex space-x-3">
               <button 
                 onClick={() => setShowSupportForm(true)}
-                className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:from-purple-600 hover:to-indigo-700 transition-colors duration-200"
+                className="bg-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors duration-200"
               >
                 Contact Support
               </button>
@@ -446,7 +446,7 @@ export function ClientDashboard() {
               </button>
               <button
                 onClick={handleSavePermissions}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 font-medium transition-colors duration-200"
+                className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 font-medium transition-colors duration-200"
               >
                 Save Changes
               </button>
@@ -499,7 +499,7 @@ export function ClientDashboard() {
                   <button
                     onClick={handleSubmitSupport}
                     disabled={submittingSupport || !supportMessage.trim()}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
+                    className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
                   >
                     {submittingSupport ? (
                       <>

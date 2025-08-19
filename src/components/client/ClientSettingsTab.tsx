@@ -196,7 +196,7 @@ export function ClientSettingsTab() {
           <button
             onClick={handleChangePassword}
             disabled={saving || !currentPassword || !newPassword || !confirmPassword}
-            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 font-medium transition-colors"
+            className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl disabled:opacity-50 font-medium transition-colors"
           >
             {saving ? 'Changing Password...' : 'Change Password'}
           </button>
@@ -300,11 +300,11 @@ export function ClientSettingsTab() {
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-end mt-8">
         <button
           onClick={handleSaveSettings}
           disabled={saving}
-          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 font-medium transition-colors"
+          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl disabled:opacity-50 font-medium transition-colors"
         >
           <Save className="w-4 h-4" />
           <span>{saving ? 'Saving...' : 'Save Settings'}</span>
@@ -324,8 +324,8 @@ export function ClientSettingsTab() {
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-indigo-600" />
                 </div>
                 <div>
                   <h4 className="font-medium text-gray-900">Contact Support</h4>
@@ -334,7 +334,7 @@ export function ClientSettingsTab() {
               </div>
               <button
                 onClick={() => setShowSupportModal(true)}
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 font-medium transition-colors"
+                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl disabled:opacity-50 font-medium transition-colors"
               >
                 Contact
               </button>

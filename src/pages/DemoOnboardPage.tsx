@@ -306,7 +306,7 @@ export function DemoOnboardPage() {
                 target.nextElementSibling?.classList.remove('hidden');
               }}
             />
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center hidden">
+            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">V</span>
             </div>
             <span className="text-lg font-semibold text-gray-900">Vast Onboarding</span>
@@ -324,9 +324,9 @@ export function DemoOnboardPage() {
                 <div className="flex flex-col items-center">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mb-2 transition-all ${
                     step.completed 
-                      ? 'bg-blue-600 text-white' 
+                      ? 'bg-indigo-600 text-white' 
                       : step.active 
-                      ? 'bg-blue-100 text-blue-600 border-2 border-blue-600' 
+                      ? 'bg-indigo-100 text-indigo-600 border-2 border-indigo-600' 
                       : 'bg-gray-200 text-gray-500'
                   }`}>
                     {step.completed ? (
@@ -336,7 +336,7 @@ export function DemoOnboardPage() {
                     )}
                   </div>
                   <span className={`text-sm font-medium ${
-                    step.active ? 'text-blue-600' : step.completed ? 'text-blue-600' : 'text-gray-400'
+                    step.active ? 'text-indigo-600' : step.completed ? 'text-indigo-600' : 'text-gray-400'
                   }`}>
                     {step.label}
                   </span>
@@ -344,7 +344,7 @@ export function DemoOnboardPage() {
                 {index < progressSteps.length - 1 && (
                   <div className={`w-16 h-0.5 mx-4 transition-all ${
                     progressSteps[index + 1].completed || progressSteps[index + 1].active 
-                      ? 'bg-blue-600' 
+                      ? 'bg-indigo-600' 
                       : 'bg-gray-300'
                   }`} />
                 )}
@@ -361,8 +361,8 @@ export function DemoOnboardPage() {
           {currentStep === 'intro' && (
             <div className="text-center">
               {/* Logo */}
-              <div className="w-32 h-32 bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-12 shadow-xl relative">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-400 via-indigo-500 to-blue-600 rounded-full flex items-center justify-center">
+              <div className="w-32 h-32 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-12 shadow-xl relative">
+                <div className="w-24 h-24 bg-indigo-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-2xl">V</span>
                 </div>
               </div>
@@ -431,7 +431,7 @@ export function DemoOnboardPage() {
               <div className="w-full flex justify-center">
                 <button
                   onClick={handleStartDemo}
-                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-8 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-800 transition-colors"
+                  className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-medium transition-colors"
                 >
                   <span>Continue</span>
                   <ArrowRight className="w-4 h-4" />
@@ -443,7 +443,7 @@ export function DemoOnboardPage() {
               <button
                 onClick={handleContinue}
                 disabled={platformStatuses[currentStep] === 'pending' || (platformStatuses[currentStep] === 'connected' && platformPhases[currentStep] === 'connect')}
-                className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-800 transition-colors ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span>Continue</span>
                 <ArrowRight className="w-4 h-4" />
@@ -453,7 +453,7 @@ export function DemoOnboardPage() {
             {currentStep === 'complete' && (
               <button
                 onClick={handleAccessDashboard}
-                className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-700 transition-colors ml-auto"
+                className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-medium transition-colors ml-auto"
               >
                 <span>Access Dashboard</span>
                 <ArrowRight className="w-4 h-4" />

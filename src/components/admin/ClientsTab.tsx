@@ -734,7 +734,7 @@ export function ClientsTab() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search clients..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-colors"
             />
           </div>
 
@@ -742,7 +742,7 @@ export function ClientsTab() {
           <div className="relative">
             <button
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-              className="flex items-center space-x-2 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="flex items-center space-x-2 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-colors"
             >
               <span>Filter: {selectedFilter}</span>
               <ChevronDown className="w-4 h-4" />
@@ -758,7 +758,7 @@ export function ClientsTab() {
                     }}
                     className={`w-full text-left px-4 py-2 text-sm transition-colors ${
                       selectedFilter === option
-                        ? 'bg-blue-50 text-blue-700 font-medium'
+                        ? 'bg-indigo-50 text-indigo-700 font-medium'
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >

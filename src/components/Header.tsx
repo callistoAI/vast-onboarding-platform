@@ -17,7 +17,7 @@ export function Header() {
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 min-h-[64px] backdrop-blur-sm bg-white/95">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center h-16 min-w-0">
-          {/* Left side - Logo */}
+          {/* Logo Placeholder */}
           <div className="flex items-center space-x-3">
             <button
               onClick={() => navigate('/')}
@@ -34,11 +34,10 @@ export function Header() {
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm hidden">
+              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-sm hidden">
                 <span className="text-white font-bold text-lg">V</span>
               </div>
             </button>
-            <span className="text-xl font-bold text-gray-900">Vast Platform</span>
           </div>
 
           {/* Center - Navigation */}

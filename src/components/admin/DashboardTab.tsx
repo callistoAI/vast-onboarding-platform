@@ -471,7 +471,7 @@ export function OnboardingLinksTab() {
         </div>
         <button 
           onClick={() => setShowLinkForm(!showLinkForm)}
-          className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-colors duration-200 font-medium"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg transition-colors duration-200 font-medium"
         >
           Create Link
         </button>
@@ -677,7 +677,7 @@ export function OnboardingLinksTab() {
                 <button
                   onClick={generateLink}
                   disabled={generating || selectedPlatforms.length === 0 || Object.keys(platformApis).length === 0 || !linkName.trim()}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 font-medium transition-colors duration-200"
+                  className="flex-1 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl disabled:opacity-50 font-medium transition-colors duration-200"
                 >
                   {generating ? 'Generating...' : 'Generate Link'}
                 </button>
@@ -795,7 +795,7 @@ export function OnboardingLinksTab() {
                         type="text"
                         value={editingLinkName}
                         onChange={(e) => setEditingLinkName(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600"
                         onKeyPress={(e) => {
                           if (e.key === 'Enter') handleSaveLinkName(link.id);
                           if (e.key === 'Escape') handleCancelEdit();
@@ -809,7 +809,7 @@ export function OnboardingLinksTab() {
                         </div>
                         <button
                           onClick={() => handleEditLinkName(link.id, link.note || '')}
-                          className="text-gray-400 hover:text-blue-600 hover:scale-110 transition-all duration-200"
+                          className="text-gray-400 hover:text-indigo-600 hover:scale-110 transition-all duration-200"
                           title="Edit name"
                         >
                           <Edit3 className="w-4 h-4" />
@@ -864,7 +864,7 @@ export function OnboardingLinksTab() {
                     <div className="flex items-center justify-center space-x-3">
                       <button
                         onClick={() => handleTestLink(link.link_token)}
-                        className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                        className="p-2.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors duration-200"
                         title="Test link"
                       >
                         <Eye className="w-4 h-4" />
@@ -927,7 +927,7 @@ export function OnboardingLinksTab() {
             </p>
             <button
               onClick={() => setGeneratedLink(null)}
-              className="w-full px-6 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 font-medium transition-colors duration-200"
+              className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors duration-200"
             >
               Close
             </button>

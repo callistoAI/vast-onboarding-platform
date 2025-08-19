@@ -552,7 +552,7 @@ export function SettingsTab() {
                   ) : (
                     <button
                       onClick={() => handleConnect(platform)}
-                      className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-600 hover:to-indigo-700 transition-colors flex items-center justify-center space-x-2 text-sm shadow-sm"
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-xl font-medium transition-colors flex items-center justify-center space-x-2 text-sm shadow-sm"
                     >
                       <span>Connect Platform</span>
                       <ExternalLink className="w-4 h-4" />
@@ -575,7 +575,7 @@ export function SettingsTab() {
             </div>
             <button 
               onClick={() => setShowInviteForm(!showInviteForm)}
-              className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-colors font-medium"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg transition-colors font-medium"
             >
               Invite Member
             </button>
@@ -595,7 +595,7 @@ export function SettingsTab() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="colleague@company.com"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 text-sm transition-colors"
                   />
                 </div>
                 <div>
@@ -605,7 +605,7 @@ export function SettingsTab() {
                   <select
                     value={role}
                     onChange={(e) => setRole(e.target.value as 'admin' | 'editor' | 'viewer')}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-colors"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 text-sm transition-colors"
                   >
                     {roleOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -630,7 +630,7 @@ export function SettingsTab() {
                 <button
                   onClick={sendInvite}
                   disabled={inviting || !email.trim()}
-                  className="flex-1 px-5 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 text-sm font-medium transition-colors"
+                  className="flex-1 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors disabled:opacity-50 text-sm font-medium"
                 >
                   {inviting ? 'Sending...' : 'Send Invite'}
                 </button>
@@ -835,7 +835,7 @@ export function SettingsTab() {
             </p>
             <button
               onClick={() => setGeneratedInvite(null)}
-              className="w-full px-6 py-3 bg-gradient-to-r from-indigo-500 to-pink-600 text-white rounded-xl hover:from-indigo-600 hover:to-pink-700 font-medium transition-colors"
+              className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors"
             >
               Close
             </button>
