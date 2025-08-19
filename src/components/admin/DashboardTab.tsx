@@ -770,7 +770,7 @@ export function OnboardingLinksTab() {
         {/* Table Header */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="grid grid-cols-12 gap-6 px-8 py-5 text-sm font-medium text-gray-500 border-b border-gray-100">
-            <div className="col-span-3 text-center">Name</div>
+            <div className="col-span-3 text-center -ml-4">Name</div>
             <div className="col-span-3 text-center">URL</div>
             <div className="col-span-3 text-center">Platforms</div>
             <div className="col-span-1 text-center">Status</div>
@@ -824,7 +824,7 @@ export function OnboardingLinksTab() {
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-3">
+                  <div className="col-span-3 flex justify-center">
                     <div className="flex space-x-2">
                       {link.platforms.slice(0, 3).map((platform) => {
                         const config = platformOptions.find(p => p.id === platform);
