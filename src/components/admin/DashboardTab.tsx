@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Copy, ExternalLink, CheckCircle, Eye, Edit3, ChevronDown, Link, Trash2 } from 'lucide-react';
+import { Copy, ExternalLink, CheckCircle, Eye, Edit3, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
@@ -61,7 +61,7 @@ export function OnboardingLinksTab() {
 
   const [activeTab, setActiveTab] = useState<'all' | 'manage' | 'view'>('all');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'used' | 'inactive'>('all');
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'used' | 'expired'>('all');
   const [showCopyNotification, setShowCopyNotification] = useState(false);
   
   const fetchData = useCallback(async () => {
@@ -770,11 +770,11 @@ export function OnboardingLinksTab() {
         {/* Table Header */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="grid grid-cols-12 gap-6 px-8 py-5 text-sm font-medium text-gray-500 border-b border-gray-100">
-            <div className="col-span-3">Name</div>
-            <div className="col-span-3">URL</div>
-            <div className="col-span-3">Platforms</div>
-            <div className="col-span-2">Status</div>
-            <div className="col-span-1">Actions</div>
+            <div className="col-span-3 text-center">Name</div>
+            <div className="col-span-3 text-center">URL</div>
+            <div className="col-span-3 text-center">Platforms</div>
+            <div className="col-span-1 text-center">Status</div>
+            <div className="col-span-2 text-center">Actions</div>
           </div>
         </div>
 
@@ -787,13 +787,7 @@ export function OnboardingLinksTab() {
             </div>
           ) : (
             filteredLinks().map((link) => (
-              <div key={link.id} className={`rounded-xl border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ${
-                link.isStandard && link.standardType === 'manage'
-                  ? 'bg-gradient-to-r from-cyan-50 to-teal-50 border-cyan-200 shadow-cyan-100 hover:shadow-cyan-200 ring-1 ring-cyan-200/50'
-                  : link.isStandard && link.standardType === 'view'
-                  ? 'bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 shadow-purple-100 hover:shadow-purple-200 ring-1 ring-purple-200/50'
-                  : 'bg-white border-gray-200'
-              } hover:shadow-md transition-shadow duration-200`}>
+              <div key={link.id} className="rounded-xl border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 bg-white border-gray-200 hover:shadow-md transition-shadow duration-200">
                 <div className="grid grid-cols-12 gap-6 items-center px-8 py-6 group">
                   <div className="col-span-3">
                     {editingLinkId === link.id ? (
@@ -811,14 +805,7 @@ export function OnboardingLinksTab() {
                     ) : (
                       <div className="flex items-center space-x-2">
                         <div className="flex items-center space-x-3">
-                          {link.isStandard && (
-                            <div className={`w-2 h-2 rounded-full transition-all duration-300 group-hover:scale-125 ${
-                              link.standardType === 'manage' ? 'bg-cyan-500' : 'bg-purple-500'
-                            } animate-pulse`}></div>
-                          )}
-                          <span className={`font-semibold text-base ${
-                            link.isStandard ? 'text-gray-800' : 'text-gray-900'
-                          }`}>{link.note}</span>
+                          <span className="font-semibold text-base text-gray-900">{link.note}</span>
                         </div>
                         <button
                           onClick={() => handleEditLinkName(link.id, link.note || '')}
@@ -860,7 +847,7 @@ export function OnboardingLinksTab() {
                       )}
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1 flex justify-center">
                     <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${
                       link.status === 'active' 
                         ? 'bg-green-100 text-green-800' 
@@ -871,8 +858,8 @@ export function OnboardingLinksTab() {
                       {link.status.charAt(0).toUpperCase() + link.status.slice(1)}
                     </span>
                   </div>
-                  <div className="col-span-1">
-                    <div className="flex items-center justify-center space-x-2">
+                  <div className="col-span-2">
+                    <div className="flex items-center justify-center space-x-3">
                       <button
                         onClick={() => handleTestLink(link.link_token)}
                         className="p-2.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-200"
