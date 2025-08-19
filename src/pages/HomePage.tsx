@@ -87,6 +87,60 @@ export function HomePage() {
             Please use the feedback button in the bottom right corner to submit any UI feedback or suggestions.
           </p>
         </div>
+
+        {/* Demo Cards */}
+        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          {/* Admin Dashboard */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div className="flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-xl mb-6 mx-auto">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 text-center mb-6">
+              Admin Dashboard
+            </h3>
+            <button
+              onClick={handleAdminAccess}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg font-medium hover:scale-105 hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 group"
+            >
+              <span>Access Admin</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+            </button>
+          </div>
+
+          {/* Client Dashboard */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div className="flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-xl mb-6 mx-auto">
+              <Users className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 text-center mb-6">
+              Client Dashboard
+            </h3>
+            <button
+              onClick={handleClientAccess}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg font-medium hover:scale-105 hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 group"
+            >
+              <span>Access Client</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+            </button>
+          </div>
+
+          {/* Demo Flow */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+            <div className="flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-xl mb-6 mx-auto">
+              <Play className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 text-center mb-6">
+              Demo Flow
+            </h3>
+            <button
+              onClick={() => navigate('/demo-onboard')}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg font-medium hover:scale-105 hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 group"
+            >
+              <span>Try Demo</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Feedback Button */}
