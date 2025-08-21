@@ -265,17 +265,21 @@ export function DemoOnboardPage() {
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                       <p className="text-blue-800 font-medium">Enter your Shopify store ID</p>
                       <p className="text-blue-600 text-sm mt-1">
-                        This is the middle part of your store URL: <strong>https://<span className="text-blue-800">store-id</span>.myshopify.com</strong>
+                        This is the middle part of your store URL
                       </p>
                     </div>
                     <div className="space-y-3">
-                      <input
-                        type="text"
-                        value={shopifyStoreId}
-                        onChange={(e) => setShopifyStoreId(e.target.value)}
-                        placeholder="your-store-name"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                      />
+                      <div className="flex items-center justify-center space-x-0">
+                        <span className="text-gray-600 text-sm font-mono">https://</span>
+                        <input
+                          type="text"
+                          value={shopifyStoreId}
+                          onChange={(e) => setShopifyStoreId(e.target.value)}
+                          placeholder="your-store-name"
+                          className="w-32 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-center mx-1"
+                        />
+                        <span className="text-gray-600 text-sm font-mono">.myshopify.com</span>
+                      </div>
                       <button
                         onClick={handleShopifyStoreIdSubmit}
                         disabled={!shopifyStoreId.trim()}
