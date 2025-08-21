@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, CheckCircle, ExternalLink, Shield, AlertCircle, ChevronLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
+// Helper function for Shopify admin URLs
+const getShopifyAdminUrl = (storeId: string) => {
+  return `https://${storeId}.myshopify.com/admin/settings/users`;
+};
+
 const platformConfigs = {
   meta: {
     name: 'Meta Business',
@@ -75,6 +80,11 @@ export function DemoOnboardPage() {
   });
   const [platformPermissions, setPlatformPermissions] = useState<Record<string, Record<string, boolean>>>({});
   const [isConnecting, setIsConnecting] = useState(false);
+  
+  // Shopify-specific state
+  const [shopifyStoreId, setShopifyStoreId] = useState('');
+  const [shopifyCollaboratorCode, setShopifyCollaboratorCode] = useState('');
+  const [shopifyStep, setShopifyStep] = useState<'store-id' | 'collaborator-code'>('store-id');
 
   // Get platforms that will be connected
   const getPlatformsText = () => {
@@ -138,6 +148,36 @@ export function DemoOnboardPage() {
   const handleRejectPlatform = (platform: string) => {
     setPlatformStatuses(prev => ({ ...prev, [platform]: 'rejected' }));
     handleContinue();
+  };
+
+  // Shopify-specific handlers
+  const handleShopifyStoreIdSubmit = () => {
+    if (shopifyStoreId.trim()) {
+      setShopifyStep('collaborator-code');
+    }
+  };
+
+  const handleShopifyCollaboratorCodeSubmit = () => {
+    if (shopifyCollaboratorCode.trim()) {
+      // Simulate connection delay
+      setIsConnecting(true);
+      setPlatformStatuses(prev => ({ ...prev, shopify: 'connecting' }));
+      
+      setTimeout(() => {
+        setPlatformStatuses(prev => ({ ...prev, shopify: 'connected' }));
+        
+        // Initialize permissions for Shopify (all granted by default)
+        const config = platformConfigs.shopify;
+        const permissions: Record<string, boolean> = {};
+        config.permissions.forEach(permission => {
+          permissions[permission] = true;
+        });
+        setPlatformPermissions(prev => ({ ...prev, shopify: permissions }));
+        
+        setIsConnecting(false);
+        setPlatformPhases(prev => ({ ...prev, shopify: 'permissions' }));
+      }, 2000);
+    }
   };
 
   const handlePermissionChange = (platform: string, permission: string, granted: boolean) => {
@@ -216,48 +256,130 @@ export function DemoOnboardPage() {
         {phase === 'connect' ? (
           // Connection Phase
           <div className="bg-white rounded-xl border border-gray-200 p-8 mb-8 max-w-md mx-auto">
-            {status === 'pending' && !isConnecting && (
+            {platform === 'shopify' ? (
+              // Shopify-specific two-step connection
               <div className="space-y-6">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-blue-800 font-medium">Ready to connect {config.name}</p>
-                </div>
-                <div className="flex space-x-3">
-                  <button
-                    onClick={() => handleConnectPlatform(platform)}
-                    className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-black transition-colors flex items-center justify-center space-x-2"
-                  >
-                    <span>Connect</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleRejectPlatform(platform)}
-                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-                  >
-                    Skip
-                  </button>
-                </div>
+                {shopifyStep === 'store-id' ? (
+                  // Step 1: Store ID input
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <p className="text-blue-800 font-medium">Enter your Shopify store ID</p>
+                      <p className="text-blue-600 text-sm mt-1">
+                        This is the middle part of your store URL: <strong>https://<span className="text-blue-800">store-id</span>.myshopify.com</strong>
+                      </p>
+                    </div>
+                    <div className="space-y-3">
+                      <input
+                        type="text"
+                        value={shopifyStoreId}
+                        onChange={(e) => setShopifyStoreId(e.target.value)}
+                        placeholder="your-store-name"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                      />
+                      <button
+                        onClick={handleShopifyStoreIdSubmit}
+                        disabled={!shopifyStoreId.trim()}
+                        className="w-full bg-cyan-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Continue
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  // Step 2: Collaborator code input
+                  <div className="space-y-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <p className="text-blue-800 font-medium">Get your collaborator code</p>
+                      <p className="text-blue-600 text-sm mt-1">
+                        Click the button below to open your Shopify admin settings where you can find your collaborator code.
+                      </p>
+                    </div>
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => window.open(getShopifyAdminUrl(shopifyStoreId), '_blank')}
+                        className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-black transition-colors flex items-center justify-center space-x-2"
+                      >
+                        <span>Open Shopify Admin Settings</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </button>
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700 text-left">
+                          Collaborator Code
+                        </label>
+                        <input
+                          type="text"
+                          value={shopifyCollaboratorCode}
+                          onChange={(e) => setShopifyCollaboratorCode(e.target.value)}
+                          placeholder="Enter your collaborator code"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                        />
+                      </div>
+                      <div className="flex space-x-3">
+                        <button
+                          onClick={() => setShopifyStep('store-id')}
+                          className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                        >
+                          Back
+                        </button>
+                        <button
+                          onClick={handleShopifyCollaboratorCodeSubmit}
+                          disabled={!shopifyCollaboratorCode.trim()}
+                          className="flex-1 bg-cyan-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          Connect Store
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            ) : (
+              // Standard connection flow for other platforms
+              <>
+                {status === 'pending' && !isConnecting && (
+                  <div className="space-y-6">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <p className="text-blue-800 font-medium">Ready to connect {config.name}</p>
+                    </div>
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={() => handleConnectPlatform(platform)}
+                        className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-black transition-colors flex items-center justify-center space-x-2"
+                      >
+                        <span>Connect</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleRejectPlatform(platform)}
+                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                      >
+                        Skip
+                      </button>
+                    </div>
+                  </div>
+                )}
 
-            {isConnecting && (
-              <div className="py-8">
-                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-blue-700 font-medium">Connecting to {config.name}...</p>
-              </div>
-            )}
+                {isConnecting && (
+                  <div className="py-8">
+                    <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-blue-700 font-medium">Connecting to {config.name}...</p>
+                  </div>
+                )}
 
-            {status === 'connected' && phase === 'connect' && (
-              <div className="py-8">
-                <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                <p className="text-green-700 font-medium">Successfully connected!</p>
-              </div>
-            )}
+                {status === 'connected' && phase === 'connect' && (
+                  <div className="py-8">
+                    <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                    <p className="text-green-700 font-medium">Successfully connected!</p>
+                  </div>
+                )}
 
-            {status === 'rejected' && (
-              <div className="py-8">
-                <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
-                <p className="text-orange-700 font-medium">Connection skipped</p>
-              </div>
+                {status === 'rejected' && (
+                  <div className="py-8">
+                    <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+                    <p className="text-orange-700 font-medium">Connection skipped</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         ) : (
