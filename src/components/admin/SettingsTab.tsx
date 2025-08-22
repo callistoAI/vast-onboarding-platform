@@ -16,9 +16,8 @@ const platformConfigs = {
   },
   google: {
     name: 'Google Ads',
-    description: 'Access Google Ads campaigns and analytics',
+    description: 'Connect to Google Ads campaigns and analytics',
     color: 'indigo',
-    authUrl: 'https://accounts.google.com/oauth', // Placeholder
   },
   tiktok: {
     name: 'TikTok Ads',
@@ -361,8 +360,31 @@ export function SettingsTab() {
   };
 
   const handleConnect = async (platform: string) => {
-    // Placeholder for real OAuth flow
-    alert(`Will be enabled after API access. Would redirect to ${platformConfigs[platform as keyof typeof platformConfigs].authUrl}`);
+    if (platform === 'google') {
+      // Google OAuth flow
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+      const redirectUri = `${window.location.origin}/oauth/google/callback`;
+      const scope = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
+      
+      const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+        `client_id=${encodeURIComponent(clientId)}` +
+        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+        `&response_type=code` +
+        `&scope=${encodeURIComponent(scope)}` +
+        `&access_type=offline` +
+        `&prompt=consent`;
+      
+      window.location.href = googleAuthUrl;
+      return;
+    }
+
+    // For other platforms, keep the existing placeholder
+    const config = platformConfigs[platform as keyof typeof platformConfigs];
+    if ('authUrl' in config) {
+      alert(`Will be enabled after API access. Would redirect to ${config.authUrl}`);
+    } else {
+      alert(`Will be enabled after API access.`);
+    }
     
     // Mock connection for testing
     try {

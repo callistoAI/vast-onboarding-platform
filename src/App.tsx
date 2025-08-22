@@ -6,6 +6,7 @@ import { AuthPage } from './pages/AuthPage';
 import { DemoOnboardPage } from './pages/DemoOnboardPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { GoogleOAuthCallback } from './components/GoogleOAuthCallback';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/demo/onboard" element={<DemoOnboardPage />} />
+            <Route path="/oauth/google/callback" element={<GoogleOAuthCallback />} />
             <Route 
               path="/dashboard" 
               element={
