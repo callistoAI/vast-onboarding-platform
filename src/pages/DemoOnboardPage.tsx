@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, CheckCircle, ExternalLink, Shield, ChevronLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { buildGoogleOAuthUrl, generateState } from '../lib/googleOAuth';
+import { buildClientGoogleOAuthUrl } from '../lib/googleOAuth';
 
 // Helper function for Shopify admin URLs
 const getShopifyAdminUrl = (storeId: string) => {
@@ -183,17 +183,11 @@ export function DemoOnboardPage() {
 
   const handleGoogleOAuth = () => {
     try {
-      // Generate state parameter for client flow with onboarding token
       // For demo purposes, we'll use a placeholder token
       const onboardingToken = 'demo-onboarding-token'; // In production, this would be the actual link token
-      const state = generateState('client', onboardingToken);
       
-      // Build OAuth URL with client redirect
-      const oauthUrl = buildGoogleOAuthUrl({
-        type: 'client',
-        redirectUri: `${window.location.origin}/oauth/google/client/callback`,
-        state
-      });
+      // Build OAuth URL with onboarding token as state
+      const oauthUrl = buildClientGoogleOAuthUrl(onboardingToken);
       
       // Open Google OAuth in new tab
       window.open(oauthUrl, '_blank');

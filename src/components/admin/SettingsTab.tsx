@@ -3,7 +3,7 @@ import { CheckCircle, AlertCircle, ExternalLink, Copy, Mail, UserCheck, UserX, M
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
-import { buildGoogleOAuthUrl, generateState } from '../../lib/googleOAuth';
+import { buildAdminGoogleOAuthUrl } from '../../lib/googleOAuth';
 
 type PlatformConnection = Database['public']['Tables']['platform_connections']['Row'];
 type TeamInvite = Database['public']['Tables']['team_invites']['Row'];
@@ -363,20 +363,8 @@ export function SettingsTab() {
   const handleConnect = async (platform: string) => {
     if (platform === 'google') {
       try {
-        // Generate state parameter for admin flow
-        const state = generateState('admin');
-        
-        // Build OAuth URL with admin redirect
-        const oauthUrl = buildGoogleOAuthUrl({
-          type: 'admin',
-          redirectUri: `${window.location.origin}/oauth/google/callback`,
-          state
-        });
-        
-        // Store state in sessionStorage for verification in callback
-        sessionStorage.setItem('google_oauth_state', state);
-        
-        // Redirect to Google OAuth
+        // Build and redirect to Google OAuth
+        const oauthUrl = buildAdminGoogleOAuthUrl();
         window.location.href = oauthUrl;
         return;
       } catch (error) {

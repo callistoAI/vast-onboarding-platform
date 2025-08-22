@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
-import { validateCallbackParams, getRedirectUri } from '../lib/googleOAuth';
 
 export function ClientGoogleOAuthCallback() {
   const navigate = useNavigate();
@@ -15,29 +14,25 @@ export function ClientGoogleOAuthCallback() {
       try {
         const code = searchParams.get('code');
         const error = searchParams.get('error');
-        const state = searchParams.get('state');
+        const state = searchParams.get('state'); // This contains the onboarding token
 
-        // Validate callback parameters for client flow
-        const validation = validateCallbackParams(code, error, state, 'client');
-        if (!validation.isValid) {
-          setErrorMessage(validation.error || 'Invalid callback parameters');
+        if (error) {
+          setErrorMessage('Authentication was cancelled or failed');
           setStatus('error');
           return;
         }
 
-        // Extract onboarding token from state (format: client_timestamp_random_onboardingToken)
-        const stateParts = state!.split('_');
-        const onboardingToken = stateParts[stateParts.length - 1];
-        
-        if (!onboardingToken || onboardingToken === 'demo-onboarding-token') {
-          setErrorMessage('Invalid onboarding token in state parameter');
+        if (!code) {
+          setErrorMessage('No authorization code received');
           setStatus('error');
           return;
         }
 
-        // Get the correct redirect URI for client flow
-        const redirectUri = getRedirectUri('client');
-        console.log(`Google OAuth Client: Using redirect URI: ${redirectUri}`);
+        if (!state) {
+          setErrorMessage('No onboarding token received');
+          setStatus('error');
+          return;
+        }
 
         // TODO: Replace with your actual backend API endpoint
         // For now, we'll simulate the token exchange
@@ -54,9 +49,8 @@ export function ClientGoogleOAuthCallback() {
         //   headers: { 'Content-Type': 'application/json' },
         //   body: JSON.stringify({ 
         //     code, 
-        //     redirect_uri: redirectUri,
-        //     state,
-        //     onboarding_token: onboardingToken
+        //     redirect_uri: `${window.location.origin}/oauth/google/client/callback`,
+        //     state
         //   }),
         // });
         // const tokenData = await tokenResponse.json();
@@ -104,7 +98,7 @@ export function ClientGoogleOAuthCallback() {
         
         // Redirect back to the onboarding flow after 2 seconds
         setTimeout(() => {
-          navigate(`/onboard/${onboardingToken}`);
+          navigate(`/onboard/${state}`);
         }, 2000);
 
       } catch (error) {

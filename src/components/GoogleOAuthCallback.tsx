@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
-import { validateCallbackParams, getRedirectUri } from '../lib/googleOAuth';
 
 export function GoogleOAuthCallback() {
   const navigate = useNavigate();
@@ -15,30 +14,18 @@ export function GoogleOAuthCallback() {
       try {
         const code = searchParams.get('code');
         const error = searchParams.get('error');
-        const state = searchParams.get('state');
 
-        // Validate callback parameters for admin flow
-        const validation = validateCallbackParams(code, error, state, 'admin');
-        if (!validation.isValid) {
-          setErrorMessage(validation.error || 'Invalid callback parameters');
+        if (error) {
+          setErrorMessage('Authentication was cancelled or failed');
           setStatus('error');
           return;
         }
 
-        // Verify state parameter matches what we stored
-        const storedState = sessionStorage.getItem('google_oauth_state');
-        if (!storedState || storedState !== state) {
-          setErrorMessage('State parameter mismatch - possible CSRF attack');
+        if (!code) {
+          setErrorMessage('No authorization code received');
           setStatus('error');
           return;
         }
-
-        // Clear stored state
-        sessionStorage.removeItem('google_oauth_state');
-
-        // Get the correct redirect URI for admin flow
-        const redirectUri = getRedirectUri('admin');
-        console.log(`Google OAuth Admin: Using redirect URI: ${redirectUri}`);
 
         // TODO: Replace with your actual backend API endpoint
         // For now, we'll simulate the token exchange
@@ -55,8 +42,7 @@ export function GoogleOAuthCallback() {
         //   headers: { 'Content-Type': 'application/json' },
         //   body: JSON.stringify({ 
         //     code, 
-        //     redirect_uri: redirectUri,
-        //     state 
+        //     redirect_uri: `${window.location.origin}/oauth/google/callback`
         //   }),
         // });
         // const tokenData = await tokenResponse.json();
