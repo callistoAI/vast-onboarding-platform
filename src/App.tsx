@@ -7,6 +7,7 @@ import { DemoOnboardPage } from './pages/DemoOnboardPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { GoogleOAuthCallback } from './components/GoogleOAuthCallback';
+import { ClientGoogleOAuthCallback } from './components/ClientGoogleOAuthCallback';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/demo/onboard" element={<DemoOnboardPage />} />
             <Route path="/oauth/google/callback" element={<GoogleOAuthCallback />} />
+            <Route path="/oauth/google/client/callback" element={<ClientGoogleOAuthCallback />} />
             <Route 
               path="/dashboard" 
               element={

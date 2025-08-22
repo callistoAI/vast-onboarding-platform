@@ -180,6 +180,28 @@ export function DemoOnboardPage() {
     }
   };
 
+  const handleGoogleOAuth = () => {
+    // Google OAuth flow for clients
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const redirectUri = `${window.location.origin}/oauth/google/client/callback`;
+    const scope = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
+    
+    // Use the current onboarding link token as state parameter
+    // For demo purposes, we'll use a placeholder
+    const state = 'demo-onboarding-token'; // In production, this would be the actual link token
+    
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=${encodeURIComponent(clientId)}` +
+      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+      `&response_type=code` +
+      `&scope=${encodeURIComponent(scope)}` +
+      `&access_type=offline` +
+      `&prompt=consent` +
+      `&state=${encodeURIComponent(state)}`;
+    
+    window.open(googleAuthUrl, '_blank');
+  };
+
   const handlePermissionChange = (platform: string, permission: string, granted: boolean) => {
     setPlatformPermissions(prev => ({
       ...prev,
@@ -337,53 +359,50 @@ export function DemoOnboardPage() {
                   </div>
                 )}
               </div>
+            ) : platform === 'google' ? (
+              // Google OAuth connection for clients
+              <div className="space-y-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-blue-800 font-medium">Connect your Google account</p>
+                  <p className="text-blue-600 text-sm mt-1">
+                    Click the button below to authorize access to your Google account for this onboarding request.
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => handleGoogleOAuth()}
+                    className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-indigo-700 transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <span>Connect Google Account</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </button>
+                  <p className="text-xs text-gray-500 text-center">
+                    This will open Google's authorization page in a new tab
+                  </p>
+                </div>
+              </div>
             ) : (
               // Standard connection flow for other platforms
-              <>
-                {status === 'pending' && !isConnecting && (
-                  <div className="space-y-6">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <p className="text-blue-800 font-medium">Ready to connect {config.name}</p>
-                    </div>
-                    <div className="flex space-x-3">
-                      <button
-                        onClick={() => handleConnectPlatform(platform)}
-                        className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-black transition-colors flex items-center justify-center space-x-2"
-                      >
-                        <span>Connect</span>
-                        <ExternalLink className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleRejectPlatform(platform)}
-                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-                      >
-                        Skip
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {isConnecting && (
-                  <div className="py-8">
-                    <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-blue-700 font-medium">Connecting to {config.name}...</p>
-                  </div>
-                )}
-
-                {status === 'connected' && phase === 'connect' && (
-                  <div className="py-8">
-                    <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                    <p className="text-green-700 font-medium">Successfully connected!</p>
-                  </div>
-                )}
-
-                {status === 'rejected' && (
-                  <div className="py-8">
-                    <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
-                    <p className="text-orange-700 font-medium">Connection skipped</p>
-                  </div>
-                )}
-              </>
+              <div className="space-y-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-blue-800 font-medium">Ready to connect {config.name}</p>
+                </div>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => handleConnectPlatform(platform)}
+                    className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-black transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <span>Connect</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleRejectPlatform(platform)}
+                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                  >
+                    Skip
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         ) : (
