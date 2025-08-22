@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { CheckCircle, AlertCircle, ExternalLink, Copy, Mail, UserCheck, UserX, MoreVertical, Edit3, Users, X } from 'lucide-react';
+import { CheckCircle, AlertCircle, ExternalLink, Copy, Mail, UserCheck, UserX, MoreVertical, Edit3, Users, X, Plus, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
+import { buildGoogleOAuthUrl, generateState } from '../../lib/googleOAuth';
 
 type PlatformConnection = Database['public']['Tables']['platform_connections']['Row'];
 type TeamInvite = Database['public']['Tables']['team_invites']['Row'];
@@ -361,24 +362,30 @@ export function SettingsTab() {
 
   const handleConnect = async (platform: string) => {
     if (platform === 'google') {
-      // Google OAuth flow
-      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-      const redirectUri = `${window.location.origin}/oauth/google/callback`;
-      const scope = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
-      
-      const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-        `client_id=${encodeURIComponent(clientId)}` +
-        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-        `&response_type=code` +
-        `&scope=${encodeURIComponent(scope)}` +
-        `&access_type=offline` +
-        `&prompt=consent`;
-      
-      window.location.href = googleAuthUrl;
-      return;
+      try {
+        // Generate state parameter for admin flow
+        const state = generateState('admin');
+        
+        // Build OAuth URL with admin redirect
+        const oauthUrl = buildGoogleOAuthUrl({
+          type: 'admin',
+          redirectUri: `${window.location.origin}/oauth/google/callback`,
+          state
+        });
+        
+        // Store state in sessionStorage for verification in callback
+        sessionStorage.setItem('google_oauth_state', state);
+        
+        // Redirect to Google OAuth
+        window.location.href = oauthUrl;
+        return;
+      } catch (error) {
+        console.error('Failed to initiate Google OAuth:', error);
+        alert(`Failed to connect to Google: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        return;
+      }
     }
-
-    // For other platforms, keep the existing placeholder
+    
     const config = platformConfigs[platform as keyof typeof platformConfigs];
     if ('authUrl' in config) {
       alert(`Will be enabled after API access. Would redirect to ${config.authUrl}`);
@@ -756,7 +763,7 @@ export function SettingsTab() {
                             onClick={() => removeInvite(invite.id)}
                             className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
                           >
-                            <UserX className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" />
                             <span>Remove</span>
                           </button>
                         </div>

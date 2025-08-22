@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, CheckCircle, ExternalLink, Shield, AlertCircle, ChevronLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, ExternalLink, Shield, ChevronLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { buildGoogleOAuthUrl, generateState } from '../lib/googleOAuth';
 
 // Helper function for Shopify admin URLs
 const getShopifyAdminUrl = (storeId: string) => {
@@ -181,25 +182,25 @@ export function DemoOnboardPage() {
   };
 
   const handleGoogleOAuth = () => {
-    // Google OAuth flow for clients
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    const redirectUri = `${window.location.origin}/oauth/google/client/callback`;
-    const scope = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
-    
-    // Use the current onboarding link token as state parameter
-    // For demo purposes, we'll use a placeholder
-    const state = 'demo-onboarding-token'; // In production, this would be the actual link token
-    
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-      `client_id=${encodeURIComponent(clientId)}` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&response_type=code` +
-      `&scope=${encodeURIComponent(scope)}` +
-      `&access_type=offline` +
-      `&prompt=consent` +
-      `&state=${encodeURIComponent(state)}`;
-    
-    window.open(googleAuthUrl, '_blank');
+    try {
+      // Generate state parameter for client flow with onboarding token
+      // For demo purposes, we'll use a placeholder token
+      const onboardingToken = 'demo-onboarding-token'; // In production, this would be the actual link token
+      const state = generateState('client', onboardingToken);
+      
+      // Build OAuth URL with client redirect
+      const oauthUrl = buildGoogleOAuthUrl({
+        type: 'client',
+        redirectUri: `${window.location.origin}/oauth/google/client/callback`,
+        state
+      });
+      
+      // Open Google OAuth in new tab
+      window.open(oauthUrl, '_blank');
+    } catch (error) {
+      console.error('Failed to initiate Google OAuth:', error);
+      alert(`Failed to connect to Google: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   };
 
   const handlePermissionChange = (platform: string, permission: string, granted: boolean) => {
