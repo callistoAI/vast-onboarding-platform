@@ -1,153 +1,277 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
-export function ClientGoogleOAuthCallback() {
-  const navigate = useNavigate();
+interface AccessRequest {
+  id: string;
+  platform: string;
+  requestedScopes: string[];
+  requestedAt: string;
+  status: 'pending' | 'approved' | 'rejected';
+}
+
+export default function ClientGoogleOAuthCallback() {
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [accessRequests, setAccessRequests] = useState<AccessRequest[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
       try {
         const code = searchParams.get('code');
         const error = searchParams.get('error');
-        const state = searchParams.get('state'); // This contains the onboarding token
+        const state = searchParams.get('state'); // onboardingToken
 
         if (error) {
-          setErrorMessage('Authentication was cancelled or failed');
-          setStatus('error');
+          setError(`OAuth error: ${error}`);
+          setIsLoading(false);
           return;
         }
 
         if (!code) {
-          setErrorMessage('No authorization code received');
-          setStatus('error');
+          setError('No authorization code received from Google');
+          setIsLoading(false);
           return;
         }
 
         if (!state) {
-          setErrorMessage('No onboarding token received');
-          setStatus('error');
+          setError('No onboarding token received');
+          setIsLoading(false);
           return;
         }
 
-        // TODO: Replace with your actual backend API endpoint
-        // For now, we'll simulate the token exchange
-        const mockTokenData = {
-          access_token: 'mock_access_token_' + Math.random().toString(36).substr(2, 9),
-          refresh_token: 'mock_refresh_token_' + Math.random().toString(36).substr(2, 9),
-          expires_in: 3600,
-          scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
-        };
-
-        // In production, replace this with:
-        // const tokenResponse = await fetch('/api/google/oauth/client/token', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ 
-        //     code, 
-        //     redirect_uri: `${window.location.origin}/oauth/google/client/callback`,
-        //     state
-        //   }),
-        // });
-        // const tokenData = await tokenResponse.json();
-
-        const tokenData = mockTokenData;
-
-        // Get user info from Google
-        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-          headers: {
-            Authorization: `Bearer ${tokenData.access_token}`,
-          },
-        });
-
-        if (!userInfoResponse.ok) {
-          throw new Error('Failed to get user info from Google');
+        // Check if client ID is configured
+        const clientId = import.meta.env.VITE_NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+        if (!clientId || clientId.trim() === '') {
+          setError('Google OAuth is not properly configured. Please contact your administrator.');
+          setIsLoading(false);
+          return;
         }
 
-        const userInfo = await userInfoResponse.json();
+        // Exchange code for access token
+        const response = await fetch('/api/auth/google/client/callback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            code, 
+            onboardingToken: state,
+            redirect_uri: `${window.location.origin}/oauth/google/client/callback`
+          }),
+        });
 
-        // Store the client authorization in the database
-        const { error: dbError } = await supabase
-          .from('authorizations')
-          .upsert({
-            platform: 'google',
-            status: 'authorized',
-            scopes: tokenData.scope?.split(' ') || [],
-            token_data: {
-              access_token: tokenData.access_token,
-              refresh_token: tokenData.refresh_token,
-              expires_at: new Date(Date.now() + tokenData.expires_in * 1000).toISOString(),
-              user_info: {
-                id: userInfo.id,
-                email: userInfo.email,
-                name: userInfo.name,
-                picture: userInfo.picture,
-              },
-            },
-            // Note: client_id will be set by your backend based on the onboarding token
-            client_id: 'temp-client-id', // This should come from your backend
-          });
+        if (!response.ok) {
+          throw new Error('Failed to exchange code for token');
+        }
 
-        if (dbError) throw dbError;
-
-        setStatus('success');
+        const data = await response.json();
         
-        // Redirect back to the onboarding flow after 2 seconds
-        setTimeout(() => {
-          navigate(`/onboard/${state}`);
-        }, 2000);
+        if (data.access_token) {
+          // Store the access token
+          localStorage.setItem('client_google_access_token', data.access_token);
+          
+          // Fetch access requests for this client
+          await fetchAccessRequests(state);
+        } else {
+          throw new Error('No access token received');
+        }
 
-      } catch (error) {
-        console.error('Client OAuth callback error:', error);
-        setErrorMessage(error instanceof Error ? error.message : 'An unexpected error occurred');
-        setStatus('error');
+      } catch (err) {
+        console.error('Client OAuth callback error:', err);
+        setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     handleOAuthCallback();
   }, [searchParams, navigate]);
 
-  if (status === 'loading') {
+  const fetchAccessRequests = async (onboardingToken: string) => {
+    try {
+      // TODO: Replace with actual API call to fetch access requests
+      // For now, using placeholder data
+      const mockAccessRequests: AccessRequest[] = [
+        {
+          id: '1',
+          platform: 'Google Ads',
+          requestedScopes: ['https://www.googleapis.com/auth/adwords'],
+          requestedAt: new Date().toISOString(),
+          status: 'pending'
+        },
+        {
+          id: '2',
+          platform: 'Google Analytics',
+          requestedScopes: ['https://www.googleapis.com/auth/analytics.readonly'],
+          requestedAt: new Date().toISOString(),
+          status: 'pending'
+        }
+      ];
+      
+      setAccessRequests(mockAccessRequests);
+    } catch (err) {
+      console.error('Failed to fetch access requests:', err);
+      setError('Failed to load access requests');
+    }
+  };
+
+  const handleAccessRequest = async (requestId: string, approved: boolean) => {
+    setIsProcessing(true);
+    try {
+      // TODO: Replace with actual API call to approve/reject access request
+      const response = await fetch(`/api/access-requests/${requestId}/${approved ? 'approve' : 'reject'}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ onboardingToken: searchParams.get('state') }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to process access request');
+      }
+
+      // Update local state
+      setAccessRequests(prev => 
+        prev.map(req => 
+          req.id === requestId 
+            ? { ...req, status: approved ? 'approved' : 'rejected' }
+            : req
+        )
+      );
+
+      // Show success message
+      setTimeout(() => {
+        // Redirect to completion page or show success message
+        navigate('/onboarding/complete');
+      }, 2000);
+
+    } catch (err) {
+      console.error('Failed to process access request:', err);
+      setError('Failed to process access request');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full mx-4 text-center">
-          <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Connecting to Google</h2>
-          <p className="text-gray-600">Please wait while we complete your connection...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Completing Google authentication...</p>
         </div>
       </div>
     );
   }
 
-  if (status === 'error') {
+  if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full mx-4 text-center">
-          <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Connection Failed</h2>
-          <p className="text-gray-600 mb-6">{errorMessage}</p>
-          <button
-            onClick={() => navigate('/')}
-            className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors"
-          >
-            Return to Home
-          </button>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Authentication Failed</h3>
+            <p className="text-sm text-gray-500 mb-4">{error}</p>
+            <button
+              onClick={() => navigate('/')}
+              className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+            >
+              Return Home
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full mx-4 text-center">
-        <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Successfully Connected!</h2>
-        <p className="text-gray-600 mb-6">Your Google account has been connected successfully.</p>
-        <p className="text-sm text-gray-500">Redirecting you back to onboarding...</p>
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Access Request Review
+          </h1>
+          <p className="text-lg text-gray-600">
+            Please review and approve the access requests below to complete your onboarding.
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          {accessRequests.map((request) => (
+            <div key={request.id} className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">{request.platform}</h3>
+                  <p className="text-sm text-gray-500">
+                    Requested on {new Date(request.requestedAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  request.status === 'pending' 
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : request.status === 'approved'
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                </span>
+              </div>
+
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Requested Permissions:</h4>
+                <div className="space-y-2">
+                  {request.requestedScopes.map((scope, index) => (
+                    <div key={index} className="flex items-center text-sm text-gray-600">
+                      <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      {scope}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {request.status === 'pending' && (
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => handleAccessRequest(request.id, true)}
+                    disabled={isProcessing}
+                    className="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {isProcessing ? 'Processing...' : 'Approve Access'}
+                  </button>
+                  <button
+                    onClick={() => handleAccessRequest(request.id, false)}
+                    disabled={isProcessing}
+                    className="flex-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {isProcessing ? 'Processing...' : 'Reject Access'}
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {accessRequests.length === 0 && (
+          <div className="text-center py-12">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
+              <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Access Requests</h3>
+            <p className="text-gray-500">There are no pending access requests to review.</p>
+          </div>
+        )}
       </div>
     </div>
   );

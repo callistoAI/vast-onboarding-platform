@@ -6,12 +6,18 @@ export const GOOGLE_OAUTH_SCOPES = [
 
 // Build Google OAuth URL for admin flow
 export function buildAdminGoogleOAuthUrl(): string {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const clientId = import.meta.env.VITE_NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   const redirectUri = `${window.location.origin}/oauth/google/callback`;
   
-  if (!clientId) {
-    throw new Error('Google Client ID not configured');
+  if (!clientId || clientId.trim() === '') {
+    throw new Error('Google Client ID not configured. Please set VITE_NEXT_PUBLIC_GOOGLE_CLIENT_ID environment variable.');
   }
+  
+  // Debug logging (non-sensitive)
+  console.log('Google OAuth Admin Flow:', { 
+    clientId: clientId.substring(0, 10) + '...', 
+    redirectUri 
+  });
   
   const params = new URLSearchParams({
     client_id: clientId,
@@ -27,12 +33,19 @@ export function buildAdminGoogleOAuthUrl(): string {
 
 // Build Google OAuth URL for client flow
 export function buildClientGoogleOAuthUrl(onboardingToken: string): string {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const clientId = import.meta.env.VITE_NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   const redirectUri = `${window.location.origin}/oauth/google/client/callback`;
   
-  if (!clientId) {
-    throw new Error('Google Client ID not configured');
+  if (!clientId || clientId.trim() === '') {
+    throw new Error('Google Client ID not configured. Please set VITE_NEXT_PUBLIC_GOOGLE_CLIENT_ID environment variable.');
   }
+  
+  // Debug logging (non-sensitive)
+  console.log('Google OAuth Client Flow:', { 
+    clientId: clientId.substring(0, 10) + '...', 
+    redirectUri, 
+    onboardingToken 
+  });
   
   const params = new URLSearchParams({
     client_id: clientId,

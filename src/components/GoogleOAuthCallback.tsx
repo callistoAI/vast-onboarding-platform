@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
-export function GoogleOAuthCallback() {
-  const navigate = useNavigate();
+export default function GoogleOAuthCallback() {
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
@@ -16,131 +15,99 @@ export function GoogleOAuthCallback() {
         const error = searchParams.get('error');
 
         if (error) {
-          setErrorMessage('Authentication was cancelled or failed');
-          setStatus('error');
+          setError(`OAuth error: ${error}`);
+          setIsLoading(false);
           return;
         }
 
         if (!code) {
-          setErrorMessage('No authorization code received');
-          setStatus('error');
+          setError('No authorization code received from Google');
+          setIsLoading(false);
           return;
         }
 
-        // TODO: Replace with your actual backend API endpoint
-        // For now, we'll simulate the token exchange
-        const mockTokenData = {
-          access_token: 'mock_access_token_' + Math.random().toString(36).substr(2, 9),
-          refresh_token: 'mock_refresh_token_' + Math.random().toString(36).substr(2, 9),
-          expires_in: 3600,
-          scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
-        };
-
-        // In production, replace this with:
-        // const tokenResponse = await fetch('/api/google/oauth/admin/token', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ 
-        //     code, 
-        //     redirect_uri: `${window.location.origin}/oauth/google/callback`
-        //   }),
-        // });
-        // const tokenData = await tokenResponse.json();
-
-        const tokenData = mockTokenData;
-
-        // Get user info from Google
-        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-          headers: {
-            Authorization: `Bearer ${tokenData.access_token}`,
-          },
-        });
-
-        if (!userInfoResponse.ok) {
-          throw new Error('Failed to get user info from Google');
+        // Check if client ID is configured
+        const clientId = import.meta.env.VITE_NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+        if (!clientId || clientId.trim() === '') {
+          setError('Google OAuth is not properly configured. Please contact your administrator.');
+          setIsLoading(false);
+          return;
         }
 
-        const userInfo = await userInfoResponse.json();
+        // Exchange code for access token
+        const response = await fetch('/api/auth/google/callback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            code,
+            redirect_uri: `${window.location.origin}/oauth/google/callback`
+          }),
+        });
 
-        // Store the admin connection in the database
-        const { error: dbError } = await supabase
-          .from('platform_connections')
-          .upsert({
-            platform: 'google',
-            status: 'connected',
-            scopes: tokenData.scope?.split(' ') || [],
-            token_data: {
-              access_token: tokenData.access_token,
-              refresh_token: tokenData.refresh_token,
-              expires_at: new Date(Date.now() + tokenData.expires_in * 1000).toISOString(),
-              user_info: {
-                id: userInfo.id,
-                email: userInfo.email,
-                name: userInfo.name,
-                picture: userInfo.picture,
-              },
-            },
-            // Note: admin_id will be set by your backend based on the authenticated user
-            admin_id: 'temp-admin-id', // This should come from your backend
-          });
+        if (!response.ok) {
+          throw new Error('Failed to exchange code for token');
+        }
 
-        if (dbError) throw dbError;
-
-        setStatus('success');
+        const data = await response.json();
         
-        // Redirect back to admin settings after 2 seconds
-        setTimeout(() => {
-          navigate('/dashboard?tab=settings');
-        }, 2000);
+        // Store the access token or handle authentication
+        if (data.access_token) {
+          // You can store this in localStorage or your auth state
+          localStorage.setItem('google_access_token', data.access_token);
+          
+          // Redirect to admin dashboard
+          navigate('/admin/dashboard');
+        } else {
+          throw new Error('No access token received');
+        }
 
-      } catch (error) {
-        console.error('Admin OAuth callback error:', error);
-        setErrorMessage(error instanceof Error ? error.message : 'An unexpected error occurred');
-        setStatus('error');
+      } catch (err) {
+        console.error('OAuth callback error:', err);
+        setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     handleOAuthCallback();
   }, [searchParams, navigate]);
 
-  if (status === 'loading') {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full mx-4 text-center">
-          <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Connecting to Google</h2>
-          <p className="text-gray-600">Please wait while we complete your connection...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Completing Google authentication...</p>
         </div>
       </div>
     );
   }
 
-  if (status === 'error') {
+  if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full mx-4 text-center">
-          <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Connection Failed</h2>
-          <p className="text-gray-600 mb-6">{errorMessage}</p>
-          <button
-            onClick={() => navigate('/dashboard?tab=settings')}
-            className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors"
-          >
-            Return to Dashboard
-          </button>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Authentication Failed</h3>
+            <p className="text-sm text-gray-500 mb-4">{error}</p>
+            <button
+              onClick={() => navigate('/admin')}
+              className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+            >
+              Return to Admin
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full mx-4 text-center">
-        <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Successfully Connected!</h2>
-        <p className="text-gray-600 mb-6">Your Google account has been connected successfully.</p>
-        <p className="text-sm text-gray-500">Redirecting you back to the dashboard...</p>
-      </div>
-    </div>
-  );
+  return null;
 }
