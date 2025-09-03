@@ -55,6 +55,8 @@ export function SettingsTab() {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'invited' | 'expired'>('all');
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<'all' | 'admin' | 'editor' | 'viewer'>('all');
   const [showCopyNotification, setShowCopyNotification] = useState(false);
+  const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
+  const [platformToDisconnect, setPlatformToDisconnect] = useState<string | null>(null);
   const { profile } = useAuth();
 
   const fetchConnections = useCallback(async () => {
@@ -458,18 +460,40 @@ export function SettingsTab() {
     }
   };
 
-  const handleDisconnect = async (platform: string) => {
+  const handleDisconnect = (platform: string) => {
+    setPlatformToDisconnect(platform);
+    setShowDisconnectConfirm(true);
+  };
+
+  const confirmDisconnect = async () => {
+    if (!platformToDisconnect) return;
+    
     try {
       const { error } = await supabase
         .from('platform_connections')
-        .update({ status: 'disconnected' })
-        .eq('platform', platform);
+        .update({ 
+          status: 'disconnected',
+          updated_at: new Date().toISOString()
+        })
+        .eq('platform', platformToDisconnect);
 
       if (error) throw error;
-      fetchConnections();
+      
+      // Refresh connections to update UI
+      await fetchConnections();
+      
+      // Close confirmation dialog
+      setShowDisconnectConfirm(false);
+      setPlatformToDisconnect(null);
     } catch (error) {
       console.error('Error disconnecting platform:', error);
+      alert('Failed to disconnect platform. Please try again.');
     }
+  };
+
+  const cancelDisconnect = () => {
+    setShowDisconnectConfirm(false);
+    setPlatformToDisconnect(null);
   };
 
   const getConnectionStatus = (platform: string) => {
@@ -916,6 +940,38 @@ export function SettingsTab() {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Disconnect Confirmation Dialog */}
+      {showDisconnectConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-2">Disconnect Platform</h3>
+              <p className="text-gray-600">
+                Are you sure you want to disconnect {platformToDisconnect && platformConfigs[platformToDisconnect as keyof typeof platformConfigs]?.name}? 
+                This will remove the connection and prevent client authorization flows.
+              </p>
+            </div>
+            <div className="flex space-x-3">
+              <button
+                onClick={cancelDisconnect}
+                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDisconnect}
+                className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors"
+              >
+                Disconnect
+              </button>
+            </div>
           </div>
         </div>
       )}
