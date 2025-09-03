@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../hooks/useAuth';
 
 export default function GoogleOAuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,28 +36,58 @@ export default function GoogleOAuthCallback() {
           return;
         }
 
-        // Exchange code for access token
-        const response = await fetch('/api/auth/google/callback', {
+        // Exchange code for access token using Google's token endpoint
+        const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: JSON.stringify({ 
-            code,
-            redirect_uri: `${window.location.origin}/oauth/google/callback`
+          body: new URLSearchParams({
+            client_id: clientId,
+            client_secret: import.meta.env.GOOGLE_CLIENT_SECRET,
+            redirect_uri: `${window.location.origin}/oauth/google/callback`,
+            grant_type: 'authorization_code',
+            code: code
           }),
         });
 
-        if (!response.ok) {
+        if (!tokenResponse.ok) {
           throw new Error('Failed to exchange code for token');
         }
 
-        const data = await response.json();
+        const tokenData = await tokenResponse.json();
         
-        // Store the access token or handle authentication
-        if (data.access_token) {
-          // You can store this in localStorage or your auth state
-          localStorage.setItem('google_access_token', data.access_token);
+        if (tokenData.access_token) {
+          // Get user info from Google
+          const userResponse = await fetch(`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${tokenData.access_token}`);
+          const userData = await userResponse.json();
+          
+          // Save connection to database
+          if (user?.id) {
+            const { error: dbError } = await supabase
+              .from('platform_connections')
+              .upsert({
+                platform: 'google',
+                status: 'connected',
+                connection_data: {
+                  access_token: tokenData.access_token,
+                  refresh_token: tokenData.refresh_token,
+                  user_id: userData.id,
+                  user_name: userData.name,
+                  user_email: userData.email,
+                  expires_in: tokenData.expires_in,
+                  token_type: tokenData.token_type
+                },
+                connected_by: user.id
+              }, {
+                onConflict: 'platform,connected_by'
+              });
+
+            if (dbError) {
+              console.error('Database error:', dbError);
+              throw new Error('Failed to save connection to database');
+            }
+          }
           
           // Redirect to admin dashboard
           navigate('/admin/dashboard');

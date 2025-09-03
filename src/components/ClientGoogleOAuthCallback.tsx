@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 interface AccessRequest {
   id: string;
@@ -50,28 +51,68 @@ export default function ClientGoogleOAuthCallback() {
           return;
         }
 
-        // Exchange code for access token
-        const response = await fetch('/api/auth/google/client/callback', {
+        // Exchange code for access token using Google's token endpoint
+        const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: JSON.stringify({ 
-            code, 
-            onboardingToken: state,
-            redirect_uri: `${window.location.origin}/oauth/google/client/callback`
+          body: new URLSearchParams({
+            client_id: clientId,
+            client_secret: import.meta.env.GOOGLE_CLIENT_SECRET,
+            redirect_uri: `${window.location.origin}/oauth/google/client/callback`,
+            grant_type: 'authorization_code',
+            code: code
           }),
         });
 
-        if (!response.ok) {
+        if (!tokenResponse.ok) {
           throw new Error('Failed to exchange code for token');
         }
 
-        const data = await response.json();
+        const tokenData = await tokenResponse.json();
         
-        if (data.access_token) {
-          // Store the access token
-          localStorage.setItem('client_google_access_token', data.access_token);
+        if (tokenData.access_token) {
+          // Get user info from Google
+          const userResponse = await fetch(`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${tokenData.access_token}`);
+          const userData = await userResponse.json();
+          
+          // Find the client by onboarding token
+          const { data: onboardingLink, error: linkError } = await supabase
+            .from('onboarding_links')
+            .select('*')
+            .eq('link_token', state)
+            .single();
+
+          if (linkError || !onboardingLink) {
+            throw new Error('Invalid onboarding token');
+          }
+
+          // Save authorization to database
+          const { error: authError } = await supabase
+            .from('authorizations')
+            .upsert({
+              client_id: onboardingLink.used_by || onboardingLink.created_by,
+              platform: 'google',
+              status: 'authorized',
+              scopes: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/adwords', 'https://www.googleapis.com/auth/analytics.readonly'],
+              token_data: {
+                access_token: tokenData.access_token,
+                refresh_token: tokenData.refresh_token,
+                user_id: userData.id,
+                user_name: userData.name,
+                user_email: userData.email,
+                expires_in: tokenData.expires_in,
+                token_type: tokenData.token_type
+              }
+            }, {
+              onConflict: 'client_id,platform'
+            });
+
+          if (authError) {
+            console.error('Database error:', authError);
+            throw new Error('Failed to save authorization to database');
+          }
           
           // Fetch access requests for this client
           await fetchAccessRequests(state);
@@ -92,26 +133,38 @@ export default function ClientGoogleOAuthCallback() {
 
   const fetchAccessRequests = async (onboardingToken: string) => {
     try {
-      // TODO: Replace with actual API call to fetch access requests
-      // For now, using placeholder data
-      const mockAccessRequests: AccessRequest[] = [
-        {
-          id: '1',
-          platform: 'Google Ads',
-          requestedScopes: ['https://www.googleapis.com/auth/adwords'],
-          requestedAt: new Date().toISOString(),
-          status: 'pending'
-        },
-        {
-          id: '2',
-          platform: 'Google Analytics',
-          requestedScopes: ['https://www.googleapis.com/auth/analytics.readonly'],
-          requestedAt: new Date().toISOString(),
-          status: 'pending'
-        }
-      ];
+      // Find the onboarding link to get the client ID
+      const { data: onboardingLink, error: linkError } = await supabase
+        .from('onboarding_links')
+        .select('*')
+        .eq('link_token', onboardingToken)
+        .single();
+
+      if (linkError || !onboardingLink) {
+        throw new Error('Invalid onboarding token');
+      }
+
+      // Fetch authorizations for this client
+      const { data: authorizations, error: authError } = await supabase
+        .from('authorizations')
+        .select('*')
+        .eq('client_id', onboardingLink.used_by || onboardingLink.created_by)
+        .eq('platform', 'google');
+
+      if (authError) {
+        throw new Error('Failed to fetch authorizations');
+      }
+
+      // Convert to AccessRequest format
+      const accessRequests: AccessRequest[] = authorizations.map(auth => ({
+        id: auth.id,
+        platform: 'Google Business',
+        requestedScopes: auth.scopes || [],
+        requestedAt: auth.created_at,
+        status: auth.status as 'pending' | 'approved' | 'rejected'
+      }));
       
-      setAccessRequests(mockAccessRequests);
+      setAccessRequests(accessRequests);
     } catch (err) {
       console.error('Failed to fetch access requests:', err);
       setError('Failed to load access requests');
@@ -121,17 +174,17 @@ export default function ClientGoogleOAuthCallback() {
   const handleAccessRequest = async (requestId: string, approved: boolean) => {
     setIsProcessing(true);
     try {
-      // TODO: Replace with actual API call to approve/reject access request
-      const response = await fetch(`/api/access-requests/${requestId}/${approved ? 'approve' : 'reject'}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ onboardingToken: searchParams.get('state') }),
-      });
+      // Update the authorization status in the database
+      const { error: updateError } = await supabase
+        .from('authorizations')
+        .update({ 
+          status: approved ? 'authorized' : 'pending',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', requestId);
 
-      if (!response.ok) {
-        throw new Error('Failed to process access request');
+      if (updateError) {
+        throw new Error('Failed to update authorization status');
       }
 
       // Update local state
