@@ -16,10 +16,10 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret_here
 
 # Meta OAuth Configuration
 # This should be your Meta App ID from Facebook Developer Console
-VITE_NEXT_PUBLIC_META_APP_ID=your_meta_app_id_here
+VITE_NEXT_PUBLIC_META_APP_ID=1705757330127767
 
 # Server-side Meta App Secret (keep this secure, not exposed to browser)
-META_APP_SECRET=your_meta_app_secret_here
+META_APP_SECRET=f9d4b19f16381c81196c39e47eb9f86d
 
 # Supabase Configuration
 VITE_SUPABASE_URL=your_supabase_url_here
