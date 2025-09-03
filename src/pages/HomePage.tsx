@@ -44,9 +44,9 @@ export function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-3">
@@ -66,7 +66,7 @@ export function HomePage() {
             </div>
             <button
               onClick={() => navigate('/auth')}
-              className="px-6 py-2.5 text-sm font-medium text-gray-300 hover:text-white border border-gray-600 rounded-xl hover:bg-gray-700 transition-colors"
+              className="px-6 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
             >
               Sign In
             </button>
@@ -77,13 +77,13 @@ export function HomePage() {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-white mb-6 leading-tight">
+          <h2 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
             Welcome to Vast Onboarding
           </h2>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed mb-4">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed mb-4">
             This is a demo version using dummy data for UI review purposes only.
           </p>
-          <p className="text-sm text-gray-400 max-w-xl mx-auto">
+          <p className="text-sm text-gray-500 max-w-xl mx-auto">
             Please use the feedback button in the bottom right corner to submit any UI feedback or suggestions.
           </p>
         </div>
@@ -91,11 +91,11 @@ export function HomePage() {
         {/* Demo Cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {/* Admin Dashboard */}
-          <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
             <div className="flex items-center justify-center w-16 h-16 bg-cyan-500 rounded-xl mb-6 mx-auto">
               <Shield className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-white text-center mb-6">
+            <h3 className="text-xl font-semibold text-gray-900 text-center mb-6">
               Admin Dashboard
             </h3>
             <button
@@ -108,11 +108,11 @@ export function HomePage() {
           </div>
 
           {/* Client Dashboard */}
-          <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
             <div className="flex items-center justify-center w-16 h-16 bg-sky-500 rounded-xl mb-6 mx-auto">
               <Users className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-white text-center mb-6">
+            <h3 className="text-xl font-semibold text-gray-900 text-center mb-6">
               Client Dashboard
             </h3>
             <button
@@ -125,11 +125,11 @@ export function HomePage() {
           </div>
 
           {/* Demo Flow */}
-          <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
             <div className="flex items-center justify-center w-16 h-16 bg-purple-500 rounded-xl mb-6 mx-auto">
               <Play className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-white text-center mb-6">
+            <h3 className="text-xl font-semibold text-gray-900 text-center mb-6">
               Demo Flow
             </h3>
             <button
