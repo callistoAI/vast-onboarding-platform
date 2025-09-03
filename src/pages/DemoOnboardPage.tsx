@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, CheckCircle, ExternalLink, Shield, ChevronLeft } from 'lucide-react';
+import { ArrowRight, CheckCircle, ExternalLink, Shield, ChevronLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { buildClientGoogleOAuthUrl } from '../lib/googleOAuth';
+import { buildClientMetaOAuthUrl } from '../lib/metaOAuth';
 
 // Helper function for Shopify admin URLs
 const getShopifyAdminUrl = (storeId: string) => {
@@ -197,6 +198,22 @@ export function DemoOnboardPage() {
     }
   };
 
+  const handleMetaOAuth = () => {
+    try {
+      // For demo purposes, we'll use a placeholder token
+      const onboardingToken = 'demo-onboarding-token'; // In production, this would be the actual link token
+      
+      // Build OAuth URL with onboarding token as state
+      const oauthUrl = buildClientMetaOAuthUrl(onboardingToken);
+      
+      // Open Meta OAuth in new tab
+      window.open(oauthUrl, '_blank');
+    } catch (error) {
+      console.error('Failed to initiate Meta OAuth:', error);
+      alert(`Failed to connect to Meta: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
   const handlePermissionChange = (platform: string, permission: string, granted: boolean) => {
     setPlatformPermissions(prev => ({
       ...prev,
@@ -373,6 +390,28 @@ export function DemoOnboardPage() {
                   </button>
                   <p className="text-xs text-gray-500 text-center">
                     This will open Google's authorization page in a new tab
+                  </p>
+                </div>
+              </div>
+            ) : platform === 'meta' ? (
+              // Meta OAuth connection for clients
+              <div className="space-y-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-blue-800 font-medium">Connect your Meta Business account</p>
+                  <p className="text-blue-600 text-sm mt-1">
+                    Click the button below to authorize access to your Facebook and Instagram business accounts for this onboarding request.
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => handleMetaOAuth()}
+                    className="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <span>Connect Meta Business Account</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </button>
+                  <p className="text-xs text-gray-500 text-center">
+                    This will open Meta's authorization page in a new tab
                   </p>
                 </div>
               </div>

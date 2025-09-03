@@ -10,6 +10,8 @@ import TermsPage from './pages/TermsPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import GoogleOAuthCallback from './components/GoogleOAuthCallback';
 import ClientGoogleOAuthCallback from './components/ClientGoogleOAuthCallback';
+import MetaOAuthCallback from './components/MetaOAuthCallback';
+import ClientMetaOAuthCallback from './components/ClientMetaOAuthCallback';
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/oauth/google/callback" element={<GoogleOAuthCallback />} />
             <Route path="/oauth/google/client/callback" element={<ClientGoogleOAuthCallback />} />
+            <Route path="/oauth/meta/callback" element={<MetaOAuthCallback />} />
+            <Route path="/oauth/meta/client/callback" element={<ClientMetaOAuthCallback />} />
             <Route 
               path="/dashboard" 
               element={

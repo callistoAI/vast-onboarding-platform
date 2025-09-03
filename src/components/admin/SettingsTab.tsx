@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
 import { buildAdminGoogleOAuthUrl } from '../../lib/googleOAuth';
+import { buildAdminMetaOAuthUrl } from '../../lib/metaOAuth';
 
 type PlatformConnection = Database['public']['Tables']['platform_connections']['Row'];
 type TeamInvite = Database['public']['Tables']['team_invites']['Row'];
@@ -393,6 +394,42 @@ export function SettingsTab() {
       } catch (error) {
         console.error('Failed to initiate Google OAuth:', error);
         alert(`Failed to connect to Google: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        return;
+      }
+    }
+
+    if (platform === 'meta') {
+      try {
+        // Check if environment variables are configured
+        const clientId = import.meta.env.VITE_NEXT_PUBLIC_META_APP_ID;
+        console.log('Meta Environment check:', {
+          hasClientId: !!clientId,
+          clientIdLength: clientId?.length,
+          origin: window.location.origin
+        });
+        
+        if (!clientId || clientId.trim() === '') {
+          alert('Meta OAuth is not configured. Please check your environment variables.');
+          return;
+        }
+
+        // Build and redirect to Meta OAuth
+        const oauthUrl = buildAdminMetaOAuthUrl();
+        console.log('Redirecting to Meta OAuth:', oauthUrl);
+        
+        // Test the URL before redirecting
+        try {
+          new URL(oauthUrl);
+          console.log('Meta OAuth URL is valid, redirecting...');
+          window.location.href = oauthUrl;
+        } catch (urlError) {
+          console.error('Invalid Meta OAuth URL:', urlError);
+          alert('Generated Meta OAuth URL is invalid. Please check the configuration.');
+        }
+        return;
+      } catch (error) {
+        console.error('Failed to initiate Meta OAuth:', error);
+        alert(`Failed to connect to Meta: ${error instanceof Error ? error.message : 'Unknown error'}`);
         return;
       }
     }
