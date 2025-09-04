@@ -71,7 +71,7 @@ export default function ClientMetaOAuthCallback() {
           },
           body: new URLSearchParams({
             client_id: clientId,
-            client_secret: import.meta.env.META_APP_SECRET,
+            client_secret: import.meta.env.VITE_META_APP_SECRET,
             redirect_uri: `${window.location.origin}/oauth/meta/client/callback`,
             code: code
           }),

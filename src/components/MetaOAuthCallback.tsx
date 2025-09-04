@@ -38,7 +38,7 @@ export default function MetaOAuthCallback() {
         }
 
         // Exchange code for access token using Meta's token endpoint
-        const clientSecret = import.meta.env.META_APP_SECRET;
+        const clientSecret = import.meta.env.VITE_META_APP_SECRET;
         const redirectUri = `${window.location.origin}/oauth/meta/callback`;
         
         console.log('Meta OAuth Token Exchange:', {
