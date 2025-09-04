@@ -3,11 +3,13 @@ export const handler = async (event, context) => {
     statusCode: 200,
     headers: {
       'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
     },
     body: JSON.stringify({
-      message: 'Hello from Netlify Function!',
+      message: 'Simple test function is working!',
       timestamp: new Date().toISOString(),
       method: event.httpMethod,
+      path: event.path
     })
   };
 };
