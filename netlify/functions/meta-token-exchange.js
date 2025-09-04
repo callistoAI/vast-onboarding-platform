@@ -56,7 +56,8 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 400,
         headers: {
-          'Access-Control-Allow-Origin': '*'
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ error: 'Missing required parameters: code and redirectUri' })
       };
@@ -81,7 +82,8 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 500,
         headers: {
-          'Access-Control-Allow-Origin': '*'
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
           error: 'Meta OAuth not properly configured',
