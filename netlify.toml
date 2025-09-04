@@ -2,7 +2,7 @@
   functions = "netlify/functions"
   publish = "dist"
 
-# SPA routing - redirect all non-function requests to index.html
+# SPA routing - redirect all requests to index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
