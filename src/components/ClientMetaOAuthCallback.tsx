@@ -63,29 +63,30 @@ export default function ClientMetaOAuthCallback() {
           return;
         }
 
-        // Exchange code for access token using Meta's token endpoint
-        const tokenResponse = await fetch('https://graph.facebook.com/v18.0/oauth/access_token', {
+        // Exchange code for access token using server-side function
+        const redirectUri = `${window.location.origin}/oauth/meta/client/callback`;
+        
+        const tokenResponse = await fetch('/.netlify/functions/meta-token-exchange', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
-          body: new URLSearchParams({
-            client_id: clientId,
-            client_secret: import.meta.env.VITE_META_APP_SECRET,
-            redirect_uri: `${window.location.origin}/oauth/meta/client/callback`,
-            code: code
+          body: JSON.stringify({
+            code: code,
+            redirectUri: redirectUri
           }),
         });
 
         if (!tokenResponse.ok) {
-          throw new Error('Failed to exchange code for token');
+          const errorData = await tokenResponse.json();
+          throw new Error(`Failed to exchange code for token: ${errorData.details || errorData.error}`);
         }
 
         const tokenData = await tokenResponse.json();
         
         if (tokenData.access_token) {
           // Get user info from Meta
-          const userResponse = await fetch(`https://graph.facebook.com/v18.0/me?access_token=${tokenData.access_token}&fields=id,name,email`);
+          const userResponse = await fetch(`https://graph.facebook.com/v21.0/me?access_token=${tokenData.access_token}&fields=id,name,email`);
           const userData = await userResponse.json();
           
           // Find the client by onboarding token

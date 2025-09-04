@@ -37,37 +37,32 @@ export default function MetaOAuthCallback() {
           return;
         }
 
-        // Exchange code for access token using Meta's token endpoint
-        const clientSecret = import.meta.env.VITE_META_APP_SECRET;
+        // Exchange code for access token using server-side function
         const redirectUri = `${window.location.origin}/oauth/meta/callback`;
         
         console.log('Meta OAuth Token Exchange:', {
           clientId: clientId.substring(0, 10) + '...',
-          hasClientSecret: !!clientSecret,
           redirectUri,
           code: code.substring(0, 10) + '...'
         });
 
-        const tokenResponse = await fetch('https://graph.facebook.com/v21.0/oauth/access_token', {
+        const tokenResponse = await fetch('/.netlify/functions/meta-token-exchange', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
-          body: new URLSearchParams({
-            client_id: clientId,
-            client_secret: clientSecret,
-            redirect_uri: redirectUri,
-            code: code
+          body: JSON.stringify({
+            code: code,
+            redirectUri: redirectUri
           }),
         });
 
         console.log('Token response status:', tokenResponse.status);
-        console.log('Token response headers:', Object.fromEntries(tokenResponse.headers.entries()));
 
         if (!tokenResponse.ok) {
-          const errorText = await tokenResponse.text();
-          console.error('Token exchange error:', errorText);
-          throw new Error(`Failed to exchange code for token: ${tokenResponse.status} - ${errorText}`);
+          const errorData = await tokenResponse.json();
+          console.error('Token exchange error:', errorData);
+          throw new Error(`Failed to exchange code for token: ${tokenResponse.status} - ${errorData.details || errorData.error}`);
         }
 
         const tokenData = await tokenResponse.json();
