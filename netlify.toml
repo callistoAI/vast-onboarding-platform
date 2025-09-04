@@ -1,12 +1,8 @@
 [build]
-  functions = "netlify/functions"
+  functions = "functions"
   publish = "dist"
 
-[[redirects]]
-  from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
+# SPA routing - redirect all non-function requests to index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
