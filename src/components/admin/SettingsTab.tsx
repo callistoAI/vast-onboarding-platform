@@ -5,6 +5,7 @@ import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
 import { buildAdminGoogleOAuthUrl } from '../../lib/googleOAuth';
 import { buildAdminMetaOAuthUrl } from '../../lib/metaOAuth';
+import MetaDebugTest from '../MetaDebugTest';
 
 type PlatformConnection = Database['public']['Tables']['platform_connections']['Row'];
 type TeamInvite = Database['public']['Tables']['team_invites']['Row'];
@@ -583,6 +584,12 @@ export function SettingsTab() {
           <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
           <p className="text-gray-600 mt-1">Manage platform connections, team members, and account settings</p>
         </div>
+      </div>
+
+      {/* Debug Section - Temporary */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-yellow-800 mb-2">Meta OAuth Debug (Temporary)</h3>
+        <MetaDebugTest />
       </div>
 
       {/* Copy Notification */}

@@ -40,12 +40,15 @@ export default function MetaOAuthCallback() {
         // Exchange code for access token directly with Meta
         const clientSecret = import.meta.env.VITE_META_APP_SECRET;
         const redirectUri = `${window.location.origin}/oauth/meta/callback`;
+        console.log('Constructed redirect URI:', redirectUri);
         
         console.log('Meta OAuth Token Exchange:', {
           clientId: clientId.substring(0, 10) + '...',
           hasClientSecret: !!clientSecret,
           redirectUri,
-          code: code.substring(0, 10) + '...'
+          code: code.substring(0, 10) + '...',
+          allEnvVars: Object.keys(import.meta.env).filter(key => key.includes('META')),
+          clientSecretValue: clientSecret ? clientSecret.substring(0, 10) + '...' : 'undefined'
         });
 
         if (!clientSecret) {
