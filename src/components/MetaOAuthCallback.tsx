@@ -84,9 +84,20 @@ export default function MetaOAuthCallback() {
             userEmail: userData.email
           });
           
+          // Get current user from Supabase
+          const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+          console.log('Current user check:', { 
+            hasUser: !!user, 
+            hasCurrentUser: !!currentUser,
+            userId: user?.id,
+            currentUserId: currentUser?.id,
+            userError 
+          });
+
           // Save connection to database
-          if (user?.id) {
-            console.log('Saving connection for user:', user.id);
+          const userId = user?.id || currentUser?.id;
+          if (userId) {
+            console.log('Saving connection for user:', userId);
             const { error: dbError } = await supabase
               .from('platform_connections')
               .upsert({
@@ -100,7 +111,7 @@ export default function MetaOAuthCallback() {
                   expires_in: tokenData.expires_in,
                   token_type: tokenData.token_type
                 },
-                connected_by: user.id
+                connected_by: userId
               }, {
                 onConflict: 'platform,connected_by'
               });
