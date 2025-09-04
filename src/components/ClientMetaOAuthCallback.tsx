@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { META_ACCESS_REQUEST_OPTIONS, getEnabledMetaScopes } from '../lib/metaAccessRequests';
+import { META_ACCESS_REQUEST_OPTIONS, getEnabledMetaScopes, decodeSelectedOptionsState, getScopesForSelectedOptions } from '../lib/metaAccessRequests';
 
 interface AccessRequest {
   id: string;
@@ -44,6 +44,17 @@ export default function ClientMetaOAuthCallback() {
           return;
         }
 
+        // Parse state to get onboarding token and selected options
+        const [onboardingToken, encodedState] = state.split('|');
+        if (!onboardingToken) {
+          setError('Invalid state format');
+          setIsLoading(false);
+          return;
+        }
+
+        // Decode selected options from state
+        const selectedOptions = encodedState ? decodeSelectedOptionsState(encodedState) : [];
+
         // Check if client ID is configured
         const clientId = import.meta.env.VITE_NEXT_PUBLIC_META_APP_ID;
         if (!clientId || clientId.trim() === '') {
@@ -81,28 +92,34 @@ export default function ClientMetaOAuthCallback() {
           const { data: onboardingLink, error: linkError } = await supabase
             .from('onboarding_links')
             .select('*')
-            .eq('link_token', state)
+            .eq('link_token', onboardingToken)
             .single();
 
           if (linkError || !onboardingLink) {
             throw new Error('Invalid onboarding token');
           }
 
-          // Save authorization to database with enabled scopes
+          // Get scopes for the selected options
+          const scopes = selectedOptions.length > 0 
+            ? getScopesForSelectedOptions(selectedOptions)
+            : getEnabledMetaScopes();
+
+          // Save authorization to database with selected options scopes
           const { error: authError } = await supabase
             .from('authorizations')
             .upsert({
               client_id: onboardingLink.used_by || onboardingLink.created_by,
               platform: 'meta',
               status: 'authorized',
-              scopes: getEnabledMetaScopes(),
+              scopes: scopes,
               token_data: {
                 access_token: tokenData.access_token,
                 user_id: userData.id,
                 user_name: userData.name,
                 user_email: userData.email,
                 expires_in: tokenData.expires_in,
-                token_type: tokenData.token_type
+                token_type: tokenData.token_type,
+                selected_options: selectedOptions
               }
             }, {
               onConflict: 'client_id,platform'
@@ -114,7 +131,7 @@ export default function ClientMetaOAuthCallback() {
           }
           
           // Fetch access requests for this client
-          await fetchAccessRequests(state);
+          await fetchAccessRequests(onboardingToken);
         } else {
           throw new Error('No access token received');
         }
@@ -156,10 +173,23 @@ export default function ClientMetaOAuthCallback() {
 
       // Convert to AccessRequest format with Meta access request options
       const accessRequests: AccessRequest[] = authorizations.map(auth => {
-        // Map scopes to human-readable access request options
-        const requestedOptions = META_ACCESS_REQUEST_OPTIONS
-          .filter(option => option.enabled && auth.scopes?.some(scope => option.scopes.includes(scope)))
-          .map(option => option.name);
+        // Get selected options from token_data or map from scopes
+        let requestedOptions: string[] = [];
+        
+        if (auth.token_data && typeof auth.token_data === 'object' && 'selected_options' in auth.token_data) {
+          // Use stored selected options
+          const selectedOptions = (auth.token_data as any).selected_options || [];
+          requestedOptions = selectedOptions
+            .map((optionId: string) => {
+              const option = META_ACCESS_REQUEST_OPTIONS.find(opt => opt.id === optionId);
+              return option ? option.name : optionId;
+            });
+        } else {
+          // Fallback: map scopes to human-readable access request options
+          requestedOptions = META_ACCESS_REQUEST_OPTIONS
+            .filter(option => option.enabled && auth.scopes?.some(scope => option.scopes.includes(scope)))
+            .map(option => option.name);
+        }
         
         return {
           id: auth.id,

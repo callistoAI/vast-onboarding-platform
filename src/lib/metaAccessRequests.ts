@@ -14,7 +14,7 @@ export const META_ACCESS_REQUEST_OPTIONS: MetaAccessRequestOption[] = [
     name: 'Ad Account',
     description: 'Access to manage Facebook and Instagram ad campaigns',
     enabled: true,
-    scopes: ['ads_read', 'ads_management'],
+    scopes: ['business_management', 'ads_read'],
     category: 'ads'
   },
   {
@@ -26,20 +26,7 @@ export const META_ACCESS_REQUEST_OPTIONS: MetaAccessRequestOption[] = [
       'pages_show_list',
       'pages_read_engagement',
       'pages_manage_posts',
-      'pages_manage_metadata',
-      'pages_read_user_content',
-      'pages_manage_events',
-      'pages_manage_instant_articles',
-      'pages_manage_cta',
-      'pages_manage_lead_ads',
-      'pages_manage_ads',
-      'pages_manage_metadata',
-      'pages_read_engagement',
-      'pages_manage_posts',
-      'pages_manage_instant_articles',
-      'pages_manage_cta',
-      'pages_manage_lead_ads',
-      'pages_manage_ads'
+      'pages_manage_metadata'
     ],
     category: 'pages'
   },
@@ -48,7 +35,7 @@ export const META_ACCESS_REQUEST_OPTIONS: MetaAccessRequestOption[] = [
     name: 'Instagram Account',
     description: 'Access to manage Instagram Business accounts and content',
     enabled: false, // Disabled for now - coming later
-    scopes: ['instagram_basic', 'instagram_manage_insights', 'instagram_manage_comments'],
+    scopes: ['instagram_basic', 'pages_show_list'], // pages_show_list needed to traverse Page→IG
     category: 'instagram'
   },
   {
@@ -56,7 +43,7 @@ export const META_ACCESS_REQUEST_OPTIONS: MetaAccessRequestOption[] = [
     name: 'Catalog',
     description: 'Access to manage product catalogs for Facebook and Instagram Shopping',
     enabled: false, // Disabled for now - coming later
-    scopes: ['catalog_management'],
+    scopes: ['ads_management'], // Only if supporting management, otherwise keep disabled
     category: 'catalog'
   },
   {
@@ -64,7 +51,7 @@ export const META_ACCESS_REQUEST_OPTIONS: MetaAccessRequestOption[] = [
     name: 'Dataset',
     description: 'Access to manage datasets for advanced analytics and custom audiences',
     enabled: false, // Disabled for now - coming later
-    scopes: ['business_management'],
+    scopes: ['ads_management'], // Only if supporting management, otherwise keep disabled
     category: 'dataset'
   }
 ];
@@ -96,4 +83,88 @@ export function isMetaAccessRequestOptionEnabled(optionId: string): boolean {
 // Get option by ID
 export function getMetaAccessRequestOption(optionId: string): MetaAccessRequestOption | undefined {
   return META_ACCESS_REQUEST_OPTIONS.find(opt => opt.id === optionId);
+}
+
+// Get scopes for selected access request options
+export function getScopesForSelectedOptions(selectedOptions: string[]): string[] {
+  const scopes = selectedOptions
+    .map(optionId => {
+      const option = getMetaAccessRequestOption(optionId);
+      return option?.enabled ? option.scopes : [];
+    })
+    .flat();
+  
+  // Remove duplicates and return
+  return [...new Set(scopes)];
+}
+
+// Encode selected options into state for OAuth
+export function encodeSelectedOptionsState(selectedOptions: string[]): string {
+  const stateObject = {
+    ad: selectedOptions.includes('ad_account'),
+    page: selectedOptions.includes('page_all_permissions'),
+    instagram: selectedOptions.includes('instagram_account'),
+    catalog: selectedOptions.includes('catalog'),
+    dataset: selectedOptions.includes('dataset')
+  };
+  
+  return btoa(JSON.stringify(stateObject));
+}
+
+// Decode state back to selected options
+export function decodeSelectedOptionsState(encodedState: string): string[] {
+  try {
+    const stateObject = JSON.parse(atob(encodedState));
+    const selectedOptions: string[] = [];
+    
+    if (stateObject.ad) selectedOptions.push('ad_account');
+    if (stateObject.page) selectedOptions.push('page_all_permissions');
+    if (stateObject.instagram) selectedOptions.push('instagram_account');
+    if (stateObject.catalog) selectedOptions.push('catalog');
+    if (stateObject.dataset) selectedOptions.push('dataset');
+    
+    return selectedOptions;
+  } catch (error) {
+    console.error('Failed to decode state:', error);
+    return [];
+  }
+}
+
+// Build Meta OAuth URL for client flow with selected options
+export function buildClientMetaOAuthUrlWithOptions(
+  onboardingToken: string, 
+  selectedOptions: string[]
+): string {
+  const clientId = import.meta.env.VITE_NEXT_PUBLIC_META_APP_ID;
+  const redirectUri = `${window.location.origin}/oauth/meta/client/callback`;
+  
+  if (!clientId || clientId.trim() === '') {
+    throw new Error('Meta App ID not configured. Please set VITE_NEXT_PUBLIC_META_APP_ID environment variable.');
+  }
+  
+  // Get scopes for selected options
+  const scopes = getScopesForSelectedOptions(selectedOptions);
+  
+  // Encode selected options into state
+  const encodedState = encodeSelectedOptionsState(selectedOptions);
+  const state = `${onboardingToken}|${encodedState}`;
+  
+  // Debug logging (non-sensitive)
+  console.log('Meta OAuth Client Flow with Options:', { 
+    clientId: clientId.substring(0, 10) + '...', 
+    redirectUri,
+    selectedOptions,
+    scopes,
+    state: state.substring(0, 20) + '...'
+  });
+  
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    response_type: 'code',
+    scope: scopes.join(','),
+    state: state
+  });
+
+  return `https://www.facebook.com/v21.0/dialog/oauth?${params.toString()}`;
 }

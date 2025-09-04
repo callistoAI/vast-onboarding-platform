@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle, ExternalLink, Shield, ChevronLeft } from 'luci
 import { useAuth } from '../hooks/useAuth';
 import { buildClientGoogleOAuthUrl } from '../lib/googleOAuth';
 import { buildClientMetaOAuthUrl } from '../lib/metaOAuth';
+import { buildClientMetaOAuthUrlWithOptions, decodeSelectedOptionsState } from '../lib/metaAccessRequests';
 
 // Helper function for Shopify admin URLs
 const getShopifyAdminUrl = (storeId: string) => {
@@ -203,8 +204,12 @@ export function DemoOnboardPage() {
       // For demo purposes, we'll use a placeholder token
       const onboardingToken = 'demo-onboarding-token'; // In production, this would be the actual link token
       
-      // Build OAuth URL with onboarding token as state
-      const oauthUrl = buildClientMetaOAuthUrl(onboardingToken);
+      // For demo, use default selected options (Ad Account and Page permissions)
+      // In production, these would come from the link configuration stored in the database
+      const selectedOptions = ['ad_account', 'page_all_permissions'];
+      
+      // Build OAuth URL with selected options
+      const oauthUrl = buildClientMetaOAuthUrlWithOptions(onboardingToken, selectedOptions);
       
       // Open Meta OAuth in new tab
       window.open(oauthUrl, '_blank');

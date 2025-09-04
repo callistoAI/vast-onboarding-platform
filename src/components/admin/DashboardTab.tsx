@@ -3,7 +3,7 @@ import { Copy, ExternalLink, CheckCircle, Eye, Edit3, Trash2, X } from 'lucide-r
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
-import { META_ACCESS_REQUEST_OPTIONS } from '../../lib/metaAccessRequests';
+import { META_ACCESS_REQUEST_OPTIONS, getScopesForSelectedOptions, encodeSelectedOptionsState } from '../../lib/metaAccessRequests';
 
 type OnboardingLink = Database['public']['Tables']['onboarding_links']['Row'];
 
@@ -244,13 +244,39 @@ export function OnboardingLinksTab() {
     
     setGenerating(true);
     try {
+      // Build platform-specific configuration
+      const platformConfigs: Record<string, any> = {};
+      
+      selectedPlatforms.forEach(platform => {
+        const apis = platformApis[platform] || [];
+        
+        if (platform === 'meta') {
+          // For Meta, store the selected access request options and their scopes
+          const selectedOptions = apis; // These are the access request option names
+          const scopes = getScopesForSelectedOptions(selectedOptions);
+          const encodedState = encodeSelectedOptionsState(selectedOptions);
+          
+          platformConfigs[platform] = {
+            selectedOptions,
+            scopes,
+            encodedState,
+            oauthUrl: `https://www.facebook.com/v21.0/dialog/oauth?client_id=${import.meta.env.VITE_NEXT_PUBLIC_META_APP_ID}&redirect_uri=${window.location.origin}/oauth/meta/client/callback&response_type=code&scope=${scopes.join(',')}&state=`
+          };
+        } else {
+          // For other platforms, keep the existing API structure
+          platformConfigs[platform] = {
+            apis: apis
+          };
+        }
+      });
+
       const { data, error } = await supabase
         .from('onboarding_links')
         .insert({
           created_by: profile?.id || 'test-admin-user',
           platforms: selectedPlatforms,
           expires_at: null,
-          note: `${linkType.toUpperCase()} - ${linkName} - APIs: ${Object.entries(platformApis).map(([platform, apis]) => `${platform}: ${apis.join(', ')}`).join(' | ')}`,
+          note: `${linkType.toUpperCase()} - ${linkName} - Config: ${JSON.stringify(platformConfigs)}`,
         })
         .select()
         .single();
