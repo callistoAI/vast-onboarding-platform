@@ -294,7 +294,22 @@ export function SettingsTab() {
   useEffect(() => {
     fetchConnections();
     fetchInvites();
-  }, [fetchConnections, fetchInvites]);
+    
+    // Check for pending connections on component mount
+    const pendingConnection = localStorage.getItem('pending_meta_connection');
+    if (pendingConnection && profile?.id) {
+      console.log('Found pending Meta connection on mount:', pendingConnection);
+      try {
+        const connectionData = JSON.parse(pendingConnection);
+        saveConnectionToDatabase(connectionData);
+        localStorage.removeItem('pending_meta_connection');
+        // Refresh connections after saving
+        setTimeout(() => fetchConnections(), 1000);
+      } catch (error) {
+        console.error('Error processing pending connection on mount:', error);
+      }
+    }
+  }, [fetchConnections, fetchInvites, profile?.id]);
 
   // Handle OAuth callback redirects and pending connections
   useEffect(() => {
@@ -563,6 +578,17 @@ export function SettingsTab() {
 
   const getConnectionStatus = (platform: string) => {
     const connection = connections.find(c => c.platform === platform);
+    
+    // Debug logging
+    if (platform === 'meta') {
+      console.log('Meta connection status check:', {
+        connections: connections,
+        metaConnection: connection,
+        status: connection?.status || 'disconnected',
+        localStorage: localStorage.getItem('pending_meta_connection')
+      });
+    }
+    
     return connection?.status || 'disconnected';
   };
 
