@@ -38,32 +38,59 @@ export default function MetaOAuthCallback() {
         }
 
         // Exchange code for access token using Meta's token endpoint
-        const tokenResponse = await fetch('https://graph.facebook.com/v18.0/oauth/access_token', {
+        const clientSecret = import.meta.env.META_APP_SECRET;
+        const redirectUri = `${window.location.origin}/oauth/meta/callback`;
+        
+        console.log('Meta OAuth Token Exchange:', {
+          clientId: clientId.substring(0, 10) + '...',
+          hasClientSecret: !!clientSecret,
+          redirectUri,
+          code: code.substring(0, 10) + '...'
+        });
+
+        const tokenResponse = await fetch('https://graph.facebook.com/v21.0/oauth/access_token', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
           body: new URLSearchParams({
             client_id: clientId,
-            client_secret: import.meta.env.META_APP_SECRET,
-            redirect_uri: `${window.location.origin}/oauth/meta/callback`,
+            client_secret: clientSecret,
+            redirect_uri: redirectUri,
             code: code
           }),
         });
 
+        console.log('Token response status:', tokenResponse.status);
+        console.log('Token response headers:', Object.fromEntries(tokenResponse.headers.entries()));
+
         if (!tokenResponse.ok) {
-          throw new Error('Failed to exchange code for token');
+          const errorText = await tokenResponse.text();
+          console.error('Token exchange error:', errorText);
+          throw new Error(`Failed to exchange code for token: ${tokenResponse.status} - ${errorText}`);
         }
 
         const tokenData = await tokenResponse.json();
+        console.log('Token data received:', { 
+          hasAccessToken: !!tokenData.access_token,
+          tokenType: tokenData.token_type,
+          expiresIn: tokenData.expires_in
+        });
         
         if (tokenData.access_token) {
           // Get user info from Meta
-          const userResponse = await fetch(`https://graph.facebook.com/v18.0/me?access_token=${tokenData.access_token}&fields=id,name,email`);
+          const userResponse = await fetch(`https://graph.facebook.com/v21.0/me?access_token=${tokenData.access_token}&fields=id,name,email`);
           const userData = await userResponse.json();
+          
+          console.log('User data received:', { 
+            hasUserId: !!userData.id,
+            userName: userData.name,
+            userEmail: userData.email
+          });
           
           // Save connection to database
           if (user?.id) {
+            console.log('Saving connection for user:', user.id);
             const { error: dbError } = await supabase
               .from('platform_connections')
               .upsert({
@@ -82,10 +109,15 @@ export default function MetaOAuthCallback() {
                 onConflict: 'platform,connected_by'
               });
 
+            console.log('Database save result:', { error: dbError });
+
             if (dbError) {
               console.error('Database error:', dbError);
               throw new Error('Failed to save connection to database');
             }
+          } else {
+            console.warn('No authenticated user found, cannot save connection');
+            // Still redirect to admin dashboard even if we can't save the connection
           }
           
           // Redirect to admin dashboard

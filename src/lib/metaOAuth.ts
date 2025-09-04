@@ -28,7 +28,7 @@ export function buildAdminMetaOAuthUrl(): string {
     state: 'admin_flow'
   });
 
-  return `https://www.facebook.com/v18.0/dialog/oauth?${params.toString()}`;
+  return `https://www.facebook.com/v21.0/dialog/oauth?${params.toString()}`;
 }
 
 // Build Meta OAuth URL for client flow
@@ -56,5 +56,5 @@ export function buildClientMetaOAuthUrl(onboardingToken: string): string {
     state: onboardingToken
   });
 
-  return `https://www.facebook.com/v18.0/dialog/oauth?${params.toString()}`;
+  return `https://www.facebook.com/v21.0/dialog/oauth?${params.toString()}`;
 }
