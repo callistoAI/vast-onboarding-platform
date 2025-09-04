@@ -8,20 +8,44 @@ exports.handler = async (event, context) => {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
       },
       body: ''
     };
   }
 
-  // Only allow POST requests
+  // Handle GET requests for testing
+  if (event.httpMethod === 'GET') {
+    const clientId = process.env.VITE_NEXT_PUBLIC_META_APP_ID;
+    const clientSecret = process.env.META_APP_SECRET;
+    
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        message: 'Meta token exchange function is working',
+        timestamp: new Date().toISOString(),
+        environment: {
+          hasClientId: !!clientId,
+          hasClientSecret: !!clientSecret,
+          clientIdValue: clientId ? clientId.substring(0, 10) + '...' : 'undefined'
+        },
+        usage: 'Send POST request with { "code": "...", "redirectUri": "..." }'
+      }, null, 2)
+    };
+  }
+
+  // Only allow POST requests for actual token exchange
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
       headers: {
         'Access-Control-Allow-Origin': '*'
       },
-      body: JSON.stringify({ error: 'Method not allowed' })
+      body: JSON.stringify({ error: 'Method not allowed. Use GET for testing or POST for token exchange.' })
     };
   }
 
