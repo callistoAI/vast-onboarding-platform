@@ -311,6 +311,27 @@ export function SettingsTab() {
     }
   }, [fetchConnections, fetchInvites, profile?.id]);
 
+  // Additional check for pending connections every 2 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const pendingConnection = localStorage.getItem('pending_meta_connection');
+      if (pendingConnection && profile?.id) {
+        console.log('Found pending Meta connection via interval check:', pendingConnection);
+        try {
+          const connectionData = JSON.parse(pendingConnection);
+          saveConnectionToDatabase(connectionData);
+          localStorage.removeItem('pending_meta_connection');
+          // Refresh connections after saving
+          fetchConnections();
+        } catch (error) {
+          console.error('Error processing pending connection via interval:', error);
+        }
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [profile?.id, fetchConnections]);
+
   // Handle OAuth callback redirects and pending connections
   useEffect(() => {
     const connectedPlatform = searchParams.get('connected');
@@ -690,6 +711,33 @@ export function SettingsTab() {
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
         <h3 className="text-lg font-semibold text-yellow-800 mb-2">Meta OAuth Debug (Temporary)</h3>
         <MetaDebugTest />
+        
+        {/* Manual connection processing button */}
+        <div className="mt-4">
+          <button
+            onClick={() => {
+              const pendingConnection = localStorage.getItem('pending_meta_connection');
+              if (pendingConnection && profile?.id) {
+                console.log('Manually processing pending connection:', pendingConnection);
+                try {
+                  const connectionData = JSON.parse(pendingConnection);
+                  saveConnectionToDatabase(connectionData);
+                  localStorage.removeItem('pending_meta_connection');
+                  fetchConnections();
+                  setShowSuccessMessage('Meta connection processed manually!');
+                  setTimeout(() => setShowSuccessMessage(null), 3000);
+                } catch (error) {
+                  console.error('Error manually processing connection:', error);
+                }
+              } else {
+                console.log('No pending connection found or user not authenticated');
+              }
+            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Process Pending Meta Connection
+          </button>
+        </div>
       </div>
 
       {/* Copy Notification */}

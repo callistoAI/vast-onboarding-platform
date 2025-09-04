@@ -103,8 +103,29 @@ export default function MetaOAuthCallback() {
           console.log('Saving connection data to localStorage:', connectionData);
           localStorage.setItem('pending_meta_connection', JSON.stringify(connectionData));
           
-          // Redirect to admin settings tab with refresh parameter
-          navigate('/admin/settings?connected=meta');
+          // Show success message immediately
+          setError(null);
+          setIsLoading(false);
+          
+          // Try multiple redirect methods
+          try {
+            // Method 1: React Router navigate
+            navigate('/admin/settings?connected=meta');
+            console.log('Redirected using React Router navigate');
+          } catch (navError) {
+            console.warn('React Router navigate failed:', navError);
+            try {
+              // Method 2: Window location
+              window.location.href = '/admin/settings?connected=meta';
+              console.log('Redirected using window.location.href');
+            } catch (locationError) {
+              console.warn('Window location redirect failed:', locationError);
+              // Method 3: Manual redirect
+              setTimeout(() => {
+                window.location.replace('/admin/settings?connected=meta');
+              }, 1000);
+            }
+          }
         } else {
           throw new Error('No access token received');
         }
