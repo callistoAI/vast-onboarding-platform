@@ -39,10 +39,10 @@ exports.handler = async (event, context) => {
     }
 
     // Get environment variables
-    const clientId = process.env.VITE_NEXT_PUBLIC_META_APP_ID;
-    const clientSecret = process.env.META_APP_SECRET;
+    const clientId = process.env.VITE_NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
-    console.log('Meta token exchange request:', {
+    console.log('Google token exchange request:', {
       hasClientId: !!clientId,
       hasClientSecret: !!clientSecret,
       redirectUri,
@@ -60,7 +60,7 @@ exports.handler = async (event, context) => {
           'Access-Control-Allow-Origin': '*'
         },
         body: JSON.stringify({ 
-          error: 'Meta OAuth not properly configured',
+          error: 'Google OAuth not properly configured',
           debug: {
             hasClientId: !!clientId,
             hasClientSecret: !!clientSecret
@@ -70,7 +70,7 @@ exports.handler = async (event, context) => {
     }
 
     // Exchange code for access token
-    const tokenResponse = await fetch('https://graph.facebook.com/v21.0/oauth/access_token', {
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -79,7 +79,8 @@ exports.handler = async (event, context) => {
         client_id: clientId,
         client_secret: clientSecret,
         redirect_uri: redirectUri,
-        code: code
+        code: code,
+        grant_type: 'authorization_code'
       }),
     });
 
@@ -117,7 +118,7 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('Meta token exchange error:', error);
+    console.error('Google token exchange error:', error);
     return {
       statusCode: 500,
       headers: {

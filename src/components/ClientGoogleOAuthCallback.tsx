@@ -51,23 +51,21 @@ export default function ClientGoogleOAuthCallback() {
           return;
         }
 
-        // Exchange code for access token using Google's token endpoint
-        const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        // Exchange code for access token using server-side function
+        const tokenResponse = await fetch('/.netlify/functions/google-token-exchange', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
-          body: new URLSearchParams({
-            client_id: clientId,
-            client_secret: import.meta.env.GOOGLE_CLIENT_SECRET,
-            redirect_uri: `${window.location.origin}/oauth/google/client/callback`,
-            grant_type: 'authorization_code',
-            code: code
+          body: JSON.stringify({
+            code: code,
+            redirectUri: `${window.location.origin}/oauth/google/client/callback`
           }),
         });
 
         if (!tokenResponse.ok) {
-          throw new Error('Failed to exchange code for token');
+          const errorData = await tokenResponse.json();
+          throw new Error(`Failed to exchange code for token: ${errorData.details || errorData.error}`);
         }
 
         const tokenData = await tokenResponse.json();

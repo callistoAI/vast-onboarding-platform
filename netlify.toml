@@ -1,5 +1,5 @@
 [build]
-  functions = "functions"
+  functions = "netlify/functions"
   publish = "dist"
 
 # SPA routing - redirect all non-function requests to index.html
