@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { CheckCircle, AlertCircle, ExternalLink, Copy, Mail, UserCheck, UserX, MoreVertical, Edit3, Users, X, Plus, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
@@ -48,6 +49,7 @@ export function SettingsTab() {
   const [loading, setLoading] = useState(true);
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [email, setEmail] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [role, setRole] = useState<'admin' | 'editor' | 'viewer'>('viewer');
   const [inviting, setInviting] = useState(false);
   const [generatedInvite, setGeneratedInvite] = useState<string | null>(null);
@@ -58,6 +60,7 @@ export function SettingsTab() {
   const [showCopyNotification, setShowCopyNotification] = useState(false);
   const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
   const [platformToDisconnect, setPlatformToDisconnect] = useState<string | null>(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState<string | null>(null);
   const { profile } = useAuth();
 
   const fetchConnections = useCallback(async () => {
@@ -263,6 +266,21 @@ export function SettingsTab() {
     fetchConnections();
     fetchInvites();
   }, [fetchConnections, fetchInvites]);
+
+  // Handle OAuth callback redirects
+  useEffect(() => {
+    const connectedPlatform = searchParams.get('connected');
+    if (connectedPlatform) {
+      // Refresh connections when coming back from OAuth
+      fetchConnections();
+      // Show success message
+      setShowSuccessMessage(`${connectedPlatform.charAt(0).toUpperCase() + connectedPlatform.slice(1)} account connected successfully!`);
+      // Clear the query parameter
+      setSearchParams({});
+      // Hide success message after 5 seconds
+      setTimeout(() => setShowSuccessMessage(null), 5000);
+    }
+  }, [searchParams, fetchConnections, setSearchParams]);
 
   const sendInvite = async () => {
     if (!email.trim()) return;
@@ -585,6 +603,16 @@ export function SettingsTab() {
           <p className="text-gray-600 mt-1">Manage platform connections, team members, and account settings</p>
         </div>
       </div>
+
+      {/* Success Message */}
+      {showSuccessMessage && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+          <div className="flex items-center">
+            <CheckCircle className="w-5 h-5 text-green-400 mr-2" />
+            <p className="text-green-800 font-medium">{showSuccessMessage}</p>
+          </div>
+        </div>
+      )}
 
       {/* Debug Section - Temporary */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">

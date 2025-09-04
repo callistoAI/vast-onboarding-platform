@@ -116,8 +116,8 @@ export default function MetaOAuthCallback() {
             // Still redirect to admin dashboard even if we can't save the connection
           }
           
-          // Redirect to admin dashboard
-          navigate('/admin/dashboard');
+          // Redirect to admin settings tab with refresh parameter
+          navigate('/admin/settings?connected=meta');
         } else {
           throw new Error('No access token received');
         }
