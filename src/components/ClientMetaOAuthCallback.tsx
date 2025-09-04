@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { META_ACCESS_REQUEST_OPTIONS, getEnabledMetaScopes } from '../lib/metaAccessRequests';
 
 interface AccessRequest {
   id: string;
@@ -87,14 +88,14 @@ export default function ClientMetaOAuthCallback() {
             throw new Error('Invalid onboarding token');
           }
 
-          // Save authorization to database
+          // Save authorization to database with enabled scopes
           const { error: authError } = await supabase
             .from('authorizations')
             .upsert({
               client_id: onboardingLink.used_by || onboardingLink.created_by,
               platform: 'meta',
               status: 'authorized',
-              scopes: ['ads_read', 'business_management', 'pages_show_list', 'pages_read_engagement', 'instagram_basic'],
+              scopes: getEnabledMetaScopes(),
               token_data: {
                 access_token: tokenData.access_token,
                 user_id: userData.id,
@@ -153,14 +154,21 @@ export default function ClientMetaOAuthCallback() {
         throw new Error('Failed to fetch authorizations');
       }
 
-      // Convert to AccessRequest format
-      const accessRequests: AccessRequest[] = authorizations.map(auth => ({
-        id: auth.id,
-        platform: 'Meta Business',
-        requestedScopes: auth.scopes || [],
-        requestedAt: auth.created_at,
-        status: auth.status as 'pending' | 'approved' | 'rejected'
-      }));
+      // Convert to AccessRequest format with Meta access request options
+      const accessRequests: AccessRequest[] = authorizations.map(auth => {
+        // Map scopes to human-readable access request options
+        const requestedOptions = META_ACCESS_REQUEST_OPTIONS
+          .filter(option => option.enabled && auth.scopes?.some(scope => option.scopes.includes(scope)))
+          .map(option => option.name);
+        
+        return {
+          id: auth.id,
+          platform: 'Meta Business',
+          requestedScopes: requestedOptions.length > 0 ? requestedOptions : (auth.scopes || []),
+          requestedAt: auth.created_at,
+          status: auth.status as 'pending' | 'approved' | 'rejected'
+        };
+      });
       
       setAccessRequests(accessRequests);
     } catch (err) {

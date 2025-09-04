@@ -1,11 +1,8 @@
 // Meta OAuth Configuration and Utilities
-export const META_OAUTH_SCOPES = [
-  'ads_read',
-  'business_management',
-  'pages_show_list',
-  'pages_read_engagement',
-  'instagram_basic'
-];
+import { getEnabledMetaScopes } from './metaAccessRequests';
+
+// Get scopes from enabled access request options
+export const META_OAUTH_SCOPES = getEnabledMetaScopes();
 
 // Build Meta OAuth URL for admin flow
 export function buildAdminMetaOAuthUrl(): string {

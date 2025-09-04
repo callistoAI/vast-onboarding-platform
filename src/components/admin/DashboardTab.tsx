@@ -3,6 +3,7 @@ import { Copy, ExternalLink, CheckCircle, Eye, Edit3, Trash2, X } from 'lucide-r
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
+import { META_ACCESS_REQUEST_OPTIONS } from '../../lib/metaAccessRequests';
 
 type OnboardingLink = Database['public']['Tables']['onboarding_links']['Row'];
 
@@ -14,12 +15,12 @@ const platformOptions = [
 ];
 
 const platformApiOptions = {
-  meta: [
-    'Facebook Ads API',
-    'Instagram Business API',
-    'Facebook Pages API',
-    'Meta Business SDK'
-  ],
+  meta: META_ACCESS_REQUEST_OPTIONS.map(option => ({
+    id: option.id,
+    name: option.name,
+    description: option.description,
+    enabled: option.enabled
+  })),
   google: [
     'Google Ads API',
     'Google Analytics API',
@@ -534,7 +535,12 @@ export function OnboardingLinksTab() {
                               </div>
                               <div>
                                 <span className="font-semibold text-gray-900">{platform.name}</span>
-                                <p className="text-sm text-gray-600">{platformApiOptions[platform.id as keyof typeof platformApiOptions].length} APIs available</p>
+                                <p className="text-sm text-gray-600">
+                                  {platform.id === 'meta' 
+                                    ? `${META_ACCESS_REQUEST_OPTIONS.filter(opt => opt.enabled).length} access options available`
+                                    : `${platformApiOptions[platform.id as keyof typeof platformApiOptions].length} APIs available`
+                                  }
+                                </p>
                               </div>
                             </div>
                           </div>
@@ -548,45 +554,70 @@ export function OnboardingLinksTab() {
                         {selectedPlatforms.includes(platform.id) && (
                           <div className="border-t border-gray-200 bg-white">
                             <div className="p-5 space-y-3">
-                              <p className="text-sm font-semibold text-gray-900 mb-4">Select APIs:</p>
+                              <p className="text-sm font-semibold text-gray-900 mb-4">
+                                {platform.id === 'meta' ? 'Select Access Options:' : 'Select APIs:'}
+                              </p>
                               <div className="space-y-3">
-                                {platformApiOptions[platform.id as keyof typeof platformApiOptions].map((api) => (
-                                  <label key={api} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <div className="relative">
-                                      <input
-                                        type="checkbox"
-                                        checked={platformApis[platform.id]?.includes(api) || false}
-                                        onChange={(e) => {
-                                          const currentApis = platformApis[platform.id] || [];
-                                          if (e.target.checked) {
-                                            setPlatformApis({
-                                              ...platformApis,
-                                              [platform.id]: [...currentApis, api]
-                                            });
-                                          } else {
-                                            setPlatformApis({
-                                              ...platformApis,
-                                              [platform.id]: currentApis.filter(a => a !== api)
-                                            });
-                                          }
-                                        }}
-                                        className="sr-only"
-                                      />
-                                      <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200 ${
-                                        platformApis[platform.id]?.includes(api) 
-                                          ? 'bg-gray-600 border-gray-600'
-                                          : 'border-gray-300 bg-white group-hover:border-gray-400'
-                                      }`}>
-                                        {platformApis[platform.id]?.includes(api) && (
-                                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                          </svg>
+                                {platformApiOptions[platform.id as keyof typeof platformApiOptions].map((api) => {
+                                  const apiName = typeof api === 'string' ? api : api.name;
+                                  const apiId = typeof api === 'string' ? api : api.id;
+                                  const apiDescription = typeof api === 'object' ? api.description : '';
+                                  const isEnabled = typeof api === 'object' ? api.enabled : true;
+                                  
+                                  return (
+                                    <label key={apiId} className={`flex items-center space-x-3 cursor-pointer group p-3 rounded-lg transition-colors ${
+                                      isEnabled ? 'hover:bg-gray-50' : 'opacity-50 cursor-not-allowed'
+                                    }`}>
+                                      <div className="relative">
+                                        <input
+                                          type="checkbox"
+                                          checked={platformApis[platform.id]?.includes(apiName) || false}
+                                          disabled={!isEnabled}
+                                          onChange={(e) => {
+                                            if (!isEnabled) return;
+                                            const currentApis = platformApis[platform.id] || [];
+                                            if (e.target.checked) {
+                                              setPlatformApis({
+                                                ...platformApis,
+                                                [platform.id]: [...currentApis, apiName]
+                                              });
+                                            } else {
+                                              setPlatformApis({
+                                                ...platformApis,
+                                                [platform.id]: currentApis.filter(a => a !== apiName)
+                                              });
+                                            }
+                                          }}
+                                          className="sr-only"
+                                        />
+                                        <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200 ${
+                                          platformApis[platform.id]?.includes(apiName) 
+                                            ? 'bg-gray-600 border-gray-600'
+                                            : isEnabled 
+                                            ? 'border-gray-300 bg-white group-hover:border-gray-400'
+                                            : 'border-gray-200 bg-gray-100'
+                                        }`}>
+                                          {platformApis[platform.id]?.includes(apiName) && (
+                                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="flex-1">
+                                        <div className="flex items-center space-x-2">
+                                          <span className="text-sm font-medium text-gray-900">{apiName}</span>
+                                          {!isEnabled && (
+                                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Coming Later</span>
+                                          )}
+                                        </div>
+                                        {apiDescription && (
+                                          <p className="text-xs text-gray-500 mt-1">{apiDescription}</p>
                                         )}
                                       </div>
-                                    </div>
-                                    <span className="text-sm text-gray-800 group-hover:text-gray-900 flex-1 font-medium">{api}</span>
-                                  </label>
-                                ))}
+                                    </label>
+                                  );
+                                })}
                               </div>
                             </div>
                           </div>
