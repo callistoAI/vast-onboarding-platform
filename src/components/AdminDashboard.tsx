@@ -9,6 +9,12 @@ import { ClientSettingsTab } from './client/ClientSettingsTab';
 export function AdminDashboard() {
   const location = useLocation();
   
+  // Debug logging
+  console.log('AdminDashboard rendering:', {
+    pathname: location.pathname,
+    currentTab: getCurrentTab()
+  });
+  
   const getCurrentTab = () => {
     switch (location.pathname) {
       case '/admin/clients':

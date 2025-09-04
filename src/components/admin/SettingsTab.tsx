@@ -50,6 +50,14 @@ export function SettingsTab() {
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [email, setEmail] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Debug logging
+  console.log('SettingsTab rendering:', {
+    loading,
+    connections: connections.length,
+    profile: profile?.id,
+    searchParams: searchParams.toString()
+  });
   const [role, setRole] = useState<'admin' | 'editor' | 'viewer'>('viewer');
   const [inviting, setInviting] = useState(false);
   const [generatedInvite, setGeneratedInvite] = useState<string | null>(null);
@@ -682,6 +690,19 @@ export function SettingsTab() {
           {[1, 2, 3, 4].map(i => (
             <div key={i} className="h-48 bg-gray-200 rounded-lg"></div>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback for debugging - show something even if there are issues
+  if (!profile?.id) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h3 className="text-lg font-semibold text-red-800 mb-2">Debug: No Profile Found</h3>
+          <p className="text-red-600">Profile ID: {profile?.id || 'undefined'}</p>
+          <p className="text-red-600">Loading: {loading ? 'true' : 'false'}</p>
         </div>
       </div>
     );
