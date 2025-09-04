@@ -84,48 +84,24 @@ export default function MetaOAuthCallback() {
             userEmail: userData.email
           });
           
-          // Get current user from Supabase
-          const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
-          console.log('Current user check:', { 
-            hasUser: !!user, 
-            hasCurrentUser: !!currentUser,
-            userId: user?.id,
-            currentUserId: currentUser?.id,
-            userError 
-          });
+          // Save connection data to localStorage temporarily
+          // This will be processed when the user returns to the admin dashboard
+          const connectionData = {
+            platform: 'meta',
+            status: 'connected',
+            connection_data: {
+              access_token: tokenData.access_token,
+              user_id: userData.id,
+              user_name: userData.name,
+              user_email: userData.email,
+              expires_in: tokenData.expires_in,
+              token_type: tokenData.token_type
+            },
+            timestamp: Date.now()
+          };
 
-          // Save connection to database
-          const userId = user?.id || currentUser?.id;
-          if (userId) {
-            console.log('Saving connection for user:', userId);
-            const { error: dbError } = await supabase
-              .from('platform_connections')
-              .upsert({
-                platform: 'meta',
-                status: 'connected',
-                connection_data: {
-                  access_token: tokenData.access_token,
-                  user_id: userData.id,
-                  user_name: userData.name,
-                  user_email: userData.email,
-                  expires_in: tokenData.expires_in,
-                  token_type: tokenData.token_type
-                },
-                connected_by: userId
-              }, {
-                onConflict: 'platform,connected_by'
-              });
-
-            console.log('Database save result:', { error: dbError });
-
-            if (dbError) {
-              console.error('Database error:', dbError);
-              throw new Error('Failed to save connection to database');
-            }
-          } else {
-            console.warn('No authenticated user found, cannot save connection');
-            // Still redirect to admin dashboard even if we can't save the connection
-          }
+          console.log('Saving connection data to localStorage:', connectionData);
+          localStorage.setItem('pending_meta_connection', JSON.stringify(connectionData));
           
           // Redirect to admin settings tab with refresh parameter
           navigate('/admin/settings?connected=meta');

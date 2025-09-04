@@ -81,6 +81,35 @@ export function SettingsTab() {
     }
   }, []);
 
+  const saveConnectionToDatabase = async (connectionData: any) => {
+    if (!profile?.id) {
+      console.error('No authenticated user found for saving connection');
+      return;
+    }
+
+    try {
+      const { error: dbError } = await supabase
+        .from('platform_connections')
+        .upsert({
+          platform: connectionData.platform,
+          status: connectionData.status,
+          connection_data: connectionData.connection_data,
+          connected_by: profile.id
+        }, {
+          onConflict: 'platform,connected_by'
+        });
+
+      if (dbError) {
+        console.error('Database error saving connection:', dbError);
+        throw new Error('Failed to save connection to database');
+      }
+
+      console.log('Connection saved successfully to database');
+    } catch (error) {
+      console.error('Error saving connection to database:', error);
+    }
+  };
+
   const setMockData = () => {
     const mockConnections = [
       {
@@ -267,10 +296,27 @@ export function SettingsTab() {
     fetchInvites();
   }, [fetchConnections, fetchInvites]);
 
-  // Handle OAuth callback redirects
+  // Handle OAuth callback redirects and pending connections
   useEffect(() => {
     const connectedPlatform = searchParams.get('connected');
     if (connectedPlatform) {
+      // Check for pending connection data in localStorage
+      const pendingConnection = localStorage.getItem('pending_meta_connection');
+      if (pendingConnection && profile?.id) {
+        try {
+          const connectionData = JSON.parse(pendingConnection);
+          console.log('Processing pending Meta connection:', connectionData);
+          
+          // Save to database
+          saveConnectionToDatabase(connectionData);
+          
+          // Remove from localStorage
+          localStorage.removeItem('pending_meta_connection');
+        } catch (error) {
+          console.error('Error processing pending connection:', error);
+        }
+      }
+      
       // Refresh connections when coming back from OAuth
       fetchConnections();
       // Show success message
@@ -280,7 +326,7 @@ export function SettingsTab() {
       // Hide success message after 5 seconds
       setTimeout(() => setShowSuccessMessage(null), 5000);
     }
-  }, [searchParams, fetchConnections, setSearchParams]);
+  }, [searchParams, fetchConnections, setSearchParams, profile?.id]);
 
   const sendInvite = async () => {
     if (!email.trim()) return;
