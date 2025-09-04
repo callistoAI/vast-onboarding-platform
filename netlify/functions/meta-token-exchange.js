@@ -18,17 +18,34 @@ exports.handler = async (event, context) => {
     }
 
     // Get environment variables
-    const clientId = process.env.VITE_NEXT_PUBLIC_META_APP_ID;
+    const clientId = process.env.META_APP_ID || process.env.VITE_NEXT_PUBLIC_META_APP_ID;
     const clientSecret = process.env.META_APP_SECRET;
+
+    // Debug: Log available environment variables
+    console.log('Available environment variables:', {
+      META_APP_ID: !!process.env.META_APP_ID,
+      VITE_NEXT_PUBLIC_META_APP_ID: !!process.env.VITE_NEXT_PUBLIC_META_APP_ID,
+      META_APP_SECRET: !!process.env.META_APP_SECRET,
+      allEnvKeys: Object.keys(process.env).filter(key => key.includes('META'))
+    });
 
     if (!clientId || !clientSecret) {
       console.error('Missing environment variables:', {
         hasClientId: !!clientId,
-        hasClientSecret: !!clientSecret
+        hasClientSecret: !!clientSecret,
+        clientIdValue: clientId ? clientId.substring(0, 10) + '...' : 'undefined',
+        clientSecretValue: clientSecret ? 'present' : 'undefined'
       });
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'Meta OAuth not properly configured' })
+        body: JSON.stringify({ 
+          error: 'Meta OAuth not properly configured',
+          debug: {
+            hasClientId: !!clientId,
+            hasClientSecret: !!clientSecret,
+            availableEnvKeys: Object.keys(process.env).filter(key => key.includes('META'))
+          }
+        })
       };
     }
 
