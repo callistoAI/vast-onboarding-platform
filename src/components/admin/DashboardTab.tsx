@@ -260,7 +260,7 @@ export function OnboardingLinksTab() {
             selectedOptions,
             scopes,
             encodedState,
-            oauthUrl: `https://www.facebook.com/v21.0/dialog/oauth?client_id=${import.meta.env.VITE_NEXT_PUBLIC_META_APP_ID}&redirect_uri=${window.location.origin}/oauth/meta/client/callback&response_type=code&scope=${scopes.join(',')}&state=`
+            oauthUrl: `https://www.facebook.com/v21.0/dialog/oauth?client_id=${import.meta.env.VITE_NEXT_PUBLIC_META_APP_ID}&redirect_uri=${window.location.origin}/oauth/meta/client/callback&response_type=code&scope=${scopes.join(',')}&state=TOKEN_PLACEHOLDER|${encodedState}`
           };
         } else {
           // For other platforms, keep the existing API structure
