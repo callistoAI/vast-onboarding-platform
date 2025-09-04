@@ -37,32 +37,41 @@ export default function MetaOAuthCallback() {
           return;
         }
 
-        // Exchange code for access token using server-side function
+        // Exchange code for access token directly with Meta
+        const clientSecret = import.meta.env.VITE_META_APP_SECRET;
         const redirectUri = `${window.location.origin}/oauth/meta/callback`;
         
         console.log('Meta OAuth Token Exchange:', {
           clientId: clientId.substring(0, 10) + '...',
+          hasClientSecret: !!clientSecret,
           redirectUri,
           code: code.substring(0, 10) + '...'
         });
 
-        const tokenResponse = await fetch('/.netlify/functions/meta-token-exchange', {
+        if (!clientSecret) {
+          throw new Error('Meta App Secret not configured. Please set VITE_META_APP_SECRET environment variable.');
+        }
+
+        const tokenResponse = await fetch('https://graph.facebook.com/v21.0/oauth/access_token', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: JSON.stringify({
-            code: code,
-            redirectUri: redirectUri
+          body: new URLSearchParams({
+            client_id: clientId,
+            client_secret: clientSecret,
+            redirect_uri: redirectUri,
+            code: code
           }),
         });
 
         console.log('Token response status:', tokenResponse.status);
+        console.log('Token response headers:', Object.fromEntries(tokenResponse.headers.entries()));
 
         if (!tokenResponse.ok) {
-          const errorData = await tokenResponse.json();
-          console.error('Token exchange error:', errorData);
-          throw new Error(`Failed to exchange code for token: ${tokenResponse.status} - ${errorData.details || errorData.error}`);
+          const errorText = await tokenResponse.text();
+          console.error('Token exchange error:', errorText);
+          throw new Error(`Failed to exchange code for token: ${tokenResponse.status} - ${errorText}`);
         }
 
         const tokenData = await tokenResponse.json();

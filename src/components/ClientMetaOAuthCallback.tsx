@@ -63,23 +63,30 @@ export default function ClientMetaOAuthCallback() {
           return;
         }
 
-        // Exchange code for access token using server-side function
+        // Exchange code for access token directly with Meta
+        const clientSecret = import.meta.env.VITE_META_APP_SECRET;
         const redirectUri = `${window.location.origin}/oauth/meta/client/callback`;
         
-        const tokenResponse = await fetch('/.netlify/functions/meta-token-exchange', {
+        if (!clientSecret) {
+          throw new Error('Meta App Secret not configured. Please set VITE_META_APP_SECRET environment variable.');
+        }
+
+        const tokenResponse = await fetch('https://graph.facebook.com/v21.0/oauth/access_token', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: JSON.stringify({
-            code: code,
-            redirectUri: redirectUri
+          body: new URLSearchParams({
+            client_id: clientId,
+            client_secret: clientSecret,
+            redirect_uri: redirectUri,
+            code: code
           }),
         });
 
         if (!tokenResponse.ok) {
-          const errorData = await tokenResponse.json();
-          throw new Error(`Failed to exchange code for token: ${errorData.details || errorData.error}`);
+          const errorText = await tokenResponse.text();
+          throw new Error(`Failed to exchange code for token: ${tokenResponse.status} - ${errorText}`);
         }
 
         const tokenData = await tokenResponse.json();
