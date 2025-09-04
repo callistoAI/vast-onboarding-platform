@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+// Using built-in fetch (available in Node.js 18+)
 
 export const handler = async (event, context) => {
   // Handle CORS preflight
