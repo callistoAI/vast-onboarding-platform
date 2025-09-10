@@ -7,7 +7,10 @@ import { CustomisationTab } from './admin/CustomisationTab';
 import { ClientSettingsTab } from './client/ClientSettingsTab';
 
 export function AdminDashboard() {
+  console.log('AdminDashboard: Starting render');
+  
   const location = useLocation();
+  console.log('AdminDashboard: useLocation successful, pathname:', location.pathname);
   
   const getCurrentTab = () => {
     switch (location.pathname) {
@@ -25,19 +28,37 @@ export function AdminDashboard() {
   };
 
   const currentTab = getCurrentTab();
+  console.log('AdminDashboard: Current tab:', currentTab);
 
   const renderTabContent = () => {
-    switch (currentTab) {
-      case 'clients':
-        return <ClientsTab />;
-      case 'settings':
-        return <SettingsTab />;
-      case 'customisation':
-        return <CustomisationTab />;
-      case 'client-settings':
-        return <ClientSettingsTab />;
-      default:
-        return <OnboardingLinksTab />;
+    console.log('AdminDashboard: Rendering tab content for:', currentTab);
+    
+    try {
+      switch (currentTab) {
+        case 'clients':
+          console.log('AdminDashboard: Rendering ClientsTab');
+          return <ClientsTab />;
+        case 'settings':
+          console.log('AdminDashboard: Rendering SettingsTab');
+          return <SettingsTab />;
+        case 'customisation':
+          console.log('AdminDashboard: Rendering CustomisationTab');
+          return <CustomisationTab />;
+        case 'client-settings':
+          console.log('AdminDashboard: Rendering ClientSettingsTab');
+          return <ClientSettingsTab />;
+        default:
+          console.log('AdminDashboard: Rendering OnboardingLinksTab');
+          return <OnboardingLinksTab />;
+      }
+    } catch (error) {
+      console.error('AdminDashboard: Error in renderTabContent:', error);
+      return (
+        <div className="p-8 text-center">
+          <h2 className="text-xl font-semibold text-red-900 mb-4">Error Loading Content</h2>
+          <p className="text-red-600 mb-4">Error: {error instanceof Error ? error.message : String(error)}</p>
+        </div>
+      );
     }
   };
 

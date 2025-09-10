@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../Users/henry/Desktop/vast-onboarding-platform/netlify/functions/hello.js"],
+  "sourceRoot": "/var/folders/p1/6gmmfs0911x4mt_33k46zlh00000gn/T/tmp-97455-8mgV4QQ2LyRV",
+  "sourcesContent": ["export const handler = async (event, context) => {\n  return {\n    statusCode: 200,\n    headers: {\n      'Content-Type': 'application/json',\n    },\n    body: JSON.stringify({\n      message: 'Hello from Netlify Function!',\n      timestamp: new Date().toISOString(),\n      method: event.httpMethod,\n    })\n  };\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAO,IAAM,UAAU,OAAO,OAAO,YAAY;AAC/C,SAAO;AAAA,IACL,YAAY;AAAA,IACZ,SAAS;AAAA,MACP,gBAAgB;AAAA,IAClB;AAAA,IACA,MAAM,KAAK,UAAU;AAAA,MACnB,SAAS;AAAA,MACT,YAAW,oBAAI,KAAK,GAAE,YAAY;AAAA,MAClC,QAAQ,MAAM;AAAA,IAChB,CAAC;AAAA,EACH;AACF;",
+  "names": []
+}

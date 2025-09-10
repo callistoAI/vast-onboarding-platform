@@ -11,6 +11,15 @@ export function DashboardPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Debug logging
+  console.log('DashboardPage rendering:', {
+    loading,
+    profile: profile?.id,
+    role: profile?.role,
+    pathname: location.pathname,
+    profileObject: profile
+  });
+
   useEffect(() => {
     if (!loading && !profile) {
       navigate('/auth');
@@ -29,7 +38,12 @@ export function DashboardPage() {
   return (
     <Layout>
       {profile?.role === 'admin' ? (
-        <AdminDashboard />
+        <div>
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            <strong>DEBUG:</strong> About to render AdminDashboard
+          </div>
+          <AdminDashboard />
+        </div>
       ) : profile?.role === 'client' && location.pathname === '/client/settings' ? (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <ClientSettingsTab />
