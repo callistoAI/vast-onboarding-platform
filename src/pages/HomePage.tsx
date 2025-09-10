@@ -12,8 +12,12 @@ export function HomePage() {
   const [submitted, setSubmitted] = useState(false);
 
   const handleAdminAccess = () => {
+    console.log('Admin button clicked, setting test user to admin');
     setTestUser('admin');
+    console.log('Navigating to dashboard');
+    console.log('Current location before navigate:', window.location.href);
     navigate('/dashboard');
+    console.log('Navigate called, should redirect to dashboard');
   };
 
   const handleClientAccess = () => {
