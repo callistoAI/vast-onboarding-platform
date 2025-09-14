@@ -1,0 +1,21 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[dev]
+  command = "npm run dev"
+  port = 5173
+  publish = "dist"
+
+# Environment variables (set these in Netlify dashboard)
+# VITE_NEXT_PUBLIC_GOOGLE_CLIENT_ID
+# VITE_NEXT_PUBLIC_META_APP_ID
+# GOOGLE_CLIENT_SECRET
