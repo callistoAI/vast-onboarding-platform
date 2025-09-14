@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { CheckCircle, AlertCircle, ExternalLink, Copy, Mail, UserCheck, UserX, MoreVertical, Edit3, Users, X, Plus, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
 import { buildAdminGoogleOAuthUrl } from '../../lib/googleOAuth';
 import { buildAdminMetaOAuthUrl } from '../../lib/metaOAuth';
+import MetaDebugTest from '../MetaDebugTest';
 
 type PlatformConnection = Database['public']['Tables']['platform_connections']['Row'];
 type TeamInvite = Database['public']['Tables']['team_invites']['Row'];
@@ -47,6 +49,7 @@ export function SettingsTab() {
   const [loading, setLoading] = useState(true);
   const [showInviteForm, setShowInviteForm] = useState(false);
   const [email, setEmail] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [role, setRole] = useState<'admin' | 'editor' | 'viewer'>('viewer');
   const [inviting, setInviting] = useState(false);
   const [generatedInvite, setGeneratedInvite] = useState<string | null>(null);
@@ -55,6 +58,9 @@ export function SettingsTab() {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'invited' | 'expired'>('all');
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<'all' | 'admin' | 'editor' | 'viewer'>('all');
   const [showCopyNotification, setShowCopyNotification] = useState(false);
+  const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
+  const [platformToDisconnect, setPlatformToDisconnect] = useState<string | null>(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState<string | null>(null);
   const { profile } = useAuth();
 
   const fetchConnections = useCallback(async () => {
@@ -68,12 +74,41 @@ export function SettingsTab() {
       setConnections(data || []);
     } catch (error) {
       console.error('Error fetching connections:', error);
+      // If there's an error, start with empty connections
+      setConnections([]);
     } finally {
       setLoading(false);
     }
-    // Always use mock data for demonstration
-    setMockData();
   }, []);
+
+  const saveConnectionToDatabase = async (connectionData: any) => {
+    if (!profile?.id) {
+      console.error('No authenticated user found for saving connection');
+      return;
+    }
+
+    try {
+      const { error: dbError } = await supabase
+        .from('platform_connections')
+        .upsert({
+          platform: connectionData.platform,
+          status: connectionData.status,
+          connection_data: connectionData.connection_data,
+          connected_by: profile.id
+        }, {
+          onConflict: 'platform,connected_by'
+        });
+
+      if (dbError) {
+        console.error('Database error saving connection:', dbError);
+        throw new Error('Failed to save connection to database');
+      }
+
+      console.log('Connection saved successfully to database');
+    } catch (error) {
+      console.error('Error saving connection to database:', error);
+    }
+  };
 
   const setMockData = () => {
     const mockConnections = [
@@ -111,9 +146,9 @@ export function SettingsTab() {
       setInvites(data || []);
     } catch (error) {
       console.error('Error fetching invites:', error);
+      // If there's an error, start with empty invites
+      setInvites([]);
     }
-    // Always use mock data for demonstration
-    setMockInviteData();
   }, []);
 
   const setMockInviteData = () => {
@@ -257,9 +292,72 @@ export function SettingsTab() {
   };
 
   useEffect(() => {
-    fetchConnections();
-    fetchInvites();
-  }, [fetchConnections, fetchInvites]);
+    const initializeData = async () => {
+      await fetchConnections();
+      await fetchInvites();
+      
+      // Check for pending connections on component mount
+      const pendingConnection = localStorage.getItem('pending_meta_connection');
+      if (pendingConnection && profile?.id) {
+        console.log('Found pending Meta connection on mount:', pendingConnection);
+        try {
+          const connectionData = JSON.parse(pendingConnection);
+          await saveConnectionToDatabase(connectionData);
+          localStorage.removeItem('pending_meta_connection');
+          console.log('Pending connection processed on mount');
+          // Refresh connections after saving
+          setTimeout(() => fetchConnections(), 1000);
+        } catch (error) {
+          console.error('Error processing pending connection on mount:', error);
+        }
+      }
+    };
+
+    initializeData();
+  }, [fetchConnections, fetchInvites, profile?.id]);
+
+  // Handle OAuth callback redirects and pending connections
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      const connectedPlatform = searchParams.get('connected');
+      if (connectedPlatform) {
+        console.log('OAuth callback detected for platform:', connectedPlatform);
+        
+        // Check for pending connection data in localStorage
+        const pendingConnection = localStorage.getItem('pending_meta_connection');
+        console.log('Pending connection found:', !!pendingConnection);
+        
+        if (pendingConnection && profile?.id) {
+          try {
+            const connectionData = JSON.parse(pendingConnection);
+            console.log('Processing pending Meta connection:', connectionData);
+            
+            // Save to database
+            await saveConnectionToDatabase(connectionData);
+            
+            // Remove from localStorage
+            localStorage.removeItem('pending_meta_connection');
+            console.log('Connection saved and localStorage cleared');
+          } catch (error) {
+            console.error('Error processing pending connection:', error);
+          }
+        }
+        
+        // Refresh connections when coming back from OAuth
+        setTimeout(() => {
+          fetchConnections();
+          // Show success message
+          setShowSuccessMessage(`${connectedPlatform.charAt(0).toUpperCase() + connectedPlatform.slice(1)} account connected successfully!`);
+          // Clear the query parameter
+          setSearchParams({});
+          // Hide success message after 5 seconds
+          setTimeout(() => setShowSuccessMessage(null), 5000);
+        }, 1000);
+      }
+    };
+
+    handleOAuthCallback();
+  }, [searchParams, fetchConnections, setSearchParams, profile?.id]);
 
   const sendInvite = async () => {
     if (!email.trim()) return;
@@ -458,22 +556,55 @@ export function SettingsTab() {
     }
   };
 
-  const handleDisconnect = async (platform: string) => {
+  const handleDisconnect = (platform: string) => {
+    setPlatformToDisconnect(platform);
+    setShowDisconnectConfirm(true);
+  };
+
+  const confirmDisconnect = async () => {
+    if (!platformToDisconnect) return;
+    
     try {
       const { error } = await supabase
         .from('platform_connections')
-        .update({ status: 'disconnected' })
-        .eq('platform', platform);
+        .update({ 
+          status: 'disconnected',
+          updated_at: new Date().toISOString()
+        })
+        .eq('platform', platformToDisconnect);
 
       if (error) throw error;
-      fetchConnections();
+      
+      // Refresh connections to update UI
+      await fetchConnections();
+      
+      // Close confirmation dialog
+      setShowDisconnectConfirm(false);
+      setPlatformToDisconnect(null);
     } catch (error) {
       console.error('Error disconnecting platform:', error);
+      alert('Failed to disconnect platform. Please try again.');
     }
+  };
+
+  const cancelDisconnect = () => {
+    setShowDisconnectConfirm(false);
+    setPlatformToDisconnect(null);
   };
 
   const getConnectionStatus = (platform: string) => {
     const connection = connections.find(c => c.platform === platform);
+    
+    // Debug logging
+    if (platform === 'meta') {
+      console.log('Meta connection status check:', {
+        connections: connections,
+        metaConnection: connection,
+        status: connection?.status || 'disconnected',
+        localStorage: localStorage.getItem('pending_meta_connection')
+      });
+    }
+    
     return connection?.status || 'disconnected';
   };
 
@@ -558,6 +689,50 @@ export function SettingsTab() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
           <p className="text-gray-600 mt-1">Manage platform connections, team members, and account settings</p>
+        </div>
+      </div>
+
+      {/* Success Message */}
+      {showSuccessMessage && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+          <div className="flex items-center">
+            <CheckCircle className="w-5 h-5 text-green-400 mr-2" />
+            <p className="text-green-800 font-medium">{showSuccessMessage}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Debug Section - Temporary */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <h3 className="text-lg font-semibold text-yellow-800 mb-2">Meta OAuth Debug (Temporary)</h3>
+        <MetaDebugTest />
+        
+        {/* Manual connection processing button */}
+        <div className="mt-4">
+          <button
+            onClick={async () => {
+              const pendingConnection = localStorage.getItem('pending_meta_connection');
+              if (pendingConnection && profile?.id) {
+                console.log('Manually processing pending connection:', pendingConnection);
+                try {
+                  const connectionData = JSON.parse(pendingConnection);
+                  await saveConnectionToDatabase(connectionData);
+                  localStorage.removeItem('pending_meta_connection');
+                  fetchConnections();
+                  setShowSuccessMessage('Meta connection processed manually!');
+                  setTimeout(() => setShowSuccessMessage(null), 3000);
+                } catch (error) {
+                  console.error('Error manually processing connection:', error);
+                }
+              } else {
+                console.log('No pending connection found or user not authenticated');
+                alert('No pending connection found or user not authenticated');
+              }
+            }}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Process Pending Meta Connection
+          </button>
         </div>
       </div>
 
@@ -916,6 +1091,38 @@ export function SettingsTab() {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Disconnect Confirmation Dialog */}
+      {showDisconnectConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-2">Disconnect Platform</h3>
+              <p className="text-gray-600">
+                Are you sure you want to disconnect {platformToDisconnect && platformConfigs[platformToDisconnect as keyof typeof platformConfigs]?.name}? 
+                This will remove the connection and prevent client authorization flows.
+              </p>
+            </div>
+            <div className="flex space-x-3">
+              <button
+                onClick={cancelDisconnect}
+                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDisconnect}
+                className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors"
+              >
+                Disconnect
+              </button>
+            </div>
           </div>
         </div>
       )}

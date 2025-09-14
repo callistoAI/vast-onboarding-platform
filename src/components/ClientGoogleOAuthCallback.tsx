@@ -51,23 +51,21 @@ export default function ClientGoogleOAuthCallback() {
           return;
         }
 
-        // Exchange code for access token using Google's token endpoint
-        const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        // Exchange code for access token using server-side function
+        const tokenResponse = await fetch('/.netlify/functions/google-token-exchange', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
-          body: new URLSearchParams({
-            client_id: clientId,
-            client_secret: import.meta.env.GOOGLE_CLIENT_SECRET,
-            redirect_uri: `${window.location.origin}/oauth/google/client/callback`,
-            grant_type: 'authorization_code',
-            code: code
+          body: JSON.stringify({
+            code: code,
+            redirectUri: `${window.location.origin}/oauth/google/client/callback`
           }),
         });
 
         if (!tokenResponse.ok) {
-          throw new Error('Failed to exchange code for token');
+          const errorData = await tokenResponse.json();
+          throw new Error(`Failed to exchange code for token: ${errorData.details || errorData.error}`);
         }
 
         const tokenData = await tokenResponse.json();
@@ -90,15 +88,15 @@ export default function ClientGoogleOAuthCallback() {
 
           // Save authorization to database
           const { error: authError } = await supabase
-            .from('authorizations')
-            .upsert({
+          .from('authorizations')
+          .upsert({
               client_id: onboardingLink.used_by || onboardingLink.created_by,
-              platform: 'google',
-              status: 'authorized',
+            platform: 'google',
+            status: 'authorized',
               scopes: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/adwords', 'https://www.googleapis.com/auth/analytics.readonly'],
-              token_data: {
-                access_token: tokenData.access_token,
-                refresh_token: tokenData.refresh_token,
+            token_data: {
+              access_token: tokenData.access_token,
+              refresh_token: tokenData.refresh_token,
                 user_id: userData.id,
                 user_name: userData.name,
                 user_email: userData.email,
@@ -233,12 +231,12 @@ export default function ClientGoogleOAuthCallback() {
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">Authentication Failed</h3>
             <p className="text-sm text-gray-500 mb-4">{error}</p>
-            <button
-              onClick={() => navigate('/')}
+          <button
+            onClick={() => navigate('/')}
               className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-            >
+          >
               Return Home
-            </button>
+          </button>
           </div>
         </div>
       </div>

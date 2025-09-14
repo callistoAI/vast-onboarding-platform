@@ -1,21 +1,9 @@
 [build]
-  command = "npm run build"
+  functions = "netlify/functions"
   publish = "dist"
 
-[build.environment]
-  NODE_VERSION = "18"
-
+# SPA routing - redirect all requests to index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-[dev]
-  command = "npm run dev"
-  port = 5173
-  publish = "dist"
-
-# Environment variables (set these in Netlify dashboard)
-# VITE_NEXT_PUBLIC_GOOGLE_CLIENT_ID
-# VITE_NEXT_PUBLIC_META_APP_ID
-# GOOGLE_CLIENT_SECRET

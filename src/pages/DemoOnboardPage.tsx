@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle, ExternalLink, Shield, ChevronLeft } from 'luci
 import { useAuth } from '../hooks/useAuth';
 import { buildClientGoogleOAuthUrl } from '../lib/googleOAuth';
 import { buildClientMetaOAuthUrl } from '../lib/metaOAuth';
+import { buildClientMetaOAuthUrlWithOptions, decodeSelectedOptionsState } from '../lib/metaAccessRequests';
 
 // Helper function for Shopify admin URLs
 const getShopifyAdminUrl = (storeId: string) => {
@@ -200,14 +201,24 @@ export function DemoOnboardPage() {
 
   const handleMetaOAuth = () => {
     try {
-      // For demo purposes, we'll use a placeholder token
-      const onboardingToken = 'demo-onboarding-token'; // In production, this would be the actual link token
+      // Get the onboarding token from URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
       
-      // Build OAuth URL with onboarding token as state
-      const oauthUrl = buildClientMetaOAuthUrl(onboardingToken);
+      if (!token) {
+        alert('Invalid onboarding link. Please contact your administrator.');
+        return;
+      }
       
-      // Open Meta OAuth in new tab
-      window.open(oauthUrl, '_blank');
+      // For now, use default selected options (Ad Account and Page permissions)
+      // In production, these would come from the link configuration stored in the database
+      const selectedOptions = ['ad_account', 'page_all_permissions'];
+      
+      // Build OAuth URL with selected options
+      const oauthUrl = buildClientMetaOAuthUrlWithOptions(token, selectedOptions);
+      
+      // Redirect to Meta OAuth (not in new tab for better UX)
+      window.location.href = oauthUrl;
     } catch (error) {
       console.error('Failed to initiate Meta OAuth:', error);
       alert(`Failed to connect to Meta: ${error instanceof Error ? error.message : 'Unknown error'}`);

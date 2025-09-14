@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { META_ACCESS_REQUEST_OPTIONS, getEnabledMetaScopes, decodeSelectedOptionsState, getScopesForSelectedOptions } from '../lib/metaAccessRequests';
 
 interface AccessRequest {
   id: string;
@@ -43,6 +44,17 @@ export default function ClientMetaOAuthCallback() {
           return;
         }
 
+        // Parse state to get onboarding token and selected options
+        const [onboardingToken, encodedState] = state.split('|');
+        if (!onboardingToken) {
+          setError('Invalid state format');
+          setIsLoading(false);
+          return;
+        }
+
+        // Decode selected options from state
+        const selectedOptions = encodedState ? decodeSelectedOptionsState(encodedState) : [];
+
         // Check if client ID is configured
         const clientId = import.meta.env.VITE_NEXT_PUBLIC_META_APP_ID;
         if (!clientId || clientId.trim() === '') {
@@ -51,57 +63,64 @@ export default function ClientMetaOAuthCallback() {
           return;
         }
 
-        // Exchange code for access token using Meta's token endpoint
-        const tokenResponse = await fetch('https://graph.facebook.com/v18.0/oauth/access_token', {
+        // Exchange code for access token using server-side function
+        const redirectUri = `${window.location.origin}/oauth/meta/client/callback`;
+        
+        const tokenResponse = await fetch('/.netlify/functions/meta-token-exchange', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
-          body: new URLSearchParams({
-            client_id: clientId,
-            client_secret: import.meta.env.META_APP_SECRET,
-            redirect_uri: `${window.location.origin}/oauth/meta/client/callback`,
-            code: code
+          body: JSON.stringify({
+            code: code,
+            redirectUri: redirectUri
           }),
         });
 
         if (!tokenResponse.ok) {
-          throw new Error('Failed to exchange code for token');
+          const errorData = await tokenResponse.json();
+          throw new Error(`Failed to exchange code for token: ${tokenResponse.status} - ${errorData.details || errorData.error}`);
         }
 
         const tokenData = await tokenResponse.json();
         
         if (tokenData.access_token) {
           // Get user info from Meta
-          const userResponse = await fetch(`https://graph.facebook.com/v18.0/me?access_token=${tokenData.access_token}&fields=id,name,email`);
+          const userResponse = await fetch(`https://graph.facebook.com/v21.0/me?access_token=${tokenData.access_token}&fields=id,name,email`);
           const userData = await userResponse.json();
           
           // Find the client by onboarding token
           const { data: onboardingLink, error: linkError } = await supabase
             .from('onboarding_links')
             .select('*')
-            .eq('link_token', state)
+            .eq('link_token', onboardingToken)
             .single();
 
           if (linkError || !onboardingLink) {
             throw new Error('Invalid onboarding token');
           }
 
-          // Save authorization to database
+          // Get scopes for the selected options
+          const scopes = selectedOptions.length > 0 
+            ? getScopesForSelectedOptions(selectedOptions)
+            : getEnabledMetaScopes();
+
+          // Save authorization to database with selected options scopes
           const { error: authError } = await supabase
             .from('authorizations')
             .upsert({
               client_id: onboardingLink.used_by || onboardingLink.created_by,
               platform: 'meta',
               status: 'authorized',
-              scopes: ['ads_read', 'business_management', 'pages_show_list', 'pages_read_engagement', 'instagram_basic'],
+              scopes: scopes,
               token_data: {
                 access_token: tokenData.access_token,
                 user_id: userData.id,
                 user_name: userData.name,
                 user_email: userData.email,
                 expires_in: tokenData.expires_in,
-                token_type: tokenData.token_type
+                token_type: tokenData.token_type,
+                selected_options: selectedOptions
               }
             }, {
               onConflict: 'client_id,platform'
@@ -113,7 +132,7 @@ export default function ClientMetaOAuthCallback() {
           }
           
           // Fetch access requests for this client
-          await fetchAccessRequests(state);
+          await fetchAccessRequests(onboardingToken);
         } else {
           throw new Error('No access token received');
         }
@@ -153,14 +172,34 @@ export default function ClientMetaOAuthCallback() {
         throw new Error('Failed to fetch authorizations');
       }
 
-      // Convert to AccessRequest format
-      const accessRequests: AccessRequest[] = authorizations.map(auth => ({
-        id: auth.id,
-        platform: 'Meta Business',
-        requestedScopes: auth.scopes || [],
-        requestedAt: auth.created_at,
-        status: auth.status as 'pending' | 'approved' | 'rejected'
-      }));
+      // Convert to AccessRequest format with Meta access request options
+      const accessRequests: AccessRequest[] = authorizations.map(auth => {
+        // Get selected options from token_data or map from scopes
+        let requestedOptions: string[] = [];
+        
+        if (auth.token_data && typeof auth.token_data === 'object' && 'selected_options' in auth.token_data) {
+          // Use stored selected options
+          const selectedOptions = (auth.token_data as any).selected_options || [];
+          requestedOptions = selectedOptions
+            .map((optionId: string) => {
+              const option = META_ACCESS_REQUEST_OPTIONS.find(opt => opt.id === optionId);
+              return option ? option.name : optionId;
+            });
+        } else {
+          // Fallback: map scopes to human-readable access request options
+          requestedOptions = META_ACCESS_REQUEST_OPTIONS
+            .filter(option => option.enabled && auth.scopes?.some(scope => option.scopes.includes(scope)))
+            .map(option => option.name);
+        }
+        
+        return {
+          id: auth.id,
+          platform: 'Meta Business',
+          requestedScopes: requestedOptions.length > 0 ? requestedOptions : (auth.scopes || []),
+          requestedAt: auth.created_at,
+          status: auth.status as 'pending' | 'approved' | 'rejected'
+        };
+      });
       
       setAccessRequests(accessRequests);
     } catch (err) {

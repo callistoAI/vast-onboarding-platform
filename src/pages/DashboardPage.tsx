@@ -10,14 +10,6 @@ export function DashboardPage() {
   const { profile, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Debug logging
-  console.log('DashboardPage rendering:', {
-    loading,
-    profile: profile?.id,
-    role: profile?.role,
-    pathname: location.pathname
-  });
 
   useEffect(() => {
     if (!loading && !profile) {
