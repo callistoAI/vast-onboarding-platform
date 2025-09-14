@@ -48,15 +48,6 @@ export function OnboardingLinksTab() {
   const [activeLinks, setActiveLinks] = useState(0);
   const [usedLinks, setUsedLinks] = useState(0);
   const [expiredLinks, setExpiredLinks] = useState(0);
-
-  console.log('OnboardingLinksTab render:', {
-    loading,
-    linksCount: links.length,
-    totalLinks,
-    activeLinks,
-    usedLinks,
-    expiredLinks
-  });
   const [showLinkForm, setShowLinkForm] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [platformApis, setPlatformApis] = useState<Record<string, string[]>>({});
@@ -66,14 +57,22 @@ export function OnboardingLinksTab() {
   const [linkType, setLinkType] = useState<'manage' | 'view'>('manage');
   const [connections, setConnections] = useState<any[]>([]);
   const { profile } = useAuth();
-
   const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
   const [editingLinkName, setEditingLinkName] = useState('');
-
   const [activeTab, setActiveTab] = useState<'all' | 'manage' | 'view'>('all');
+
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'used' | 'expired'>('all');
   const [showCopyNotification, setShowCopyNotification] = useState(false);
+  
+  console.log('OnboardingLinksTab render:', {
+    loading,
+    linksCount: links.length,
+    totalLinks,
+    activeLinks,
+    usedLinks,
+    expiredLinks
+  });
   
   const fetchConnections = useCallback(async () => {
     try {
