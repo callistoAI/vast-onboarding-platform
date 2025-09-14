@@ -48,6 +48,15 @@ export function OnboardingLinksTab() {
   const [activeLinks, setActiveLinks] = useState(0);
   const [usedLinks, setUsedLinks] = useState(0);
   const [expiredLinks, setExpiredLinks] = useState(0);
+
+  console.log('OnboardingLinksTab render:', {
+    loading,
+    linksCount: links.length,
+    totalLinks,
+    activeLinks,
+    usedLinks,
+    expiredLinks
+  });
   const [showLinkForm, setShowLinkForm] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [platformApis, setPlatformApis] = useState<Record<string, string[]>>({});

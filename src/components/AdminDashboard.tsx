@@ -9,6 +9,10 @@ import { ClientSettingsTab } from './client/ClientSettingsTab';
 export function AdminDashboard() {
   const location = useLocation();
   
+  console.log('AdminDashboard render:', {
+    pathname: location.pathname
+  });
+  
   const getCurrentTab = () => {
     switch (location.pathname) {
       case '/admin/clients':
@@ -25,6 +29,7 @@ export function AdminDashboard() {
   };
 
   const currentTab = getCurrentTab();
+  console.log('Current tab:', currentTab);
 
   const renderTabContent = () => {
     switch (currentTab) {
