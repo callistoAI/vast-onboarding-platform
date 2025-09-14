@@ -65,14 +65,7 @@ export function OnboardingLinksTab() {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'used' | 'expired'>('all');
   const [showCopyNotification, setShowCopyNotification] = useState(false);
   
-  console.log('OnboardingLinksTab render:', {
-    loading,
-    linksCount: links.length,
-    totalLinks,
-    activeLinks,
-    usedLinks,
-    expiredLinks
-  });
+  // Debug logging moved to useEffect to avoid variable access issues
   
   const fetchConnections = useCallback(async () => {
     try {
@@ -124,6 +117,18 @@ export function OnboardingLinksTab() {
     fetchData();
     fetchConnections();
   }, [fetchData, fetchConnections]);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('OnboardingLinksTab render:', {
+      loading,
+      linksCount: links.length,
+      totalLinks,
+      activeLinks,
+      usedLinks,
+      expiredLinks
+    });
+  }, [loading, links.length, totalLinks, activeLinks, usedLinks, expiredLinks]);
 
   const setMockData = () => {
     // Enhanced mock links with more variety and different statuses - expanded for complete UI
