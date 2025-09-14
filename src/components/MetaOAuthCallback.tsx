@@ -37,59 +37,95 @@ export default function MetaOAuthCallback() {
           return;
         }
 
-        // Exchange code for access token using Meta's token endpoint
-        const tokenResponse = await fetch('https://graph.facebook.com/v18.0/oauth/access_token', {
+        // Exchange code for access token using server-side function
+        const redirectUri = `${window.location.origin}/oauth/meta/callback`;
+        console.log('Constructed redirect URI:', redirectUri);
+        
+        console.log('Meta OAuth Token Exchange:', {
+          clientId: clientId.substring(0, 10) + '...',
+          redirectUri,
+          code: code.substring(0, 10) + '...'
+        });
+
+        const tokenResponse = await fetch('/.netlify/functionsIs the most current version /meta-token-exchange', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
-          body: new URLSearchParams({
-            client_id: clientId,
-            client_secret: import.meta.env.META_APP_SECRET,
-            redirect_uri: `${window.location.origin}/oauth/meta/callback`,
-            code: code
+          body: JSON.stringify({
+            code: code,
+            redirectUri: redirectUri
           }),
         });
 
+        console.log('Token response status:', tokenResponse.status);
+
         if (!tokenResponse.ok) {
-          throw new Error('Failed to exchange code for token');
+          const errorData = await tokenResponse.json();
+          console.error('Token exchange error:', errorData);
+          throw new Error(`Failed to exchange code for token: ${tokenResponse.status} - ${errorData.details || errorData.error}`);
         }
 
         const tokenData = await tokenResponse.json();
+        console.log('Token data received:', { 
+          hasAccessToken: !!tokenData.access_token,
+          tokenType: tokenData.token_type,
+          expiresIn: tokenData.expires_in
+        });
         
         if (tokenData.access_token) {
           // Get user info from Meta
-          const userResponse = await fetch(`https://graph.facebook.com/v18.0/me?access_token=${tokenData.access_token}&fields=id,name,email`);
+          const userResponse = await fetch(`https://graph.facebook.com/v21.0/me?access_token=${tokenData.access_token}&fields=id,name,email`);
           const userData = await userResponse.json();
           
-          // Save connection to database
-          if (user?.id) {
-            const { error: dbError } = await supabase
-              .from('platform_connections')
-              .upsert({
-                platform: 'meta',
-                status: 'connected',
-                connection_data: {
-                  access_token: tokenData.access_token,
-                  user_id: userData.id,
-                  user_name: userData.name,
-                  user_email: userData.email,
-                  expires_in: tokenData.expires_in,
-                  token_type: tokenData.token_type
-                },
-                connected_by: user.id
-              }, {
-                onConflict: 'platform,connected_by'
-              });
+          console.log('User data received:', { 
+            hasUserId: !!userData.id,
+            userName: userData.name,
+            userEmail: userData.email
+          });
+          
+          // Save connection data to localStorage temporarily
+          // This will be processed when the user returns to the admin dashboard
+          const connectionData = {
+            platform: 'meta',
+            status: 'connected',
+            connection_data: {
+              access_token: tokenData.access_token,
+              user_id: userData.id,
+              user_name: userData.name,
+              user_email: userData.email,
+              expires_in: tokenData.expires_in,
+              token_type: tokenData.token_type
+            },
+            timestamp: Date.now()
+          };
 
-            if (dbError) {
-              console.error('Database error:', dbError);
-              throw new Error('Failed to save connection to database');
+          console.log('Saving connection data to localStorage:', connectionData);
+          localStorage.setItem('pending_meta_connection', JSON.stringify(connectionData));
+          
+          // Show success message immediately
+          setError(null);
+          setIsLoading(false);
+          
+          // Try multiple redirect methods
+          try {
+            // Method 1: React Router navigate
+            navigate('/admin/settings?connected=meta');
+            console.log('Redirected using React Router navigate');
+          } catch (navError) {
+            console.warn('React Router navigate failed:', navError);
+            try {
+              // Method 2: Window location
+              window.location.href = '/admin/settings?connected=meta';
+              console.log('Redirected using window.location.href');
+            } catch (locationError) {
+              console.warn('Window location redirect failed:', locationError);
+              // Method 3: Manual redirect
+              setTimeout(() => {
+                window.location.replace('/admin/settings?connected=meta');
+              }, 1000);
             }
           }
-          
-          // Redirect to admin dashboard
-          navigate('/admin/dashboard');
         } else {
           throw new Error('No access token received');
         }

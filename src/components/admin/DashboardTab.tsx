@@ -3,23 +3,24 @@ import { Copy, ExternalLink, CheckCircle, Eye, Edit3, Trash2, X } from 'lucide-r
 import { supabase } from '../../lib/supabase';
 import { Database } from '../../lib/database.types';
 import { useAuth } from '../../hooks/useAuth';
+import { META_ACCESS_REQUEST_OPTIONS, getScopesForSelectedOptions, encodeSelectedOptionsState } from '../../lib/metaAccessRequests';
 
 type OnboardingLink = Database['public']['Tables']['onboarding_links']['Row'];
 
 const platformOptions = [
-  { id: 'meta', name: 'Meta Business', color: 'purple' },
-  { id: 'google', name: 'Google Ads', color: 'indigo' },
-  { id: 'tiktok', name: 'TikTok Ads', color: 'teal' },
-  { id: 'shopify', name: 'Shopify', color: 'cyan' }
+  { id: 'meta', name: 'Meta Business', color: 'purple', enabled: true },
+  { id: 'google', name: 'Google Ads', color: 'indigo', enabled: false },
+  { id: 'tiktok', name: 'TikTok Ads', color: 'teal', enabled: false },
+  { id: 'shopify', name: 'Shopify', color: 'cyan', enabled: false }
 ];
 
 const platformApiOptions = {
-  meta: [
-    'Facebook Ads API',
-    'Instagram Business API',
-    'Facebook Pages API',
-    'Meta Business SDK'
-  ],
+  meta: META_ACCESS_REQUEST_OPTIONS.map(option => ({
+    id: option.id,
+    name: option.name,
+    description: option.description,
+    enabled: option.enabled
+  })),
   google: [
     'Google Ads API',
     'Google Analytics API',
@@ -54,6 +55,7 @@ export function OnboardingLinksTab() {
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
   const [linkName, setLinkName] = useState('');
   const [linkType, setLinkType] = useState<'manage' | 'view'>('manage');
+  const [connections, setConnections] = useState<any[]>([]);
   const { profile } = useAuth();
 
   const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
@@ -64,6 +66,21 @@ export function OnboardingLinksTab() {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'used' | 'expired'>('all');
   const [showCopyNotification, setShowCopyNotification] = useState(false);
   
+  const fetchConnections = useCallback(async () => {
+    try {
+      const { data: connectionsData, error: connectionsError } = await supabase
+        .from('platform_connections')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (connectionsError) throw connectionsError;
+      setConnections(connectionsData || []);
+    } catch (error) {
+      console.error('Error fetching connections:', error);
+      setConnections([]);
+    }
+  }, []);
+
   const fetchData = useCallback(async () => {
     try {
       // Fetch onboarding links
@@ -97,7 +114,8 @@ export function OnboardingLinksTab() {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    fetchConnections();
+  }, [fetchData, fetchConnections]);
 
   const setMockData = () => {
     // Enhanced mock links with more variety and different statuses - expanded for complete UI
@@ -238,18 +256,63 @@ export function OnboardingLinksTab() {
     setLinks(mockLinks);
   };
 
+  const isMetaConnected = () => {
+    const metaConnection = connections.find(c => c.platform === 'meta');
+    return metaConnection?.status === 'connected';
+  };
+
   const generateLink = async () => {
     if (selectedPlatforms.length === 0 || Object.keys(platformApis).length === 0 || !linkName.trim()) return;
     
+    // Check if Meta is connected for Meta platform links
+    if (selectedPlatforms.includes('meta') && !isMetaConnected()) {
+      alert('Please connect your Meta Business account first in Settings before generating Meta access links.');
+      return;
+    }
+    
     setGenerating(true);
     try {
+      // Build platform-specific configuration
+      const platformConfigs: Record<string, any> = {};
+      
+      selectedPlatforms.forEach(platform => {
+        const apis = platformApis[platform] || [];
+        
+        if (platform === 'meta') {
+          // For Meta, store the selected access request options and their scopes
+          const selectedOptions = apis; // These are the access request option names
+          const scopes = getScopesForSelectedOptions(selectedOptions);
+          const encodedState = encodeSelectedOptionsState(selectedOptions);
+          
+          // Get the admin's Meta connection info
+          const metaConnection = connections.find(c => c.platform === 'meta' && c.status === 'connected');
+          
+          platformConfigs[platform] = {
+            selectedOptions,
+            scopes,
+            encodedState,
+            adminConnection: metaConnection ? {
+              connected_by: metaConnection.connected_by,
+              token_data: metaConnection.token_data,
+              connected_at: metaConnection.created_at
+            } : null,
+            oauthUrl: `https://www.facebook.com/v21.0/dialog/oauth?client_id=${import.meta.env.VITE_NEXT_PUBLIC_META_APP_ID}&redirect_uri=${window.location.origin}/oauth/meta/client/callback&response_type=code&scope=${scopes.join(',')}&state=TOKEN_PLACEHOLDER|${encodedState}`
+          };
+        } else {
+          // For other platforms, keep the existing API structure
+          platformConfigs[platform] = {
+            apis: apis
+          };
+        }
+      });
+
       const { data, error } = await supabase
         .from('onboarding_links')
         .insert({
           created_by: profile?.id || 'test-admin-user',
           platforms: selectedPlatforms,
           expires_at: null,
-          note: `${linkType.toUpperCase()} - ${linkName} - APIs: ${Object.entries(platformApis).map(([platform, apis]) => `${platform}: ${apis.join(', ')}`).join(' | ')}`,
+          note: `${linkType.toUpperCase()} - ${linkName} - Config: ${JSON.stringify(platformConfigs)}`,
         })
         .select()
         .single();
@@ -494,14 +557,22 @@ export function OnboardingLinksTab() {
                 <div className="space-y-4">
                   {platformOptions.map((platform) => (
                     <div key={platform.id} className="relative">
-                      <div className="bg-gray-50 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all duration-200">
-                        <label className="flex items-center justify-between p-5 cursor-pointer">
+                      <div className={`border border-gray-200 rounded-xl transition-all duration-200 ${
+                        platform.enabled 
+                          ? 'bg-gray-50 hover:border-gray-300 hover:shadow-sm' 
+                          : 'bg-gray-100 opacity-50 cursor-not-allowed'
+                      }`}>
+                        <label className={`flex items-center justify-between p-5 ${
+                          platform.enabled ? 'cursor-pointer' : 'cursor-not-allowed'
+                        }`}>
                           <div className="flex items-center space-x-3">
                             <div className="relative">
                               <input
                                 type="checkbox"
                                 checked={selectedPlatforms.includes(platform.id)}
+                                disabled={!platform.enabled}
                                 onChange={(e) => {
+                                  if (!platform.enabled) return;
                                   if (e.target.checked) {
                                     setSelectedPlatforms([...selectedPlatforms, platform.id]);
                                     setPlatformApis({ ...platformApis, [platform.id]: [] });
@@ -517,7 +588,9 @@ export function OnboardingLinksTab() {
                               <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${
                                 selectedPlatforms.includes(platform.id)
                                   ? `bg-gradient-to-r from-${platform.color}-500 to-${platform.color}-600 border-${platform.color}-500`
-                                  : 'border-gray-300 bg-white hover:border-gray-400'
+                                  : platform.enabled
+                                  ? 'border-gray-300 bg-white hover:border-gray-400'
+                                  : 'border-gray-200 bg-gray-100'
                               }`}>
                                 {selectedPlatforms.includes(platform.id) && (
                                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -527,18 +600,36 @@ export function OnboardingLinksTab() {
                               </div>
                             </div>
                             <div className="flex items-center space-x-3">
-                              <div className={`w-10 h-10 bg-gradient-to-br from-${platform.color}-400 to-${platform.color}-500 rounded-xl flex items-center justify-center shadow-sm`}>
+                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${
+                                platform.enabled
+                                  ? `bg-gradient-to-br from-${platform.color}-400 to-${platform.color}-500`
+                                  : 'bg-gray-400'
+                              }`}>
                                 <span className="text-white font-bold text-sm">
                                   {platform.name.charAt(0)}
                                 </span>
                               </div>
                               <div>
-                                <span className="font-semibold text-gray-900">{platform.name}</span>
-                                <p className="text-sm text-gray-600">{platformApiOptions[platform.id as keyof typeof platformApiOptions].length} APIs available</p>
+                                <div className="flex items-center space-x-2">
+                                  <span className={`font-semibold ${
+                                    platform.enabled ? 'text-gray-900' : 'text-gray-500'
+                                  }`}>{platform.name}</span>
+                                  {!platform.enabled && (
+                                    <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">Coming Soon</span>
+                                  )}
+                                </div>
+                                <p className={`text-sm ${
+                                  platform.enabled ? 'text-gray-600' : 'text-gray-400'
+                                }`}>
+                                  {platform.id === 'meta' 
+                                    ? `${META_ACCESS_REQUEST_OPTIONS.filter(opt => opt.enabled).length} access options available`
+                                    : `${platformApiOptions[platform.id as keyof typeof platformApiOptions].length} APIs available`
+                                  }
+                                </p>
                               </div>
                             </div>
                           </div>
-                          {selectedPlatforms.includes(platform.id) && (
+                          {selectedPlatforms.includes(platform.id) && platform.enabled && (
                             <svg className="w-5 h-5 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
@@ -548,45 +639,70 @@ export function OnboardingLinksTab() {
                         {selectedPlatforms.includes(platform.id) && (
                           <div className="border-t border-gray-200 bg-white">
                             <div className="p-5 space-y-3">
-                              <p className="text-sm font-semibold text-gray-900 mb-4">Select APIs:</p>
+                              <p className="text-sm font-semibold text-gray-900 mb-4">
+                                {platform.id === 'meta' ? 'Select Access Options:' : 'Select APIs:'}
+                              </p>
                               <div className="space-y-3">
-                                {platformApiOptions[platform.id as keyof typeof platformApiOptions].map((api) => (
-                                  <label key={api} className="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <div className="relative">
-                                      <input
-                                        type="checkbox"
-                                        checked={platformApis[platform.id]?.includes(api) || false}
-                                        onChange={(e) => {
-                                          const currentApis = platformApis[platform.id] || [];
-                                          if (e.target.checked) {
-                                            setPlatformApis({
-                                              ...platformApis,
-                                              [platform.id]: [...currentApis, api]
-                                            });
-                                          } else {
-                                            setPlatformApis({
-                                              ...platformApis,
-                                              [platform.id]: currentApis.filter(a => a !== api)
-                                            });
-                                          }
-                                        }}
-                                        className="sr-only"
-                                      />
-                                      <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200 ${
-                                        platformApis[platform.id]?.includes(api) 
-                                          ? 'bg-gray-600 border-gray-600'
-                                          : 'border-gray-300 bg-white group-hover:border-gray-400'
-                                      }`}>
-                                        {platformApis[platform.id]?.includes(api) && (
-                                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                          </svg>
+                                {platformApiOptions[platform.id as keyof typeof platformApiOptions].map((api) => {
+                                  const apiName = typeof api === 'string' ? api : api.name;
+                                  const apiId = typeof api === 'string' ? api : api.id;
+                                  const apiDescription = typeof api === 'object' ? api.description : '';
+                                  const isEnabled = typeof api === 'object' ? api.enabled : true;
+                                  
+                                  return (
+                                    <label key={apiId} className={`flex items-center space-x-3 cursor-pointer group p-3 rounded-lg transition-colors ${
+                                      isEnabled ? 'hover:bg-gray-50' : 'opacity-50 cursor-not-allowed'
+                                    }`}>
+                                      <div className="relative">
+                                        <input
+                                          type="checkbox"
+                                          checked={platformApis[platform.id]?.includes(apiName) || false}
+                                          disabled={!isEnabled}
+                                          onChange={(e) => {
+                                            if (!isEnabled) return;
+                                            const currentApis = platformApis[platform.id] || [];
+                                            if (e.target.checked) {
+                                              setPlatformApis({
+                                                ...platformApis,
+                                                [platform.id]: [...currentApis, apiName]
+                                              });
+                                            } else {
+                                              setPlatformApis({
+                                                ...platformApis,
+                                                [platform.id]: currentApis.filter(a => a !== apiName)
+                                              });
+                                            }
+                                          }}
+                                          className="sr-only"
+                                        />
+                                        <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all duration-200 ${
+                                          platformApis[platform.id]?.includes(apiName) 
+                                            ? 'bg-gray-600 border-gray-600'
+                                            : isEnabled 
+                                            ? 'border-gray-300 bg-white group-hover:border-gray-400'
+                                            : 'border-gray-200 bg-gray-100'
+                                        }`}>
+                                          {platformApis[platform.id]?.includes(apiName) && (
+                                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="flex-1">
+                                        <div className="flex items-center space-x-2">
+                                          <span className="text-sm font-medium text-gray-900">{apiName}</span>
+                                          {!isEnabled && (
+                                            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Coming Later</span>
+                                          )}
+                                        </div>
+                                        {apiDescription && (
+                                          <p className="text-xs text-gray-500 mt-1">{apiDescription}</p>
                                         )}
                                       </div>
-                                    </div>
-                                    <span className="text-sm text-gray-800 group-hover:text-gray-900 flex-1 font-medium">{api}</span>
-                                  </label>
-                                ))}
+                                    </label>
+                                  );
+                                })}
                               </div>
                             </div>
                           </div>
@@ -597,6 +713,21 @@ export function OnboardingLinksTab() {
                 </div>
               </div>
 
+              {/* Meta Connection Warning */}
+              {selectedPlatforms.includes('meta') && !isMetaConnected() && (
+                <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <div>
+                      <p className="text-sm font-medium text-yellow-800">Meta Business Account Required</p>
+                      <p className="text-sm text-yellow-700">Please connect your Meta Business account in Settings before generating Meta access links.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="flex space-x-4 pt-4 border-t border-gray-100">
                 <button
                   onClick={() => setShowLinkForm(false)}
@@ -606,7 +737,7 @@ export function OnboardingLinksTab() {
                 </button>
                 <button
                   onClick={generateLink}
-                  disabled={generating || selectedPlatforms.length === 0 || Object.keys(platformApis).length === 0 || !linkName.trim()}
+                  disabled={generating || selectedPlatforms.length === 0 || Object.keys(platformApis).length === 0 || !linkName.trim() || (selectedPlatforms.includes('meta') && !isMetaConnected())}
                   className="flex-1 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl disabled:opacity-50 font-medium transition-colors duration-200"
                 >
                   {generating ? 'Generating...' : 'Generate Link'}

@@ -1,11 +1,8 @@
 // Meta OAuth Configuration and Utilities
-export const META_OAUTH_SCOPES = [
-  'ads_read',
-  'business_management',
-  'pages_show_list',
-  'pages_read_engagement',
-  'instagram_basic'
-];
+import { getEnabledMetaScopes } from './metaAccessRequests';
+
+// Get scopes from enabled access request options
+export const META_OAUTH_SCOPES = getEnabledMetaScopes();
 
 // Build Meta OAuth URL for admin flow
 export function buildAdminMetaOAuthUrl(): string {
@@ -31,7 +28,7 @@ export function buildAdminMetaOAuthUrl(): string {
     state: 'admin_flow'
   });
 
-  return `https://www.facebook.com/v18.0/dialog/oauth?${params.toString()}`;
+  return `https://www.facebook.com/v21.0/dialog/oauth?${params.toString()}`;
 }
 
 // Build Meta OAuth URL for client flow
@@ -59,5 +56,5 @@ export function buildClientMetaOAuthUrl(onboardingToken: string): string {
     state: onboardingToken
   });
 
-  return `https://www.facebook.com/v18.0/dialog/oauth?${params.toString()}`;
+  return `https://www.facebook.com/v21.0/dialog/oauth?${params.toString()}`;
 }
